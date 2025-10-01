@@ -130,8 +130,8 @@
                     </div>
                 </div>
 
-                <!-- Cart Section -->
-                <div id="cart-section" class="w-full lg:w-1/3">
+                <!-- Cart & User Orders Section -->
+                <div id="cart-and-orders-section" class="w-full lg:w-1/3">
                     <div class="bg-white rounded-lg shadow-lg p-6 sticky top-8">
                         <h2 class="text-2xl font-semibold text-gray-700 mb-4 border-b pb-3">Keranjang Anda</h2>
                         <div id="cart-items-container" class="space-y-4 mb-4 max-h-80 overflow-y-auto pr-2"></div>
@@ -156,6 +156,16 @@
                             </button>
                         </div>
                         <div id="order-status" class="mt-4 text-center"></div>
+                    </div>
+
+                    <!-- User's Orders Section -->
+                    <div id="user-orders-section" class="mt-8">
+                        <div class="bg-white rounded-lg shadow-lg p-6">
+                            <h2 class="text-2xl font-semibold text-gray-700 mb-4 border-b pb-3">Riwayat Pesanan Saya</h2>
+                            <div id="user-orders-container" class="space-y-4 max-h-96 overflow-y-auto">
+                                <!-- User's orders will be injected here -->
+                            </div>
+                        </div>
                     </div>
                 </div>
             </main>
@@ -289,12 +299,14 @@
         const addMenuButton = document.getElementById('add-menu-button');
         const menuContainer = document.getElementById('menu-container');
         
-        const cartSection = document.getElementById('cart-section');
+        const cartAndOrdersSection = document.getElementById('cart-and-orders-section');
         const cartItemsContainer = document.getElementById('cart-items-container');
         const cartTotalElement = document.getElementById('cart-total');
         const orderButton = document.getElementById('order-button');
         const orderStatus = document.getElementById('order-status');
         const paymentMethodsContainer = document.getElementById('payment-methods');
+        const userOrdersSection = document.getElementById('user-orders-section');
+        const userOrdersContainer = document.getElementById('user-orders-container');
         
         const menuModal = document.getElementById('menu-modal');
         const menuForm = document.getElementById('menu-form');
@@ -434,6 +446,43 @@
             });
         };
 
+        const renderUserOrders = () => {
+            if (currentUser.role !== 'user') return;
+            userOrdersContainer.innerHTML = '';
+            const myOrders = orders.filter(order => order.buyerId === currentUser.id);
+
+            if (myOrders.length === 0) {
+                userOrdersContainer.innerHTML = '<p class="text-gray-500 text-center">Anda belum pernah memesan.</p>';
+                return;
+            }
+
+            myOrders.sort((a, b) => b.id - a.id).forEach(order => {
+                const orderCard = document.createElement('div');
+                orderCard.className = 'border rounded-lg p-4 bg-gray-50 fade-in';
+                const sellerName = sellers.find(s => s.id === order.sellerId)?.name || 'Penjual Terhapus';
+                const itemsHtml = order.items.map(item => `<li>${item.quantity}x ${item.name}</li>`).join('');
+                const statusColor = {
+                    'Baru': 'bg-blue-100 text-blue-800',
+                    'Diproses': 'bg-yellow-100 text-yellow-800',
+                    'Selesai': 'bg-green-100 text-green-800'
+                }[order.status];
+
+                orderCard.innerHTML = `
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <p class="font-bold">Pesanan #${order.id} <span class="text-sm font-normal text-gray-600">dari ${sellerName}</span></p>
+                            <p class="font-semibold text-lg text-blue-600">${formatRupiah(order.total)}</p>
+                        </div>
+                        <span class="text-xs font-bold px-2 py-1 rounded-full ${statusColor}">${order.status}</span>
+                    </div>
+                    <ul class="list-disc list-inside text-sm text-gray-700 my-2">
+                        ${itemsHtml}
+                    </ul>
+                `;
+                userOrdersContainer.appendChild(orderCard);
+            });
+        };
+
         const renderAdminSellerList = () => {
             adminSellerList.innerHTML = `
                 <table class="w-full text-left">
@@ -498,7 +547,7 @@
                 adminDashboard.classList.add('hidden');
                 mainContent.classList.add('hidden');
                 sellerDashboard.classList.add('hidden');
-                cartSection.classList.add('hidden');
+                cartAndOrdersSection.classList.add('hidden');
                 addMenuButton.classList.add('hidden');
 
                 switch (currentUser.role) {
@@ -510,7 +559,7 @@
                     case 'penjual':
                         mainContent.classList.remove('hidden');
                         sellerDashboard.classList.remove('hidden');
-                        cartSection.classList.add('hidden');
+                        cartAndOrdersSection.classList.add('hidden');
                         addMenuButton.classList.remove('hidden');
                         menuTitle.textContent = "Produk Anda";
                         renderMenu();
@@ -519,10 +568,11 @@
                     case 'user':
                         mainContent.classList.remove('hidden');
                         sellerDashboard.classList.add('hidden');
-                        cartSection.classList.remove('hidden');
+                        cartAndOrdersSection.classList.remove('hidden');
                         menuTitle.textContent = "Menu Makanan";
                         renderMenu();
                         renderCart();
+                        renderUserOrders();
                         break;
                 }
             } else {
@@ -616,6 +666,7 @@
             setTimeout(() => { orderStatus.innerHTML = ''; }, 3000);
             cart = [];
             renderCart();
+            renderUserOrders(); // Update order history
         }
 
         const updateOrderStatus = (orderId, newStatus) => {
