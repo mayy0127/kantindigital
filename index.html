@@ -7,18 +7,24 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Menambahkan library Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
+        :root {
+            --dark-purple: #502688;
+            --light-purple: #8F57DB;
+            --pink: #FC99AF;
+            --light-pink: #EDB8CE;
+            --cream: #EFDCEF;
+            --dark-blue: #2E31AA;
+            --text-dark: #333;
+        }
+
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #ffffff; /* putih */
-            background-image: url('https://www.toptal.com/designers/subtlepatterns/uploads/dark-food.png');
-            background-repeat: repeat;
-        }
-        .login-bg {
-             background-color: #ffffff; /* putih */
-             background-image: url('https://www.toptal.com/designers/subtlepatterns/uploads/dark-food.png');
-             background-repeat: repeat;
+            background-color: var(--cream);
+            color: var(--text-dark);
         }
         .fade-in {
             animation: fadeIn 0.5s ease-in-out;
@@ -30,168 +36,150 @@
         .hidden {
             display: none;
         }
-        /* Custom scrollbar for payment methods */
-        #payment-methods::-webkit-scrollbar {
-            height: 4px;
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
         }
-        #payment-methods::-webkit-scrollbar-thumb {
-            background-color: #cbd5e1; /* cool-gray-300 */
+        ::-webkit-scrollbar-thumb {
+            background-color: var(--light-pink);
             border-radius: 20px;
         }
-        .btn-primary {
-            @apply w-full bg-blue-600 text-white font-bold py-3 rounded-lg shadow-md hover:bg-blue-700 transition-all duration-300 transform hover:-translate-y-0.5 disabled:bg-gray-400 disabled:cursor-not-allowed disabled:transform-none disabled:shadow-none;
+        .rating-star {
+            cursor: pointer;
+            transition: color 0.2s;
         }
-        .btn-secondary {
-             @apply bg-gray-200 text-gray-800 font-semibold px-4 py-2 rounded-lg hover:bg-gray-300 transition-colors;
+        .bg-card {
+            background-color: white;
         }
-        .card {
-            @apply bg-white rounded-xl shadow-sm border border-gray-200 transition-all duration-300 hover:shadow-lg hover:-translate-y-1;
-        }
-        .input-field {
-            @apply w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors;
+        .border-card{
+            border-color: var(--light-pink);
         }
     </style>
 </head>
-<body class="bg-slate-50">
+<body class="bg-cream">
 
-    <!-- Login Screen -->
-    <div id="login-screen" class="min-h-screen flex items-center justify-center p-4 login-bg">
-        <div class="bg-white p-8 rounded-2xl shadow-xl w-full max-w-sm border border-gray-200">
-            <div class="flex flex-col items-center mb-6">
-                <div class="bg-blue-600 p-3 rounded-full mb-3">
-                     <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-                    </svg>
-                </div>
-                <h2 class="text-3xl font-bold text-center text-gray-800">Kantin Digital</h2>
+    <!-- Login & Register Screen -->
+    <div id="auth-screen" class="min-h-screen flex items-center justify-center bg-cream p-4">
+        <div class="bg-card p-8 rounded-lg shadow-lg w-full max-w-sm border border-card">
+            <!-- Login Form -->
+            <div id="login-container">
+                 <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-dark-purple mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                </svg>
+                <h2 class="text-2xl font-bold text-center text-text-dark mb-6">Login Kantin Digital</h2>
+                <div id="login-error" class="text-red-500 text-center mb-4"></div>
+                <form id="login-form">
+                    <div class="mb-4">
+                        <label for="username" class="block text-gray-700 mb-2">Username</label>
+                        <input type="text" id="username" class="w-full px-3 py-2 border rounded-lg bg-cream border-light-pink text-text-dark focus:outline-none focus:ring-2 focus:ring-pink" required>
+                    </div>
+                    <div class="mb-6">
+                        <label for="password" class="block text-gray-700 mb-2">Password</label>
+                        <input type="password" id="password" class="w-full px-3 py-2 border rounded-lg bg-cream border-light-pink text-text-dark focus:outline-none focus:ring-2 focus:ring-pink" required>
+                    </div>
+                    <button type="submit" class="w-full bg-[--dark-purple] text-white font-bold py-2 rounded-lg hover:bg-[--light-purple] transition-colors">Login</button>
+                </form>
+                <p class="text-center text-sm text-gray-600 mt-4">
+                    Belum punya akun? <button id="show-register-btn" class="font-semibold text-[--dark-blue] hover:underline">Daftar di sini</button>
+                </p>
             </div>
-            <div id="login-error" class="text-red-500 text-center mb-4 text-sm"></div>
-            <form id="login-form">
-                <div class="mb-4">
-                    <label for="username" class="block text-gray-700 mb-2 font-medium">Username</label>
-                    <input type="text" id="username" class="input-field" required>
-                </div>
-                <div class="mb-6">
-                    <label for="password" class="block text-gray-700 mb-2 font-medium">Password</label>
-                    <input type="password" id="password" class="input-field" required>
-                </div>
-                <button type="submit" class="w-full bg-blue-600 text-white font-bold py-3 rounded-lg shadow-md hover:bg-blue-700 transition-all duration-300 transform hover:-translate-y-0.5">Login</button>
-            </form>
-            <p class="mt-6 text-center text-sm text-gray-600">
-                Belum punya akun? <a href="#" id="show-register-link" class="font-semibold text-blue-600 hover:underline">Daftar di sini</a>
-            </p>
-            <div class="mt-4 text-xs text-gray-500 text-center space-y-1 p-3 bg-gray-50 rounded-lg">
-                <p><span class="font-semibold">Admin:</span> admin123 / admin123</p>
-                <p><span class="font-semibold">Penjual:</span> penjual123 / penjual123</p>
+
+            <!-- Register Form -->
+            <div id="register-container" class="hidden">
+                 <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-dark-purple mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                </svg>
+                <h2 class="text-2xl font-bold text-center text-text-dark mb-6">Daftar Akun User</h2>
+                <div id="register-message" class="text-center mb-4"></div>
+                <form id="register-form">
+                    <div class="mb-4">
+                        <label for="register-username" class="block text-gray-700 mb-2">Username Baru</label>
+                        <input type="text" id="register-username" class="w-full px-3 py-2 border rounded-lg bg-cream border-light-pink text-text-dark focus:outline-none focus:ring-2 focus:ring-pink" required>
+                    </div>
+                    <div class="mb-6">
+                        <label for="register-password" class="block text-gray-700 mb-2">Password</label>
+                        <input type="password" id="register-password" class="w-full px-3 py-2 border rounded-lg bg-cream border-light-pink text-text-dark focus:outline-none focus:ring-2 focus:ring-pink" required>
+                    </div>
+                    <button type="submit" class="w-full bg-[--dark-purple] text-white font-bold py-2 rounded-lg hover:bg-[--light-purple] transition-colors">Daftar</button>
+                </form>
+                <p class="text-center text-sm text-gray-600 mt-4">
+                    Sudah punya akun? <button id="show-login-btn" class="font-semibold text-[--dark-blue] hover:underline">Login di sini</button>
+                </p>
             </div>
         </div>
     </div>
-    
-    <!-- Register Screen -->
-    <div id="register-screen" class="hidden min-h-screen flex items-center justify-center p-4 login-bg">
-        <div class="bg-white p-8 rounded-2xl shadow-xl w-full max-w-sm border border-gray-200">
-            <h2 class="text-2xl font-bold text-center text-gray-800 mb-6">Daftar Akun Baru</h2>
-            <div id="register-error" class="text-red-500 text-center mb-4 text-sm"></div>
-            <form id="register-form">
-                <div class="mb-4">
-                    <label for="register-name" class="block text-gray-700 mb-2 font-medium">Nama Lengkap</label>
-                    <input type="text" id="register-name" class="input-field" required>
-                </div>
-                <div class="mb-4">
-                    <label for="register-username" class="block text-gray-700 mb-2 font-medium">Username</label>
-                    <input type="text" id="register-username" class="input-field" required>
-                </div>
-                <div class="mb-4">
-                    <label for="register-password" class="block text-gray-700 mb-2 font-medium">Password</label>
-                    <input type="password" id="register-password" class="input-field" required>
-                </div>
-                <div class="mb-6">
-                    <label for="register-confirm-password" class="block text-gray-700 mb-2 font-medium">Konfirmasi Password</label>
-                    <input type="password" id="register-confirm-password" class="input-field" required>
-                </div>
-                <button type="submit" class="w-full bg-green-600 text-white font-bold py-3 rounded-lg shadow-md hover:bg-green-700 transition-all duration-300 transform hover:-translate-y-0.5">Daftar</button>
-            </form>
-            <p class="mt-6 text-center text-sm text-gray-600">
-                Sudah punya akun? <a href="#" id="show-login-link" class="font-semibold text-blue-600 hover:underline">Login di sini</a>
-            </p>
-        </div>
-    </div>
-
 
     <!-- App Screen -->
     <div id="app-screen" class="hidden">
         <div class="container mx-auto p-4 md:p-8">
             <!-- Header -->
-            <header class="bg-white rounded-xl shadow-md p-4 mb-8 flex justify-between items-center border border-gray-100">
-                <div class="flex items-center gap-4">
-                     <div class="bg-blue-600 p-3 rounded-full">
-                         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-                        </svg>
-                    </div>
-                    <div>
-                        <h1 class="text-2xl font-bold text-gray-800">Kantin Digital</h1>
-                        <p id="header-subtitle" class="text-gray-600 text-sm">Selamat datang!</p>
-                    </div>
+            <header class="text-center mb-8 relative">
+                <div class="flex items-center justify-center gap-3">
+                    <!-- Logo -->
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-dark-purple" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                    </svg>
+                    <h1 class="text-4xl font-bold text-text-dark">Kantin Digital</h1>
                 </div>
-                <button id="logout-button" class="bg-red-500 text-white font-semibold px-4 py-2 rounded-lg hover:bg-red-600 transition-colors shadow-sm hover:shadow-md">Logout</button>
+                <p id="header-subtitle" class="text-gray-500 mt-2">Pilih makanan favoritmu dan pesan sekarang juga!</p>
+                <button id="logout-button" class="absolute top-0 right-0 bg-red-500 text-white font-semibold px-4 py-2 rounded-lg hover:bg-red-600 transition-colors">Logout</button>
             </header>
 
             <!-- Admin Dashboard -->
             <div id="admin-dashboard" class="hidden">
-                <h2 class="text-3xl font-bold text-gray-800 mb-6">Dashboard Admin</h2>
-                <div class="card p-6 mb-8">
-                    <h3 class="text-xl font-semibold mb-4">Laporan Profit (10%)</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-center">
+                <h2 class="text-3xl font-bold text-text-dark mb-4">Dashboard Admin</h2>
+                <div class="bg-card p-6 rounded-lg shadow-lg mb-8 border border-card">
+                    <div class="flex flex-col sm:flex-row justify-between sm:items-center mb-4">
+                        <h3 class="text-xl font-semibold mb-2 sm:mb-0 text-text-dark">Laporan Profit (10%)</h3>
+                        <div id="admin-period-filter" class="flex gap-1 border rounded-lg p-1 self-start sm:self-center border-card">
+                            <button data-period="day" class="period-btn px-3 py-1 text-sm rounded-md bg-[--dark-purple] text-white font-semibold">Hari Ini</button>
+                            <button data-period="month" class="period-btn px-3 py-1 text-sm rounded-md text-white bg-[--light-purple] hover:bg-[--dark-purple] transition-colors">Bulan Ini</button>
+                            <button data-period="year" class="period-btn px-3 py-1 text-sm rounded-md text-white bg-[--light-purple] hover:bg-[--dark-purple] transition-colors">Tahun Ini</button>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-center">
                         <div>
                             <p class="text-gray-500 text-sm">Total Penjualan</p>
-                            <p id="admin-total-sales" class="text-3xl font-bold text-gray-800">Rp 0</p>
+                            <p id="admin-total-sales" class="text-2xl font-bold text-text-dark">Rp 0</p>
                         </div>
                         <div>
                             <p class="text-gray-500 text-sm">Total Profit</p>
-                            <p id="admin-total-profit" class="text-3xl font-bold text-green-600">Rp 0</p>
+                            <p id="admin-total-profit" class="text-2xl font-bold text-green-500">Rp 0</p>
                         </div>
                     </div>
                 </div>
+
+                <!-- Grafik Keuangan Admin -->
+                <div class="bg-card p-6 rounded-lg shadow-lg mb-8 border border-card">
+                    <h3 class="text-xl font-semibold mb-4 text-text-dark">Grafik Penjualan</h3>
+                    <canvas id="admin-sales-chart"></canvas>
+                </div>
                 
-                <h3 class="text-2xl font-semibold mb-4 text-gray-700">Semua Produk Penjual</h3>
+                <h3 class="text-xl font-semibold mb-4 text-text-dark">Semua Produk Penjual</h3>
                 <div id="admin-product-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                     <!-- Admin product view injected here -->
                 </div>
 
+                <!-- Pengelola Penjual -->
                 <div class="mt-12">
                     <div class="flex justify-between items-center mb-4">
-                        <h3 class="text-2xl font-semibold text-gray-700">Pengelola Penjual</h3>
-                        <button id="add-seller-button" class="bg-blue-600 text-white font-semibold px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors shadow-sm">+ Tambah Penjual</button>
+                        <h3 class="text-xl font-semibold text-text-dark">Pengelola Penjual</h3>
+                        <button id="add-seller-button" class="bg-green-500 text-white font-semibold px-4 py-2 rounded-lg hover:bg-green-600 transition-colors">+ Tambah Penjual</button>
                     </div>
-                    <div id="admin-seller-list" class="card overflow-hidden">
+                    <div id="admin-seller-list" class="bg-card rounded-lg shadow overflow-x-auto border border-card">
                         <!-- Seller list table will be injected here -->
                     </div>
                 </div>
 
+                <!-- Pengelola User (Siswa) -->
                 <div class="mt-12">
-                    <h3 class="text-2xl font-semibold mb-4 text-gray-700">Pengguna Terdaftar</h3>
-                    <div id="admin-user-list" class="card overflow-hidden">
-                        <!-- User list table will be injected here -->
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-xl font-semibold text-text-dark">Pengelola User (Siswa)</h3>
+                        <button id="add-regular-user-button" class="bg-green-500 text-white font-semibold px-4 py-2 rounded-lg hover:bg-green-600 transition-colors">+ Tambah User</button>
                     </div>
-                </div>
-                
-                <div class="mt-12">
-                    <h3 class="text-2xl font-semibold mb-4 text-gray-700">Laporan Transaksi</h3>
-                     <div class="card p-6 mb-6">
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-center">
-                            <div>
-                                <p class="text-gray-500 text-sm">Total Transaksi Selesai</p>
-                                <p id="admin-total-transactions" class="text-3xl font-bold text-gray-800">0</p>
-                            </div>
-                            <div>
-                                <p class="text-gray-500 text-sm">Total Uang Masuk</p>
-                                <p id="admin-total-revenue" class="text-3xl font-bold text-blue-700">Rp 0</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div id="admin-transaction-list" class="card overflow-hidden">
-                        <!-- Transaction list table will be injected here -->
+                    <div id="admin-regular-user-list" class="bg-card rounded-lg shadow overflow-x-auto border border-card">
+                        <!-- Regular user list table will be injected here -->
                     </div>
                 </div>
             </div>
@@ -201,24 +189,49 @@
                 <!-- Menu/Products Section -->
                 <div class="w-full lg:w-2/3">
                     <div id="seller-dashboard" class="hidden mb-8">
-                        <h2 class="text-3xl font-bold text-gray-800 mb-4">Dashboard Penjual</h2>
-                        <div class="card p-6">
-                            <h3 class="text-xl font-semibold mb-4">Pesanan Masuk</h3>
-                            <div id="seller-orders-container" class="space-y-4 max-h-96 overflow-y-auto">
-                                <!-- Seller orders injected here -->
+                        <h2 class="text-3xl font-bold text-text-dark mb-4">Dashboard Penjual</h2>
+                        <div class="bg-card p-6 rounded-lg shadow-lg mb-8 border border-card">
+                            <div class="flex flex-col sm:flex-row justify-between sm:items-center mb-4">
+                                <h3 class="text-xl font-semibold mb-2 sm:mb-0 text-text-dark">Laporan Omset</h3>
+                                <div id="seller-period-filter" class="flex gap-1 border rounded-lg p-1 self-start sm:self-center border-card">
+                                    <button data-period="day" class="period-btn px-3 py-1 text-sm rounded-md bg-[--dark-purple] text-white font-semibold">Hari Ini</button>
+                                    <button data-period="month" class="period-btn px-3 py-1 text-sm rounded-md text-white bg-[--light-purple] hover:bg-[--dark-purple] transition-colors">Bulan Ini</button>
+                                    <button data-period="year" class="period-btn px-3 py-1 text-sm rounded-md text-white bg-[--light-purple] hover:bg-[--dark-purple] transition-colors">Tahun Ini</button>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
+                                <div>
+                                    <p class="text-gray-500 text-sm">Total Omset</p>
+                                    <p id="seller-total-omset" class="text-2xl font-bold text-text-dark">Rp 0</p>
+                                </div>
+                                <div>
+                                    <p class="text-gray-500 text-sm">Kontribusi Profit (10%)</p>
+                                    <p id="seller-profit-contribution" class="text-2xl font-bold text-red-500">Rp 0</p>
+                                </div>
+                                <div>
+                                    <p class="text-gray-500 text-sm">Omset Bersih</p>
+                                    <p id="seller-net-omset" class="text-2xl font-bold text-green-500">Rp 0</p>
+                                </div>
                             </div>
                         </div>
-                        <div class="card p-6 mt-8">
-                            <h3 class="text-xl font-semibold mb-4">Laporan Transaksi Selesai</h3>
-                            <div id="seller-transaction-list" class="space-y-4 max-h-96 overflow-y-auto">
-                                <!-- Seller transaction list injected here -->
+                        
+                        <!-- Grafik Keuangan Penjual -->
+                        <div class="bg-card p-6 rounded-lg shadow-lg mb-8 border border-card">
+                            <h3 class="text-xl font-semibold mb-4 text-text-dark">Grafik Omset</h3>
+                            <canvas id="seller-sales-chart"></canvas>
+                        </div>
+
+                        <div class="bg-card p-6 rounded-lg shadow-lg border border-card">
+                            <h3 class="text-xl font-semibold mb-4 text-text-dark">Pesanan Masuk</h3>
+                            <div id="seller-orders-container" class="space-y-4 max-h-96 overflow-y-auto">
+                                <!-- Seller orders injected here -->
                             </div>
                         </div>
                     </div>
 
                     <div class="flex justify-between items-center mb-4">
                         <h2 id="menu-title" class="text-2xl font-semibold text-gray-700">Menu Makanan</h2>
-                        <button id="add-menu-button" class="hidden bg-green-500 text-white font-semibold px-4 py-2 rounded-lg hover:bg-green-600 transition-colors shadow-sm">+ Tambah Menu</button>
+                        <button id="add-menu-button" class="hidden bg-green-500 text-white font-semibold px-4 py-2 rounded-lg hover:bg-green-600 transition-colors">+ Tambah Menu</button>
                     </div>
                     <div id="menu-container" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
                         <!-- Menu items will be injected here -->
@@ -227,26 +240,22 @@
 
                 <!-- Cart & User Orders Section -->
                 <div id="cart-and-orders-section" class="w-full lg:w-1/3">
-                    <div class="card p-6 sticky top-8">
-                        <h2 class="text-2xl font-semibold text-gray-700 mb-4 border-b pb-3">Keranjang Anda</h2>
+                    <div class="bg-card rounded-lg shadow-lg p-6 sticky top-8 border border-card">
+                        <h2 class="text-2xl font-semibold text-text-dark mb-4 border-b pb-3 border-card">Keranjang Anda</h2>
                         <div id="cart-items-container" class="space-y-4 mb-4 max-h-80 overflow-y-auto pr-2"></div>
-                        <div class="border-t pt-4 space-y-4">
-                            <div>
-                                <h3 class="text-md font-semibold text-gray-700 mb-3">Metode Pembayaran</h3>
+                        <div class="border-t pt-4 space-y-3 border-card">
+                            <div class="mb-4">
+                                <h3 class="text-md font-semibold text-gray-700 mb-2">Metode Pembayaran</h3>
                                 <div class="flex overflow-x-auto gap-2 pb-2" id="payment-methods">
-                                    <button data-payment="tunai" class="payment-method-btn flex-shrink-0 px-4 border-2 border-blue-600 bg-blue-50 text-blue-800 font-semibold py-2 rounded-lg text-sm">Tunai</button>
-                                    <button data-payment="qris" class="payment-method-btn flex-shrink-0 px-4 border-2 border-gray-300 bg-white text-gray-800 font-semibold py-2 rounded-lg text-sm">QRIS</button>
-                                    <button data-payment="dana" class="payment-method-btn flex-shrink-0 px-4 border-2 border-gray-300 bg-white text-gray-800 font-semibold py-2 rounded-lg text-sm">DANA</button>
-                                    <button data-payment="ovo" class="payment-method-btn flex-shrink-0 px-4 border-2 border-gray-300 bg-white text-gray-800 font-semibold py-2 rounded-lg text-sm">OVO</button>
-                                    <button data-payment="gopay" class="payment-method-btn flex-shrink-0 px-4 border-2 border-gray-300 bg-white text-gray-800 font-semibold py-2 rounded-lg text-sm">GoPay</button>
-                                    <button data-payment="kartu" class="payment-method-btn flex-shrink-0 px-4 border-2 border-gray-300 bg-white text-gray-800 font-semibold py-2 rounded-lg text-sm">Kartu</button>
+                                    <button data-payment="tunai" class="payment-method-btn flex-shrink-0 px-4 border-2 font-semibold py-2 rounded-lg text-sm bg-[--dark-purple] text-white border-transparent">Tunai</button>
+                                    <button data-payment="qris" class="payment-method-btn flex-shrink-0 px-4 border-2 font-semibold py-2 rounded-lg text-sm bg-cream text-text-dark border-light-pink">QRIS</button>
                                 </div>
                             </div>
-                            <div class="flex justify-between items-center text-lg font-semibold text-gray-800 pt-2">
+                            <div class="flex justify-between items-center text-lg font-semibold text-text-dark">
                                 <span>Total</span>
-                                <span id="cart-total" class="text-xl text-blue-700">Rp 0</span>
+                                <span id="cart-total">Rp 0</span>
                             </div>
-                            <button id="order-button" class="btn-primary">
+                            <button id="order-button" class="w-full bg-[--dark-purple] text-white font-bold py-3 rounded-lg hover:bg-[--light-purple] transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed">
                                 Pesan Sekarang
                             </button>
                         </div>
@@ -255,8 +264,8 @@
 
                     <!-- User's Orders Section -->
                     <div id="user-orders-section" class="mt-8">
-                        <div class="card p-6">
-                            <h2 class="text-2xl font-semibold text-gray-700 mb-4 border-b pb-3">Riwayat Pesanan Saya</h2>
+                        <div class="bg-card rounded-lg shadow-lg p-6 border border-card">
+                            <h2 class="text-2xl font-semibold text-text-dark mb-4 border-b pb-3 border-card">Riwayat Pesanan Saya</h2>
                             <div id="user-orders-container" class="space-y-4 max-h-96 overflow-y-auto">
                                 <!-- User's orders will be injected here -->
                             </div>
@@ -267,108 +276,142 @@
         </div>
     </div>
     
-    <!-- Modal for Add/Edit Menu -->
-    <div id="menu-modal" class="hidden fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center p-4 z-50">
-        <div class="bg-white p-6 rounded-xl shadow-xl w-full max-w-md">
-            <h2 id="modal-title" class="text-2xl font-bold mb-4">Tambah Menu Baru</h2>
+    <!-- Modals -->
+    <div id="menu-modal" class="hidden fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-4 z-50">
+        <div class="bg-card p-6 rounded-lg shadow-xl w-full max-w-md border border-card">
+            <h2 id="modal-title" class="text-2xl font-bold mb-4 text-text-dark">Tambah Menu Baru</h2>
             <form id="menu-form">
                 <input type="hidden" id="menu-id">
                 <div class="mb-4">
-                    <label for="menu-name" class="block text-gray-700 mb-1 font-medium">Nama Menu</label>
-                    <input type="text" id="menu-name" class="input-field" required>
+                    <label for="menu-name" class="block text-gray-700 mb-1">Nama Menu</label>
+                    <input type="text" id="menu-name" class="w-full px-3 py-2 border rounded-lg bg-cream border-light-pink text-text-dark focus:outline-none focus:ring-2 focus:ring-pink" required>
                 </div>
                 <div class="mb-4">
-                    <label for="menu-price" class="block text-gray-700 mb-1 font-medium">Harga</label>
-                    <input type="number" id="menu-price" class="input-field" min="0" required>
+                    <label for="menu-price" class="block text-gray-700 mb-1">Harga</label>
+                    <input type="number" id="menu-price" class="w-full px-3 py-2 border rounded-lg bg-cream border-light-pink text-text-dark focus:outline-none focus:ring-2 focus:ring-pink" min="0" required>
                 </div>
                 <div class="mb-4">
-                    <label for="menu-stock" class="block text-gray-700 mb-1 font-medium">Stok Makanan</label>
-                    <input type="number" id="menu-stock" class="input-field" min="0" required>
+                    <label for="menu-stock" class="block text-gray-700 mb-1">Stok Makanan</label>
+                    <input type="number" id="menu-stock" class="w-full px-3 py-2 border rounded-lg bg-cream border-light-pink text-text-dark focus:outline-none focus:ring-2 focus:ring-pink" min="0" required>
                 </div>
                 <div class="mb-4">
-                    <label for="menu-image-upload" class="block text-gray-700 mb-1 font-medium">Gambar Makanan</label>
-                    <img id="image-preview" src="" alt="Preview Gambar" class="w-full h-40 object-cover rounded-lg mb-2 border hidden">
-                    <input type="file" id="menu-image-upload" class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" accept="image/*">
+                    <label for="menu-image-upload" class="block text-gray-700 mb-1">Gambar Makanan</label>
+                    <img id="image-preview" src="" alt="Preview Gambar" class="w-full h-40 object-cover rounded-lg mb-2 border hidden border-card">
+                    <input type="file" id="menu-image-upload" class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-dark-purple file:text-pink-light hover:file:bg-light-purple" accept="image/*">
                     <input type="hidden" id="menu-image-data">
                 </div>
                 <div id="modal-error" class="text-red-500 text-sm -mt-2 mb-4 hidden"></div>
                 <div class="flex justify-end gap-4 mt-6">
-                    <button type="button" id="cancel-modal" class="btn-secondary">Batal</button>
-                    <button type="submit" class="bg-blue-600 text-white font-semibold px-4 py-2 rounded-lg hover:bg-blue-700">Simpan</button>
+                    <button type="button" id="cancel-modal" class="bg-gray-300 text-gray-800 font-semibold px-4 py-2 rounded-lg hover:bg-gray-400">Batal</button>
+                    <button type="submit" class="bg-[--dark-purple] text-white font-semibold px-4 py-2 rounded-lg hover:bg-[--light-purple]">Simpan</button>
                 </div>
             </form>
         </div>
     </div>
-
-    <!-- Modal for Add/Edit Seller -->
-    <div id="seller-modal" class="hidden fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center p-4 z-50">
-        <div class="bg-white p-6 rounded-xl shadow-xl w-full max-w-md">
-            <h2 id="seller-modal-title" class="text-2xl font-bold mb-4">Tambah Penjual Baru</h2>
+    <div id="seller-modal" class="hidden fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-4 z-50">
+        <div class="bg-card p-6 rounded-lg shadow-xl w-full max-w-md border border-card">
+            <h2 id="seller-modal-title" class="text-2xl font-bold mb-4 text-text-dark">Tambah Penjual Baru</h2>
             <form id="seller-form">
                 <input type="hidden" id="seller-id-input">
                 <div class="mb-4">
-                    <label for="seller-name" class="block text-gray-700 mb-1 font-medium">Nama Penjual</label>
-                    <input type="text" id="seller-name" class="input-field" required>
+                    <label for="seller-name" class="block text-gray-700 mb-1">Nama Penjual</label>
+                    <input type="text" id="seller-name" class="w-full px-3 py-2 border rounded-lg bg-cream border-light-pink text-text-dark focus:outline-none focus:ring-2 focus:ring-pink" required>
                 </div>
                 <div class="mb-4">
-                    <label for="seller-username" class="block text-gray-700 mb-1 font-medium">Username</label>
-                    <input type="text" id="seller-username" class="input-field" required>
+                    <label for="seller-username" class="block text-gray-700 mb-1">Username</label>
+                    <input type="text" id="seller-username" class="w-full px-3 py-2 border rounded-lg bg-cream border-light-pink text-text-dark focus:outline-none focus:ring-2 focus:ring-pink" required>
                 </div>
                 <div class="mb-4">
-                    <label for="seller-password" class="block text-gray-700 mb-1 font-medium">Password</label>
-                    <input type="text" id="seller-password" class="input-field" required>
+                    <label for="seller-password" class="block text-gray-700 mb-1">Password</label>
+                    <input type="text" id="seller-password" class="w-full px-3 py-2 border rounded-lg bg-cream border-light-pink text-text-dark focus:outline-none focus:ring-2 focus:ring-pink" required>
                 </div>
                 <div id="seller-modal-error" class="text-red-500 text-sm mb-4 hidden"></div>
                 <div class="flex justify-end gap-4 mt-6">
-                    <button type="button" id="cancel-seller-modal" class="btn-secondary">Batal</button>
-                    <button type="submit" class="bg-blue-600 text-white font-semibold px-4 py-2 rounded-lg hover:bg-blue-700">Simpan</button>
+                    <button type="button" id="cancel-seller-modal" class="bg-gray-300 text-gray-800 font-semibold px-4 py-2 rounded-lg hover:bg-gray-400">Batal</button>
+                    <button type="submit" class="bg-[--dark-purple] text-white font-semibold px-4 py-2 rounded-lg hover:bg-[--light-purple]">Simpan</button>
                 </div>
             </form>
         </div>
     </div>
-    
-    <!-- Modal for QRIS Payment -->
-    <div id="qris-modal" class="hidden fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center p-4 z-50">
-        <div class="bg-white p-6 rounded-xl shadow-xl w-full max-w-sm text-center">
-            <h2 id="qris-modal-title" class="text-2xl font-bold mb-4">Pembayaran QRIS</h2>
-            <p class="text-gray-600 mb-4">Silakan scan kode di bawah ini untuk membayar.</p>
-            <img src="https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=https://example.com/kantin-digital" alt="QRIS Code" class="mx-auto rounded-lg">
-            <p class="font-bold text-2xl my-4 text-blue-700" id="qris-total"></p>
-            <button id="close-qris-modal" class="mt-4 w-full bg-blue-600 text-white font-semibold py-2 rounded-lg hover:bg-blue-700">Tutup</button>
+     <div id="regular-user-modal" class="hidden fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-4 z-50">
+        <div class="bg-card p-6 rounded-lg shadow-xl w-full max-w-md border border-card">
+            <h2 id="regular-user-modal-title" class="text-2xl font-bold mb-4 text-text-dark">Tambah User Baru</h2>
+            <form id="regular-user-form">
+                <input type="hidden" id="regular-user-id-input">
+                <div class="mb-4">
+                    <label for="regular-user-name" class="block text-gray-700 mb-1">Nama</label>
+                    <input type="text" id="regular-user-name" class="w-full px-3 py-2 border rounded-lg bg-cream border-light-pink text-text-dark focus:outline-none focus:ring-2 focus:ring-pink" required>
+                </div>
+                <div class="mb-4">
+                    <label for="regular-user-username" class="block text-gray-700 mb-1">Username</label>
+                    <input type="text" id="regular-user-username" class="w-full px-3 py-2 border rounded-lg bg-cream border-light-pink text-text-dark focus:outline-none focus:ring-2 focus:ring-pink" required>
+                </div>
+                <div class="mb-4">
+                    <label for="regular-user-password" class="block text-gray-700 mb-1">Password</label>
+                    <input type="text" id="regular-user-password" class="w-full px-3 py-2 border rounded-lg bg-cream border-light-pink text-text-dark focus:outline-none focus:ring-2 focus:ring-pink" required>
+                </div>
+                <div id="regular-user-modal-error" class="text-red-500 text-sm mb-4 hidden"></div>
+                <div class="flex justify-end gap-4 mt-6">
+                    <button type="button" id="cancel-regular-user-modal" class="bg-gray-300 text-gray-800 font-semibold px-4 py-2 rounded-lg hover:bg-gray-400">Batal</button>
+                    <button type="submit" class="bg-[--dark-purple] text-white font-semibold px-4 py-2 rounded-lg hover:bg-[--light-purple]">Simpan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div id="qris-modal" class="hidden fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-4 z-50">
+        <div class="bg-card p-6 rounded-lg shadow-xl w-full max-w-sm text-center border border-card">
+            <h2 id="qris-modal-title" class="text-2xl font-bold mb-4 text-text-dark">Pembayaran QRIS</h2>
+            <p class="text-gray-500 mb-4">Silakan scan kode di bawah ini untuk membayar.</p>
+            <img src="https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=https://example.com/kantin-digital&bgcolor=FFFFFF&color=502688" alt="QRIS Code" class="mx-auto rounded-lg">
+            <p class="font-bold text-xl my-4 text-text-dark" id="qris-total"></p>
+            <button id="close-qris-modal" class="mt-4 w-full bg-[--dark-purple] text-white font-semibold py-2 rounded-lg hover:bg-[--light-purple] transition-colors">Tutup</button>
+        </div>
+    </div>
+    <div id="rating-modal" class="hidden fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-4 z-50">
+        <div class="bg-card p-6 rounded-lg shadow-xl w-full max-w-sm text-center border border-card">
+            <h2 class="text-2xl font-bold mb-2 text-text-dark">Beri Rating</h2>
+            <p id="rating-item-name" class="text-gray-700 font-semibold mb-4"></p>
+            <form id="rating-form">
+                <input type="hidden" id="rating-menu-id">
+                <div id="rating-stars-container" class="flex justify-center text-4xl text-gray-400 mb-6">
+                    <!-- Stars will be injected here -->
+                </div>
+                <div class="flex justify-end gap-4">
+                    <button type="button" id="cancel-rating-modal" class="bg-gray-300 text-gray-800 font-semibold px-4 py-2 rounded-lg hover:bg-gray-400">Batal</button>
+                    <button type="submit" class="bg-yellow-500 text-white font-semibold px-4 py-2 rounded-lg hover:bg-yellow-600">Kirim</button>
+                </div>
+            </form>
         </div>
     </div>
 
+
     <script>
         // --- DATA ---
-        let sellers = [
-            { id: 'seller01', name: 'Kantin Bu Ani', username: 'penjual123', password: 'penjual123' }
-        ];
-        
         let users = [
-            { id: 'user01', name: 'Siswa Cerdas', username: 'user123', password: 'user123' }
+            { id: 'admin01', name: 'Admin Sekolah', username: 'admin123', password: 'admin123', role: 'admin' },
+            { id: 'user01', name: 'Siswa Cerdas', username: 'user123', password: 'user123', role: 'user' },
+            { id: 'seller01', name: 'Kantin Bu Ani', username: 'penjual123', password: 'penjual123', role: 'penjual' }
         ];
 
         let menuItems = [
-            { id: 1, sellerId: 'seller01', sellerName: 'Kantin Bu Ani', name: 'Nasi Goreng Spesial', price: 25000, stock: 15, image: 'https://placehold.co/600x400/f8b4b4/333?text=Nasi+Goreng' },
-            { id: 2, sellerId: 'seller01', sellerName: 'Kantin Bu Ani', name: 'Mie Ayam Bakso', price: 18000, stock: 20, image: 'https://placehold.co/600x400/a2d2ff/333?text=Mie+Ayam' },
-            { id: 3, sellerId: 'seller01', sellerName: 'Kantin Bu Ani', name: 'Sate Ayam (10 tusuk)', price: 22000, stock: 30, image: 'https://placehold.co/600x400/ffc8dd/333?text=Sate+Ayam' },
-            { id: 4, sellerId: 'seller01', sellerName: 'Kantin Bu Ani', name: 'Gado-gado', price: 15000, stock: 10, image: 'https://placehold.co/600x400/cdb4db/333?text=Gado-Gado' },
-            { id: 5, sellerId: 'seller01', sellerName: 'Kantin Bu Ani', name: 'Ayam Geprek', price: 20000, stock: 0, image: 'https://placehold.co/600x400/bde0fe/333?text=Ayam+Geprek' },
-            { id: 6, sellerId: 'seller01', sellerName: 'Kantin Bu Ani', name: 'Es Teh Manis', price: 5000, stock: 50, image: 'https://placehold.co/600x400/e9edc9/333?text=Es+Teh' }
+            { id: 1, sellerId: 'seller01', name: 'Nasi Goreng Spesial', price: 25000, stock: 15, image: 'https://placehold.co/600x400/8F57DB/ffffff?text=Nasi+Goreng', ratings: [], avgRating: 0 },
+            { id: 2, sellerId: 'seller01', name: 'Mie Ayam Bakso', price: 18000, stock: 20, image: 'https://placehold.co/600x400/FC99AF/ffffff?text=Mie+Ayam', ratings: [], avgRating: 0 }
         ];
-        let orders = [];
+        
+        // Dummy orders for demonstration
+        let orders = [
+            { id: 1, sellerId: 'seller01', buyerId: 'user01', buyerName: 'Siswa Cerdas', items: [{id: 1, name: 'Nasi Goreng Spesial', quantity: 1}], total: 25000, status: 'Selesai', date: new Date() },
+            { id: 2, sellerId: 'seller01', buyerId: 'user01', buyerName: 'Siswa Cerdas', items: [{id: 2, name: 'Mie Ayam Bakso', quantity: 2}], total: 36000, status: 'Selesai', date: new Date(new Date().setDate(1)) },
+            { id: 3, sellerId: 'seller01', buyerId: 'user01', buyerName: 'Siswa Cerdas', items: [{id: 1, name: 'Nasi Goreng Spesial', quantity: 1}], total: 25000, status: 'Selesai', date: new Date(new Date().setMonth(0, 15)) },
+            { id: 4, sellerId: 'seller01', buyerId: 'user01', buyerName: 'Siswa Cerdas', items: [{id: 2, name: 'Mie Ayam Bakso', quantity: 1}], total: 18000, status: 'Selesai', date: new Date(new Date().setFullYear(new Date().getFullYear() - 1)) }
+        ];
 
-        // --- ACCOUNTS (Dynamically generated) ---
+        // --- ACCOUNTS (Dynamically generated for login) ---
         let accounts = {};
         const generateAccounts = () => {
-            accounts = {
-                admin123: { password: 'admin123', role: 'admin', id: 'admin01', name: 'Admin Sekolah' },
-            };
-            sellers.forEach(seller => {
-                accounts[seller.username] = { password: seller.password, role: 'penjual', id: seller.id, name: seller.name };
-            });
+            accounts = {};
             users.forEach(user => {
-                accounts[user.username] = { password: user.password, role: 'user', id: user.id, name: user.name };
+                accounts[user.username] = { password: user.password, role: user.role, id: user.id, name: user.name };
             });
         };
 
@@ -376,41 +419,33 @@
         let cart = [];
         let currentUser = null;
         let selectedPaymentMethod = 'tunai';
-        const qrisMethods = ['qris', 'dana', 'ovo', 'gopay'];
+        const qrisMethods = ['qris'];
+        let adminChartInstance = null;
+        let sellerChartInstance = null;
 
         // --- DOM ELEMENTS ---
-        const loginScreen = document.getElementById('login-screen');
+        const authScreen = document.getElementById('auth-screen');
+        const loginContainer = document.getElementById('login-container');
+        const registerContainer = document.getElementById('register-container');
+        const showRegisterBtn = document.getElementById('show-register-btn');
+        const showLoginBtn = document.getElementById('show-login-btn');
+        const registerForm = document.getElementById('register-form');
+        const registerMessage = document.getElementById('register-message');
         const appScreen = document.getElementById('app-screen');
         const loginForm = document.getElementById('login-form');
         const loginError = document.getElementById('login-error');
         const logoutButton = document.getElementById('logout-button');
         const headerSubtitle = document.getElementById('header-subtitle');
-        
-        const registerScreen = document.getElementById('register-screen');
-        const registerForm = document.getElementById('register-form');
-        const registerError = document.getElementById('register-error');
-        const showRegisterLink = document.getElementById('show-register-link');
-        const showLoginLink = document.getElementById('show-login-link');
-
         const adminDashboard = document.getElementById('admin-dashboard');
         const adminTotalSales = document.getElementById('admin-total-sales');
         const adminTotalProfit = document.getElementById('admin-total-profit');
         const adminProductList = document.getElementById('admin-product-list');
         const adminSellerList = document.getElementById('admin-seller-list');
-        const adminUserList = document.getElementById('admin-user-list');
-        const adminTransactionList = document.getElementById('admin-transaction-list');
-        const adminTotalTransactions = document.getElementById('admin-total-transactions');
-        const adminTotalRevenue = document.getElementById('admin-total-revenue');
-
+        const adminRegularUserList = document.getElementById('admin-regular-user-list');
         const mainContent = document.getElementById('main-content');
         const sellerDashboard = document.getElementById('seller-dashboard');
         const sellerOrdersContainer = document.getElementById('seller-orders-container');
-        const sellerTransactionList = document.getElementById('seller-transaction-list');
-        
-        const menuTitle = document.getElementById('menu-title');
-        const addMenuButton = document.getElementById('add-menu-button');
         const menuContainer = document.getElementById('menu-container');
-        
         const cartAndOrdersSection = document.getElementById('cart-and-orders-section');
         const cartItemsContainer = document.getElementById('cart-items-container');
         const cartTotalElement = document.getElementById('cart-total');
@@ -419,7 +454,6 @@
         const paymentMethodsContainer = document.getElementById('payment-methods');
         const userOrdersSection = document.getElementById('user-orders-section');
         const userOrdersContainer = document.getElementById('user-orders-container');
-        
         const menuModal = document.getElementById('menu-modal');
         const menuForm = document.getElementById('menu-form');
         const cancelModalButton = document.getElementById('cancel-modal');
@@ -428,71 +462,89 @@
         const imagePreview = document.getElementById('image-preview');
         const menuImageUpload = document.getElementById('menu-image-upload');
         const menuImageData = document.getElementById('menu-image-data');
-        
         const sellerModal = document.getElementById('seller-modal');
         const sellerModalTitle = document.getElementById('seller-modal-title');
         const sellerForm = document.getElementById('seller-form');
         const addSellerButton = document.getElementById('add-seller-button');
         const cancelSellerModalButton = document.getElementById('cancel-seller-modal');
         const sellerModalError = document.getElementById('seller-modal-error');
-        
+        const regularUserModal = document.getElementById('regular-user-modal');
+        const regularUserModalTitle = document.getElementById('regular-user-modal-title');
+        const regularUserForm = document.getElementById('regular-user-form');
+        const addRegularUserButton = document.getElementById('add-regular-user-button');
+        const cancelRegularUserModalButton = document.getElementById('cancel-regular-user-modal');
+        const regularUserModalError = document.getElementById('regular-user-modal-error');
         const qrisModal = document.getElementById('qris-modal');
         const qrisModalTitle = document.getElementById('qris-modal-title');
         const qrisTotalElement = document.getElementById('qris-total');
         const closeQrisModalButton = document.getElementById('close-qris-modal');
-
-        // --- HELPER FUNCTION ---
+        const ratingModal = document.getElementById('rating-modal');
+        const ratingItemName = document.getElementById('rating-item-name');
+        const ratingForm = document.getElementById('rating-form');
+        const ratingStarsContainer = document.getElementById('rating-stars-container');
+        const cancelRatingModal = document.getElementById('cancel-rating-modal');
+        const adminPeriodFilter = document.getElementById('admin-period-filter');
+        const sellerPeriodFilter = document.getElementById('seller-period-filter');
+        const sellerTotalOmset = document.getElementById('seller-total-omset');
+        const sellerProfitContribution = document.getElementById('seller-profit-contribution');
+        const sellerNetOmset = document.getElementById('seller-net-omset');
+        const menuTitle = document.getElementById('menu-title');
+        const addMenuButton = document.getElementById('add-menu-button');
+        
+        // --- HELPER FUNCTIONS ---
         const formatRupiah = (number) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(number);
+        
+        const renderStars = (rating) => {
+            let starsHtml = '';
+            for (let i = 1; i <= 5; i++) {
+                const starClass = i <= rating ? 'text-yellow-400' : 'text-gray-400';
+                starsHtml += `<svg class="w-5 h-5 ${starClass}" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>`;
+            }
+            return `<div class="flex items-center">${starsHtml}<span class="text-xs text-gray-500 ml-1">(${rating.toFixed(1)})</span></div>`;
+        };
 
         // --- RENDER FUNCTIONS ---
         const renderMenu = () => {
             menuContainer.innerHTML = '';
             let itemsToDisplay = [];
-
             if (currentUser.role === 'penjual') {
                 itemsToDisplay = menuItems.filter(item => item.sellerId === currentUser.id);
-            } else { // User and Admin see all
+            } else {
                 itemsToDisplay = menuItems;
             }
-
-            if (itemsToDisplay.length === 0 && currentUser.role === 'penjual') {
-                menuContainer.innerHTML = '<p class="text-gray-500 col-span-full text-center">Anda belum memiliki produk. Silakan tambahkan menu.</p>';
-            }
-
             itemsToDisplay.forEach(item => {
                 const isSeller = currentUser.role === 'penjual';
+                const isUser = currentUser.role === 'user';
                 const isOutOfStock = item.stock === 0;
                 const menuItemElement = document.createElement('div');
-                menuItemElement.className = `card flex flex-col relative ${isOutOfStock ? 'opacity-60' : ''}`;
+                menuItemElement.className = `bg-card rounded-lg shadow-lg overflow-hidden flex flex-col relative border border-card ${isOutOfStock ? 'opacity-60' : ''}`;
                 menuItemElement.innerHTML = `
-                    ${isOutOfStock ? `<div class="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center z-10 rounded-xl"><span class="text-white text-xl font-bold">STOK HABIS</span></div>` : ''}
-                    <img src="${item.image}" alt="${item.name}" class="w-full h-48 object-cover rounded-t-xl" onerror="this.src='https://placehold.co/600x400/cccccc/333?text=Gambar+Error'">
+                    ${isOutOfStock ? `<div class="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center z-10"><span class="text-white text-xl font-bold">STOK HABIS</span></div>` : ''}
+                    <img src="${item.image}" alt="${item.name}" class="w-full h-48 object-cover">
                     <div class="p-4 flex-grow flex flex-col">
-                        <h3 class="text-lg font-semibold text-gray-800">${item.name}</h3>
-                        ${currentUser.role !== 'penjual' ? `<p class="text-xs text-gray-500 mb-1">dari ${item.sellerName}</p>` : ''}
+                        <h3 class="text-lg font-semibold text-text-dark">${item.name}</h3>
+                        ${!isSeller ? `<p class="text-xs text-gray-500 mb-1">dari ${users.find(u => u.id === item.sellerId)?.name || 'Penjual'}</p>` : ''}
+                        <div class="my-2">${renderStars(item.avgRating)}</div>
                         <div class="flex justify-between items-center mt-1 mb-4">
-                            <p class="text-blue-700 font-bold text-lg">${formatRupiah(item.price)}</p>
+                            <p class="text-pink font-bold">${formatRupiah(item.price)}</p>
                             <p class="text-sm font-medium ${item.stock < 5 ? 'text-red-500' : 'text-gray-500'}">Stok: ${item.stock}</p>
                         </div>
                         <div class="mt-auto">
                             ${isSeller ? `
                                 <div class="flex gap-2">
-                                    <button onclick="handleEditMenu(${item.id})" class="w-full bg-yellow-500 text-white font-semibold py-2 rounded-lg hover:bg-yellow-600 transition-colors">Edit</button>
-                                    <button onclick="handleDeleteMenu(${item.id})" class="w-full bg-red-500 text-white font-semibold py-2 rounded-lg hover:bg-red-600 transition-colors">Hapus</button>
+                                    <button onclick="handleEditMenu(${item.id})" class="w-full bg-yellow-500 text-white font-semibold py-2 rounded-lg hover:bg-yellow-600">Edit</button>
+                                    <button onclick="handleDeleteMenu(${item.id})" class="w-full bg-red-500 text-white font-semibold py-2 rounded-lg hover:bg-red-600">Hapus</button>
                                 </div>
                             ` : `
-                                <button onclick="addToCart(${item.id})" class="w-full bg-green-500 text-white font-semibold py-2 rounded-lg hover:bg-green-600 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed">
-                                    + Tambah ke Keranjang
-                                </button>
+                                <div class="flex gap-2">
+                                    ${isUser ? `<button onclick="openRatingModal(${item.id})" class="w-full bg-yellow-500 text-white font-semibold py-2 px-3 rounded-lg hover:bg-yellow-600">Beri Rating</button>` : ''}
+                                    <button onclick="addToCart(${item.id})" class="w-full bg-[--light-purple] text-white font-semibold py-2 px-3 rounded-lg hover:bg-[--dark-purple] disabled:bg-gray-400" ${isOutOfStock ? 'disabled' : ''}>+ Tambah</button>
+                                </div>
                             `}
                         </div>
                     </div>
                 `;
                 menuContainer.appendChild(menuItemElement);
-                 // Disable button after creating it
-                if (!isSeller) {
-                    menuItemElement.querySelector('button').disabled = isOutOfStock;
-                }
             });
         };
 
@@ -501,21 +553,21 @@
             cartItemsContainer.innerHTML = '';
             let total = 0;
             if (cart.length === 0) {
-                cartItemsContainer.innerHTML = '<p class="text-gray-500 text-center py-4">Keranjang Anda kosong.</p>';
+                cartItemsContainer.innerHTML = '<p class="text-gray-500 text-center">Keranjang Anda kosong.</p>';
             } else {
                 cart.forEach(cartItem => {
                     total += cartItem.price * cartItem.quantity;
                     const cartItemElement = document.createElement('div');
                     cartItemElement.className = 'flex justify-between items-center fade-in';
                     cartItemElement.innerHTML = `
-                        <div class="flex-grow pr-2">
-                            <p class="font-semibold text-gray-800 truncate">${cartItem.name}</p>
+                        <div>
+                            <p class="font-semibold text-text-dark">${cartItem.name}</p>
                             <p class="text-sm text-gray-500">${formatRupiah(cartItem.price)}</p>
                         </div>
-                        <div class="flex items-center gap-2 flex-shrink-0">
-                            <button onclick="updateQuantity(${cartItem.id}, -1)" class="w-7 h-7 bg-gray-200 rounded-full font-bold text-gray-700 hover:bg-gray-300 transition-colors">-</button>
-                            <span class="w-8 text-center font-semibold">${cartItem.quantity}</span>
-                            <button onclick="updateQuantity(${cartItem.id}, 1)" class="w-7 h-7 bg-gray-200 rounded-full font-bold text-gray-700 hover:bg-gray-300 transition-colors">+</button>
+                        <div class="flex items-center gap-2">
+                            <button onclick="updateQuantity(${cartItem.id}, -1)" class="w-6 h-6 bg-[--light-purple] rounded-full font-bold text-white hover:bg-opacity-80 transition-colors">-</button>
+                            <span class="text-text-dark">${cartItem.quantity}</span>
+                            <button onclick="updateQuantity(${cartItem.id}, 1)" class="w-6 h-6 bg-[--light-purple] rounded-full font-bold text-white hover:bg-opacity-80 transition-colors">+</button>
                         </div>
                     `;
                     cartItemsContainer.appendChild(cartItemElement);
@@ -528,36 +580,26 @@
         const renderSellerOrders = () => {
             sellerOrdersContainer.innerHTML = '';
             const myOrders = orders.filter(order => order.sellerId === currentUser.id);
-
             if (myOrders.length === 0) {
-                 sellerOrdersContainer.innerHTML = '<p class="text-gray-500 text-center py-4">Belum ada pesanan masuk.</p>';
+                 sellerOrdersContainer.innerHTML = '<p class="text-gray-500 text-center">Belum ada pesanan masuk.</p>';
                  return;
             }
-
-            myOrders.sort((a, b) => b.id - a.id).forEach(order => {
+            myOrders.forEach(order => {
                 const orderCard = document.createElement('div');
-                orderCard.className = 'border rounded-lg p-4 bg-gray-50';
+                orderCard.className = 'border-b border-card pb-4 last:border-b-0';
                 const itemsHtml = order.items.map(item => `<li>${item.quantity}x ${item.name}</li>`).join('');
-                const statusColor = {
-                    'Baru': 'bg-blue-100 text-blue-800',
-                    'Diproses': 'bg-yellow-100 text-yellow-800',
-                    'Siap Diambil': 'bg-indigo-100 text-indigo-800',
-                    'Selesai': 'bg-green-100 text-green-800'
-                }[order.status];
-
+                const statusColor = { 'Baru': 'bg-blue-200 text-blue-800', 'Diproses': 'bg-yellow-200 text-yellow-800', 'Selesai': 'bg-green-200 text-green-800' }[order.status];
                 orderCard.innerHTML = `
                     <div class="flex justify-between items-start">
                         <div>
-                            <p class="font-bold">Pesanan #${order.id} <span class="text-sm font-normal text-gray-600">dari ${order.buyerName}</span></p>
-                            <p class="font-semibold text-lg text-blue-700">${formatRupiah(order.total)}</p>
+                            <p class="font-bold text-text-dark">Pesanan #${order.id} <span class="text-sm font-normal text-gray-500">dari ${order.buyerName}</span></p>
+                            <p class="font-semibold text-lg text-pink">${formatRupiah(order.total)}</p>
                         </div>
                         <span class="text-xs font-bold px-2 py-1 rounded-full ${statusColor}">${order.status}</span>
                     </div>
-                    <ul class="list-disc list-inside text-sm text-gray-700 my-2">
-                        ${itemsHtml}
-                    </ul>
-                    ${order.status === 'Baru' ? `<button onclick="updateOrderStatus(${order.id}, 'Diproses')" class="w-full text-sm bg-yellow-500 text-white font-semibold py-1 rounded-lg hover:bg-yellow-600 mt-2 transition-colors">Proses Pesanan</button>` : ''}
-                    ${order.status === 'Diproses' ? `<button onclick="updateOrderStatus(${order.id}, 'Siap Diambil')" class="w-full text-sm bg-indigo-500 text-white font-semibold py-1 rounded-lg hover:bg-indigo-600 mt-2 transition-colors">Tandai Siap Diambil</button>` : ''}
+                    <ul class="list-disc list-inside text-sm text-gray-600 my-2">${itemsHtml}</ul>
+                    ${order.status === 'Baru' ? `<button onclick="updateOrderStatus(${order.id}, 'Diproses')" class="w-full text-sm bg-yellow-500 text-white font-semibold py-1 rounded-lg hover:bg-yellow-600 mt-2">Proses Pesanan</button>` : ''}
+                    ${order.status === 'Diproses' ? `<button onclick="updateOrderStatus(${order.id}, 'Selesai')" class="w-full text-sm bg-green-500 text-white font-semibold py-1 rounded-lg hover:bg-green-600 mt-2">Selesaikan Pesanan</button>` : ''}
                 `;
                 sellerOrdersContainer.appendChild(orderCard);
             });
@@ -567,198 +609,292 @@
             if (currentUser.role !== 'user') return;
             userOrdersContainer.innerHTML = '';
             const myOrders = orders.filter(order => order.buyerId === currentUser.id);
-
             if (myOrders.length === 0) {
-                userOrdersContainer.innerHTML = '<p class="text-gray-500 text-center py-4">Anda belum pernah memesan.</p>';
+                userOrdersContainer.innerHTML = '<p class="text-gray-500 text-center">Anda belum pernah memesan.</p>';
                 return;
             }
-
-            myOrders.sort((a, b) => b.id - a.id).forEach(order => {
+            myOrders.forEach(order => {
                 const orderCard = document.createElement('div');
-                orderCard.className = 'border rounded-lg p-4 bg-gray-50 fade-in';
-                const sellerName = sellers.find(s => s.id === order.sellerId)?.name || 'Penjual Terhapus';
+                orderCard.className = 'border-b border-card pb-4 last:border-b-0 fade-in';
+                const sellerName = users.find(s => s.id === order.sellerId)?.name || 'Penjual Terhapus';
                 const itemsHtml = order.items.map(item => `<li>${item.quantity}x ${item.name}</li>`).join('');
-                const statusColor = {
-                    'Baru': 'bg-blue-100 text-blue-800',
-                    'Diproses': 'bg-yellow-100 text-yellow-800',
-                    'Siap Diambil': 'bg-indigo-100 text-indigo-800',
-                    'Selesai': 'bg-green-100 text-green-800'
-                }[order.status];
-
+                const statusColor = { 'Baru': 'bg-blue-200 text-blue-800', 'Diproses': 'bg-yellow-200 text-yellow-800', 'Selesai': 'bg-green-200 text-green-800' }[order.status];
                 orderCard.innerHTML = `
                     <div class="flex justify-between items-start">
                         <div>
-                            <p class="font-bold">Pesanan #${order.id} <span class="text-sm font-normal text-gray-600">dari ${sellerName}</span></p>
-                            <p class="font-semibold text-lg text-blue-700">${formatRupiah(order.total)}</p>
+                            <p class="font-bold text-text-dark">Pesanan #${order.id} <span class="text-sm font-normal text-gray-500">dari ${sellerName}</span></p>
+                            <p class="font-semibold text-lg text-pink">${formatRupiah(order.total)}</p>
                         </div>
                         <span class="text-xs font-bold px-2 py-1 rounded-full ${statusColor}">${order.status}</span>
                     </div>
-                    <ul class="list-disc list-inside text-sm text-gray-700 my-2">
-                        ${itemsHtml}
-                    </ul>
-                    ${order.status === 'Siap Diambil' ? `<button onclick="updateOrderStatus(${order.id}, 'Selesai')" class="w-full text-sm bg-green-500 text-white font-semibold py-1 rounded-lg hover:bg-green-600 mt-2 transition-colors">Konfirmasi Sudah Diambil</button>` : ''}
+                    <ul class="list-disc list-inside text-sm text-gray-600 my-2">${itemsHtml}</ul>
                 `;
                 userOrdersContainer.appendChild(orderCard);
             });
         };
 
-        const renderAdminUserList = () => {
-            adminUserList.innerHTML = `
-                <table class="w-full text-left">
-                    <thead class="bg-gray-50">
-                        <tr class="border-b">
-                            <th class="p-4 font-semibold text-sm text-gray-600">Nama Lengkap</th>
-                            <th class="p-4 font-semibold text-sm text-gray-600">Username</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        ${users.map(user => `
-                            <tr class="border-b last:border-b-0 hover:bg-slate-50 transition-colors">
-                                <td class="p-4">${user.name}</td>
-                                <td class="p-4 font-mono text-sm">${user.username}</td>
-                            </tr>
-                        `).join('')}
-                    </tbody>
-                </table>
-            `;
-            if (users.length === 0) {
-                 adminUserList.innerHTML = '<p class="text-gray-500 text-center p-4">Belum ada pengguna terdaftar.</p>';
-            }
-        };
-
-        const renderAdminSellerList = () => {
+        const renderAdminLists = () => {
+            const sellers = users.filter(u => u.role === 'penjual');
+            const regularUsers = users.filter(u => u.role === 'user');
             adminSellerList.innerHTML = `
-                <table class="w-full text-left">
-                    <thead class="bg-gray-50">
-                        <tr class="border-b">
-                            <th class="p-4 font-semibold text-sm text-gray-600">Nama Penjual</th>
-                            <th class="p-4 font-semibold text-sm text-gray-600">Username</th>
-                            <th class="p-4 font-semibold text-sm text-gray-600">Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        ${sellers.map(seller => `
-                            <tr class="border-b last:border-b-0 hover:bg-slate-50 transition-colors">
-                                <td class="p-4">${seller.name}</td>
-                                <td class="p-4 font-mono text-sm">${seller.username}</td>
-                                <td class="p-4 flex gap-2">
-                                    <button onclick="handleEditSeller('${seller.id}')" class="text-sm bg-yellow-500 text-white font-semibold px-3 py-1 rounded-lg hover:bg-yellow-600 transition-colors">Edit</button>
-                                    <button onclick="handleDeleteSeller('${seller.id}')" class="text-sm bg-red-500 text-white font-semibold px-3 py-1 rounded-lg hover:bg-red-600 transition-colors">Hapus</button>
-                                </td>
-                            </tr>
-                        `).join('')}
-                    </tbody>
-                </table>
-            `;
-             if (sellers.length === 0) {
-                 adminSellerList.innerHTML = '<p class="text-gray-500 text-center p-4">Belum ada penjual terdaftar.</p>';
-            }
+                <table class="w-full text-left min-w-[500px]">
+                    <thead class="bg-cream"><tr class="border-b border-card">
+                        <th class="p-3 font-semibold text-sm text-gray-600">Nama Penjual</th>
+                        <th class="p-3 font-semibold text-sm text-gray-600">Username</th>
+                        <th class="p-3 font-semibold text-sm text-gray-600">Aksi</th>
+                    </tr></thead>
+                    <tbody>${sellers.map(user => `
+                        <tr class="border-b last:border-b-0 hover:bg-cream border-card">
+                            <td class="p-3 text-text-dark">${user.name}</td>
+                            <td class="p-3 font-mono text-sm text-text-dark">${user.username}</td>
+                            <td class="p-3 flex gap-2">
+                                <button onclick="handleEditUser('${user.id}')" class="text-sm bg-yellow-500 text-white font-semibold px-3 py-1 rounded-lg hover:bg-yellow-600">Edit</button>
+                                <button onclick="handleDeleteUser('${user.id}')" class="text-sm bg-red-500 text-white font-semibold px-3 py-1 rounded-lg hover:bg-red-600">Hapus</button>
+                            </td></tr>`).join('')}
+                    </tbody></table>`;
+            if (sellers.length === 0) adminSellerList.innerHTML = '<p class="text-gray-500 text-center p-4">Belum ada penjual terdaftar.</p>';
+            adminRegularUserList.innerHTML = `
+                <table class="w-full text-left min-w-[500px]">
+                    <thead class="bg-cream"><tr class="border-b border-card">
+                        <th class="p-3 font-semibold text-sm text-gray-600">Nama User</th>
+                        <th class="p-3 font-semibold text-sm text-gray-600">Username</th>
+                        <th class="p-3 font-semibold text-sm text-gray-600">Aksi</th>
+                    </tr></thead>
+                    <tbody>${regularUsers.map(user => `
+                        <tr class="border-b last:border-b-0 hover:bg-cream border-card">
+                            <td class="p-3 text-text-dark">${user.name}</td>
+                            <td class="p-3 font-mono text-sm text-text-dark">${user.username}</td>
+                            <td class="p-3 flex gap-2">
+                                <button onclick="handleEditUser('${user.id}')" class="text-sm bg-yellow-500 text-white font-semibold px-3 py-1 rounded-lg hover:bg-yellow-600">Edit</button>
+                                <button onclick="handleDeleteUser('${user.id}')" class="text-sm bg-red-500 text-white font-semibold px-3 py-1 rounded-lg hover:bg-red-600">Hapus</button>
+                            </td></tr>`).join('')}
+                    </tbody></table>`;
+            if (regularUsers.length === 0) adminRegularUserList.innerHTML = '<p class="text-gray-500 text-center p-4">Belum ada user (siswa) terdaftar.</p>';
         };
 
-        const renderAdminTransactionReport = () => {
-            const completedTransactions = orders.filter(o => o.status === 'Selesai');
-            
-            let totalRevenue = 0;
-            completedTransactions.forEach(t => totalRevenue += t.total);
-
-            adminTotalTransactions.textContent = completedTransactions.length;
-            adminTotalRevenue.textContent = formatRupiah(totalRevenue);
-
-            if (completedTransactions.length === 0) {
-                adminTransactionList.innerHTML = '<p class="text-gray-500 text-center p-4">Belum ada transaksi yang selesai.</p>';
-                return;
+        const renderAdminChart = (period = 'day') => {
+            const ctx = document.getElementById('admin-sales-chart').getContext('2d');
+            const now = new Date();
+            let labels = [];
+            let data = [];
+            const filteredOrders = orders.filter(order => order.status === 'Selesai');
+            if (period === 'day') {
+                labels = Array.from({length: 24}, (_, i) => `${i.toString().padStart(2, '0')}:00`);
+                data = Array(24).fill(0);
+                filteredOrders.forEach(order => {
+                    const orderDate = new Date(order.date);
+                    if (orderDate.toDateString() === now.toDateString()) {
+                        data[orderDate.getHours()] += order.total;
+                    }
+                });
+            } else if (period === 'month') {
+                const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
+                labels = Array.from({length: daysInMonth}, (_, i) => i + 1);
+                data = Array(daysInMonth).fill(0);
+                filteredOrders.forEach(order => {
+                    const orderDate = new Date(order.date);
+                    if (orderDate.getMonth() === now.getMonth() && orderDate.getFullYear() === now.getFullYear()) {
+                        data[orderDate.getDate() - 1] += order.total;
+                    }
+                });
+            } else if (period === 'year') {
+                labels = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
+                data = Array(12).fill(0);
+                filteredOrders.forEach(order => {
+                    const orderDate = new Date(order.date);
+                    if (orderDate.getFullYear() === now.getFullYear()) {
+                        data[orderDate.getMonth()] += order.total;
+                    }
+                });
             }
-
-            adminTransactionList.innerHTML = `
-                <table class="w-full text-left">
-                    <thead class="bg-gray-50">
-                        <tr class="border-b">
-                            <th class="p-4 font-semibold text-sm text-gray-600">ID Pesanan</th>
-                            <th class="p-4 font-semibold text-sm text-gray-600">Pembeli</th>
-                            <th class="p-4 font-semibold text-sm text-gray-600">Penjual</th>
-                            <th class="p-4 font-semibold text-sm text-gray-600">Total</th>
-                            <th class="p-4 font-semibold text-sm text-gray-600">Waktu</th>
-                            <th class="p-4 font-semibold text-sm text-gray-600">Pembayaran</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        ${completedTransactions.sort((a,b) => b.id - a.id).map(trx => {
-                            const sellerName = sellers.find(s => s.id === trx.sellerId)?.name || 'N/A';
-                            return `
-                            <tr class="border-b last:border-b-0 hover:bg-slate-50 transition-colors">
-                                <td class="p-4 font-mono text-sm">#${trx.id}</td>
-                                <td class="p-4">${trx.buyerName}</td>
-                                <td class="p-4">${sellerName}</td>
-                                <td class="p-4 font-semibold">${formatRupiah(trx.total)}</td>
-                                <td class="p-4 text-sm">${new Date(trx.timestamp).toLocaleString('id-ID')}</td>
-                                <td class="p-4 text-sm capitalize">${trx.paymentMethod}</td>
-                            </tr>
-                        `}).join('')}
-                    </tbody>
-                </table>
-            `;
-        };
-        
-        const renderSellerTransactionReport = () => {
-            const myCompletedTransactions = orders.filter(o => o.sellerId === currentUser.id && o.status === 'Selesai');
-
-            if (myCompletedTransactions.length === 0) {
-                sellerTransactionList.innerHTML = '<p class="text-gray-500 text-center py-4">Belum ada transaksi selesai.</p>';
-                return;
-            }
-
-            sellerTransactionList.innerHTML = '';
-            myCompletedTransactions.sort((a,b) => b.id - a.id).forEach(trx => {
-                const trxCard = document.createElement('div');
-                trxCard.className = 'border rounded-lg p-3 bg-green-50 text-sm';
-                trxCard.innerHTML = `
-                    <div class="flex justify-between items-center">
-                        <div>
-                            <p class="font-bold">Pesanan #${trx.id} <span class="font-normal">oleh ${trx.buyerName}</span></p>
-                            <p class="text-xs text-gray-500">${new Date(trx.timestamp).toLocaleString('id-ID')}</p>
-                        </div>
-                        <p class="font-semibold text-green-700">${formatRupiah(trx.total)}</p>
-                    </div>
-                `;
-                sellerTransactionList.appendChild(trxCard);
+            if (adminChartInstance) adminChartInstance.destroy();
+            adminChartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Total Penjualan',
+                        data: data,
+                        backgroundColor: 'rgba(252, 153, 175, 0.5)',
+                        borderColor: 'rgba(252, 153, 175, 1)',
+                        borderWidth: 1,
+                        borderRadius: 5,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: { 
+                        y: { 
+                            beginAtZero: true, 
+                            ticks: { 
+                                callback: value => formatRupiah(value).replace(',00', ''),
+                                color: '#333' 
+                            },
+                            grid: { color: 'rgba(143, 87, 219, 0.2)' }
+                        },
+                        x: {
+                            ticks: { color: '#333' },
+                            grid: { color: 'rgba(143, 87, 219, 0.2)' }
+                        }
+                    },
+                    plugins: { 
+                        legend: { labels: { color: '#333' } },
+                        tooltip: { callbacks: { label: context => ` Penjualan: ${formatRupiah(context.raw)}` } } 
+                    }
+                }
             });
+        };
+
+        const renderSellerChart = (period = 'day') => {
+            const ctx = document.getElementById('seller-sales-chart').getContext('2d');
+            const now = new Date();
+            let labels = [];
+            let data = [];
+            const filteredOrders = orders.filter(order => order.status === 'Selesai' && order.sellerId === currentUser.id);
+            if (period === 'day') {
+                labels = Array.from({length: 24}, (_, i) => `${i.toString().padStart(2, '0')}:00`);
+                data = Array(24).fill(0);
+                filteredOrders.forEach(order => {
+                    const orderDate = new Date(order.date);
+                    if (orderDate.toDateString() === now.toDateString()) {
+                        data[orderDate.getHours()] += order.total;
+                    }
+                });
+            } else if (period === 'month') {
+                const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
+                labels = Array.from({length: daysInMonth}, (_, i) => i + 1);
+                data = Array(daysInMonth).fill(0);
+                filteredOrders.forEach(order => {
+                    const orderDate = new Date(order.date);
+                    if (orderDate.getMonth() === now.getMonth() && orderDate.getFullYear() === now.getFullYear()) {
+                        data[orderDate.getDate() - 1] += order.total;
+                    }
+                });
+            } else if (period === 'year') {
+                labels = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
+                data = Array(12).fill(0);
+                filteredOrders.forEach(order => {
+                    const orderDate = new Date(order.date);
+                    if (orderDate.getFullYear() === now.getFullYear()) {
+                        data[orderDate.getMonth()] += order.total;
+                    }
+                });
+            }
+            if (sellerChartInstance) sellerChartInstance.destroy();
+            sellerChartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Total Omset',
+                        data: data,
+                        backgroundColor: 'rgba(143, 87, 219, 0.5)',
+                        borderColor: 'rgba(143, 87, 219, 1)',
+                        borderWidth: 1,
+                        borderRadius: 5,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                     scales: { 
+                        y: { 
+                            beginAtZero: true, 
+                            ticks: { 
+                                callback: value => formatRupiah(value).replace(',00', ''),
+                                color: '#333' 
+                            },
+                            grid: { color: 'rgba(143, 87, 219, 0.2)' }
+                        },
+                        x: {
+                            ticks: { color: '#333' },
+                            grid: { color: 'rgba(143, 87, 219, 0.2)' }
+                        }
+                    },
+                    plugins: { 
+                        legend: { labels: { color: '#333' } },
+                        tooltip: { callbacks: { label: context => ` Omset: ${formatRupiah(context.raw)}` } } 
+                    }
+                }
+            });
+        };
+
+        const renderAdminIncomeReport = (period = 'day') => {
+            const now = new Date();
+            const filteredOrders = orders.filter(order => {
+                if (order.status !== 'Selesai') return false;
+                const orderDate = new Date(order.date);
+                if (period === 'day') return orderDate.toDateString() === now.toDateString();
+                if (period === 'month') return orderDate.getMonth() === now.getMonth() && orderDate.getFullYear() === now.getFullYear();
+                if (period === 'year') return orderDate.getFullYear() === now.getFullYear();
+                return true;
+            });
+            const totalSales = filteredOrders.reduce((sum, order) => sum + order.total, 0);
+            const totalProfit = totalSales * 0.10;
+            adminTotalSales.textContent = formatRupiah(totalSales);
+            adminTotalProfit.textContent = formatRupiah(totalProfit);
+            adminPeriodFilter.querySelectorAll('.period-btn').forEach(btn => {
+                const isSelected = btn.dataset.period === period;
+                btn.classList.toggle('bg-[--dark-purple]', isSelected);
+                btn.classList.toggle('font-semibold', isSelected);
+                btn.classList.toggle('text-white', true);
+
+                btn.classList.toggle('bg-[--light-purple]', !isSelected);
+                btn.classList.toggle('hover:bg-[--dark-purple]', !isSelected);
+            });
+            renderAdminChart(period);
+        };
+
+        const renderSellerIncomeReport = (period = 'day') => {
+            const now = new Date();
+            const myOrders = orders.filter(order => {
+                if (order.status !== 'Selesai' || order.sellerId !== currentUser.id) return false;
+                const orderDate = new Date(order.date);
+                if (period === 'day') return orderDate.toDateString() === now.toDateString();
+                if (period === 'month') return orderDate.getMonth() === now.getMonth() && orderDate.getFullYear() === now.getFullYear();
+                if (period === 'year') return orderDate.getFullYear() === now.getFullYear();
+                return true;
+            });
+            const totalOmset = myOrders.reduce((sum, order) => sum + order.total, 0);
+            const contribution = totalOmset * 0.10;
+            const netOmset = totalOmset - contribution;
+            sellerTotalOmset.textContent = formatRupiah(totalOmset);
+            sellerProfitContribution.textContent = formatRupiah(contribution);
+            sellerNetOmset.textContent = formatRupiah(netOmset);
+            sellerPeriodFilter.querySelectorAll('.period-btn').forEach(btn => {
+                 const isSelected = btn.dataset.period === period;
+                btn.classList.toggle('bg-[--dark-purple]', isSelected);
+                btn.classList.toggle('font-semibold', isSelected);
+                btn.classList.toggle('text-white', true);
+
+                btn.classList.toggle('bg-[--light-purple]', !isSelected);
+                btn.classList.toggle('hover:bg-[--dark-purple]', !isSelected);
+            });
+            renderSellerChart(period);
         };
 
         const renderAdminDashboard = () => {
+            renderAdminIncomeReport();
             adminProductList.innerHTML = '';
-            let totalSales = 0;
-            orders.filter(o => o.status === 'Selesai').forEach(o => totalSales += o.total);
-            const totalProfit = totalSales * 0.10;
-
-            adminTotalSales.textContent = formatRupiah(totalSales);
-            adminTotalProfit.textContent = formatRupiah(totalProfit);
-
             menuItems.forEach(item => {
-                const productCard = document.createElement('div');
-                productCard.className = 'card p-4';
+                 const productCard = document.createElement('div');
+                productCard.className = 'bg-card p-4 rounded-lg shadow border border-card';
                 productCard.innerHTML = `
-                    <img src="${item.image}" alt="${item.name}" class="w-full h-32 object-cover rounded-lg mb-2">
-                    <p class="font-semibold">${item.name}</p>
-                    <p class="text-sm text-gray-600">${formatRupiah(item.price)}</p>
+                    <img src="${item.image}" alt="${item.name}" class="w-full h-32 object-cover rounded mb-2">
+                    <p class="font-semibold text-text-dark">${item.name}</p>
+                    <div class="my-1">${renderStars(item.avgRating)}</div>
+                    <p class="text-sm text-gray-500">${formatRupiah(item.price)}</p>
                     <p class="text-xs text-gray-500">Stok: ${item.stock}</p>
-                    <p class="text-xs font-semibold text-blue-700 mt-1">Penjual: ${item.sellerName}</p>
-                `;
+                    <p class="text-xs font-semibold text-dark-purple mt-1">Penjual: ${users.find(u => u.id === item.sellerId)?.name || 'Penjual'}</p>`;
                 adminProductList.appendChild(productCard);
             });
-            renderAdminSellerList();
-            renderAdminUserList();
-            renderAdminTransactionReport();
+            renderAdminLists();
         };
 
-        // --- UI Control Based on Role ---
         const updateView = () => {
             if (currentUser) {
-                loginScreen.classList.add('hidden');
-                registerScreen.classList.add('hidden');
+                authScreen.classList.add('hidden');
                 appScreen.classList.remove('hidden');
                 headerSubtitle.textContent = `Selamat datang, ${currentUser.name}!`;
-
-                // Hide all role-specific sections first
                 adminDashboard.classList.add('hidden');
                 mainContent.classList.add('hidden');
                 sellerDashboard.classList.add('hidden');
@@ -777,9 +913,9 @@
                         cartAndOrdersSection.classList.add('hidden');
                         addMenuButton.classList.remove('hidden');
                         menuTitle.textContent = "Produk Anda";
-                        renderMenu();
+                        renderSellerIncomeReport();
                         renderSellerOrders();
-                        renderSellerTransactionReport();
+                        renderMenu();
                         break;
                     case 'user':
                         mainContent.classList.remove('hidden');
@@ -792,12 +928,12 @@
                         break;
                 }
             } else {
-                loginScreen.classList.remove('hidden');
+                authScreen.classList.remove('hidden');
                 appScreen.classList.add('hidden');
             }
         };
 
-        // --- AUTH LOGIC ---
+        // --- CORE LOGIC ---
         const handleLogin = (e) => {
             e.preventDefault();
             const username = document.getElementById('username').value;
@@ -806,7 +942,7 @@
             if (account && account.password === password) {
                 currentUser = { id: account.id, username, role: account.role, name: account.name };
                 loginError.textContent = '';
-                document.getElementById('login-form').reset();
+                loginForm.reset();
                 updateView();
             } else {
                 loginError.textContent = 'Username atau password salah.';
@@ -815,119 +951,75 @@
 
         const handleRegister = (e) => {
             e.preventDefault();
-            registerError.textContent = '';
-            const name = document.getElementById('register-name').value;
             const username = document.getElementById('register-username').value;
             const password = document.getElementById('register-password').value;
-            const confirmPassword = document.getElementById('register-confirm-password').value;
-
-            if (password !== confirmPassword) {
-                registerError.textContent = 'Password dan konfirmasi password tidak cocok.';
+            const usernameExists = users.some(u => u.username === username);
+            if (usernameExists) {
+                registerMessage.textContent = 'Username sudah digunakan. Coba yang lain.';
+                registerMessage.className = 'text-center mb-4 text-red-500';
                 return;
             }
-            if (accounts[username]) {
-                registerError.textContent = 'Username sudah digunakan. Coba yang lain.';
-                return;
-            }
-
-            const newUser = {
-                id: 'user' + new Date().getTime(),
-                name,
-                username,
-                password
-            };
-            users.push(newUser);
+            const newId = 'user' + new Date().getTime();
+            users.push({ id: newId, name: username, username, password, role: 'user' });
             generateAccounts();
-            
-            // Auto login after register
-            const account = accounts[username];
-            currentUser = { id: account.id, username, role: account.role, name: account.name };
-            registerForm.reset();
-            updateView();
+            registerMessage.textContent = 'Pendaftaran berhasil! Silakan login.';
+            registerMessage.className = 'text-center mb-4 text-green-500';
+            setTimeout(() => {
+                showLoginForm();
+                registerForm.reset();
+                registerMessage.textContent = '';
+            }, 2000);
         };
 
         const handleLogout = () => {
             currentUser = null;
             cart = [];
+            if (adminChartInstance) {
+                adminChartInstance.destroy();
+                adminChartInstance = null;
+            }
+            if (sellerChartInstance) {
+                sellerChartInstance.destroy();
+                sellerChartInstance = null;
+            }
             updateView();
         };
         
-        // --- CART LOGIC ---
         const addToCart = (itemId) => {
-            const itemInMenu = menuItems.find(item => item.id === itemId);
-            if(itemInMenu.stock <= 0) return; // double check stock
-
             const itemInCart = cart.find(item => item.id === itemId);
-            if (itemInCart) {
-                 if (itemInCart.quantity < itemInMenu.stock) {
-                    itemInCart.quantity++;
-                 }
-            } else {
-                cart.push({ ...itemInMenu, quantity: 1 });
+            if (itemInCart) itemInCart.quantity++;
+            else {
+                const itemToAdd = menuItems.find(item => item.id === itemId);
+                cart.push({ ...itemToAdd, quantity: 1 });
             }
             renderCart();
         };
 
         const updateQuantity = (itemId, change) => {
             const itemInCart = cart.find(item => item.id === itemId);
-            const itemInMenu = menuItems.find(item => item.id === itemId);
-
             if (itemInCart) {
-                const newQuantity = itemInCart.quantity + change;
-                if (newQuantity <= 0) {
-                    cart = cart.filter(item => item.id !== itemId);
-                } else if(newQuantity <= itemInMenu.stock) {
-                    itemInCart.quantity = newQuantity;
-                }
+                itemInCart.quantity += change;
+                if (itemInCart.quantity <= 0) cart = cart.filter(item => item.id !== itemId);
             }
             renderCart();
         };
         
-        // --- ORDER LOGIC ---
         const placeOrder = () => {
             if (cart.length === 0) return;
-
-            // Check stock availability before creating order
-            let isStockSufficient = true;
-            for(const cartItem of cart) {
-                const menuItem = menuItems.find(item => item.id === cartItem.id);
-                if (menuItem.stock < cartItem.quantity) {
-                    isStockSufficient = false;
-                    orderStatus.innerHTML = `<p class="text-red-600 font-semibold">Stok ${menuItem.name} tidak cukup!</p>`;
-                    setTimeout(() => { orderStatus.innerHTML = ''; }, 3000);
-                    break;
-                }
-            }
-            if(!isStockSufficient) return;
-            
-            // Deduct stock
-            cart.forEach(cartItem => {
-                const menuItem = menuItems.find(item => item.id === cartItem.id);
-                menuItem.stock -= cartItem.quantity;
-            });
-
             const ordersBySeller = cart.reduce((acc, item) => {
                 if (!acc[item.sellerId]) acc[item.sellerId] = [];
                 acc[item.sellerId].push(item);
                 return acc;
             }, {});
-
             for (const sellerId in ordersBySeller) {
                 const sellerItems = ordersBySeller[sellerId];
                 const sellerTotal = sellerItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
-                orders.push({
-                    id: orders.length + 1,
-                    sellerId: sellerId,
-                    buyerId: currentUser.id,
-                    buyerName: currentUser.name,
-                    items: sellerItems.map(i => ({id: i.id, name: i.name, quantity: i.quantity})),
-                    total: sellerTotal,
-                    status: 'Baru',
-                    timestamp: new Date(),
-                    paymentMethod: selectedPaymentMethod
+                orders.push({ 
+                    id: orders.length + 1, sellerId, buyerId: currentUser.id, buyerName: currentUser.name, 
+                    items: sellerItems.map(i => ({id: i.id, name: i.name, quantity: i.quantity})), 
+                    total: sellerTotal, status: 'Baru', date: new Date()
                 });
             }
-            
             if(qrisMethods.includes(selectedPaymentMethod)) {
                 const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
                 qrisTotalElement.textContent = formatRupiah(total);
@@ -936,47 +1028,46 @@
             } else {
                 finishOrderPlacement();
             }
-            renderMenu(); // Re-render menu to show updated stock
         };
 
         const finishOrderPlacement = () => {
-            const paymentMethodText = selectedPaymentMethod.charAt(0).toUpperCase() + selectedPaymentMethod.slice(1);
-            orderStatus.innerHTML = `<p class="text-green-600 font-semibold">Pesanan berhasil dengan pembayaran ${paymentMethodText}!</p>`;
+            orderStatus.innerHTML = `<p class="text-green-500 font-semibold">Pesanan berhasil!</p>`;
             setTimeout(() => { orderStatus.innerHTML = ''; }, 3000);
             cart = [];
             renderCart();
-            renderUserOrders(); // Update order history
+            renderUserOrders();
+            renderSellerOrders();
         }
 
         const updateOrderStatus = (orderId, newStatus) => {
             const order = orders.find(o => o.id === orderId);
             if (order) {
                 order.status = newStatus;
-                updateView(); // Re-render everything to update all relevant views
+                renderSellerOrders();
+                renderUserOrders();
             }
         };
         
-        // --- PAYMENT LOGIC ---
         const selectPaymentMethod = (method) => {
             selectedPaymentMethod = method;
             document.querySelectorAll('.payment-method-btn').forEach(btn => {
-                btn.classList.toggle('border-blue-600', btn.dataset.payment === method);
-                btn.classList.toggle('bg-blue-50', btn.dataset.payment === method);
-                btn.classList.toggle('text-blue-800', btn.dataset.payment === method);
-                btn.classList.toggle('border-gray-300', btn.dataset.payment !== method);
-                btn.classList.toggle('bg-white', btn.dataset.payment !== method);
-                btn.classList.toggle('text-gray-800', btn.dataset.payment !== method);
+                const isSelected = btn.dataset.payment === method;
+                
+                // Selected styles
+                btn.classList.toggle('bg-[--dark-purple]', isSelected);
+                btn.classList.toggle('text-white', isSelected);
+                btn.classList.toggle('border-transparent', isSelected);
+
+                // Unselected styles
+                btn.classList.toggle('bg-cream', !isSelected);
+                btn.classList.toggle('text-text-dark', !isSelected);
+                btn.classList.toggle('border-light-pink', !isSelected);
             });
         };
 
-        // --- MENU MANAGEMENT (SELLER) ---
         const openMenuModal = (item = null) => {
             menuForm.reset();
-            modalError.classList.add('hidden');
             imagePreview.classList.add('hidden');
-            imagePreview.src = '';
-            menuImageData.value = '';
-
             if (item) {
                 modalTitle.textContent = 'Edit Menu';
                 document.getElementById('menu-id').value = item.id;
@@ -993,61 +1084,50 @@
             menuModal.classList.remove('hidden');
         };
         
-        const closeMenuModal = () => menuModal.classList.add('hidden');
-        
         const handleSaveMenu = (e) => {
             e.preventDefault();
-            modalError.classList.add('hidden');
             const id = document.getElementById('menu-id').value;
             const name = document.getElementById('menu-name').value;
             const price = parseInt(document.getElementById('menu-price').value);
             const stock = parseInt(document.getElementById('menu-stock').value);
             const image = menuImageData.value;
-
             if (!image) {
                 modalError.textContent = 'Silakan unggah gambar makanan.';
                 modalError.classList.remove('hidden');
                 return;
             }
-
             if (id) {
                 const index = menuItems.findIndex(item => item.id == id);
-                if (index > -1 && menuItems[index].sellerId === currentUser.id) {
-                    menuItems[index] = { ...menuItems[index], name, price, stock, image };
-                }
+                if (index > -1) menuItems[index] = { ...menuItems[index], name, price, stock, image };
             } else {
                 const newId = menuItems.length > 0 ? Math.max(...menuItems.map(i => i.id)) + 1 : 1;
-                menuItems.push({ id: newId, sellerId: currentUser.id, sellerName: currentUser.name, name, price, stock, image });
+                menuItems.push({ id: newId, sellerId: currentUser.id, sellerName: currentUser.name, name, price, stock, image, ratings: [], avgRating: 0 });
             }
             renderMenu();
-            closeMenuModal();
+            menuModal.classList.add('hidden');
         };
         
         const handleEditMenu = (itemId) => {
             const item = menuItems.find(i => i.id === itemId);
-            if(item && item.sellerId === currentUser.id) openMenuModal(item);
+            if(item) openMenuModal(item);
         };
         
         const handleDeleteMenu = (itemId) => {
-             if (confirm('Apakah Anda yakin ingin menghapus menu ini?')) {
-                const item = menuItems.find(i => i.id === itemId);
-                 if(item && item.sellerId === currentUser.id) {
-                    menuItems = menuItems.filter(item => item.id !== itemId);
-                    renderMenu();
-                }
+             if (confirm('Yakin hapus menu ini?')) {
+                menuItems = menuItems.filter(item => item.id !== itemId);
+                renderMenu();
             }
         };
         
-        // --- SELLER MANAGEMENT (ADMIN) ---
-        const openSellerModal = (seller = null) => {
+        const openSellerModal = (user = null) => {
             sellerForm.reset();
             sellerModalError.classList.add('hidden');
-            if (seller) {
+            if (user) {
                 sellerModalTitle.textContent = 'Edit Penjual';
-                document.getElementById('seller-id-input').value = seller.id;
-                document.getElementById('seller-name').value = seller.name;
-                document.getElementById('seller-username').value = seller.username;
-                document.getElementById('seller-password').value = seller.password;
+                document.getElementById('seller-id-input').value = user.id;
+                document.getElementById('seller-name').value = user.name;
+                document.getElementById('seller-username').value = user.username;
+                document.getElementById('seller-password').value = user.password;
             } else {
                 sellerModalTitle.textContent = 'Tambah Penjual Baru';
                 document.getElementById('seller-id-input').value = '';
@@ -1055,84 +1135,178 @@
             sellerModal.classList.remove('hidden');
         };
 
-        const closeSellerModal = () => sellerModal.classList.add('hidden');
+        const openRegularUserModal = (user = null) => {
+            regularUserForm.reset();
+            regularUserModalError.classList.add('hidden');
+            if (user) {
+                regularUserModalTitle.textContent = 'Edit User';
+                document.getElementById('regular-user-id-input').value = user.id;
+                document.getElementById('regular-user-name').value = user.name;
+                document.getElementById('regular-user-username').value = user.username;
+                document.getElementById('regular-user-password').value = user.password;
+            } else {
+                regularUserModalTitle.textContent = 'Tambah User Baru';
+                document.getElementById('regular-user-id-input').value = '';
+            }
+            regularUserModal.classList.remove('hidden');
+        };
 
         const handleSaveSeller = (e) => {
             e.preventDefault();
-            sellerModalError.classList.add('hidden');
             const id = document.getElementById('seller-id-input').value;
             const name = document.getElementById('seller-name').value;
             const username = document.getElementById('seller-username').value;
             const password = document.getElementById('seller-password').value;
-
-            const usernameExists = sellers.some(s => s.username === username && s.id !== id);
+            const role = 'penjual';
+            const usernameExists = users.some(u => u.username === username && u.id !== id);
             if (usernameExists) {
-                sellerModalError.textContent = 'Username sudah digunakan. Coba yang lain.';
+                sellerModalError.textContent = 'Username sudah digunakan.';
                 sellerModalError.classList.remove('hidden');
                 return;
             }
-
-            if (id) { // Edit
-                const index = sellers.findIndex(s => s.id === id);
-                if (index > -1) {
-                    sellers[index] = { ...sellers[index], name, username, password };
-                }
-            } else { // Add
-                const newId = 'seller' + new Date().getTime();
-                sellers.push({ id: newId, name, username, password });
+            if (id) {
+                const index = users.findIndex(u => u.id === id);
+                if (index > -1) users[index] = { id, name, username, password, role };
+            } else {
+                const newId = 'user' + new Date().getTime();
+                users.push({ id: newId, name, username, password, role });
             }
             generateAccounts();
             renderAdminDashboard();
-            closeSellerModal();
+            sellerModal.classList.add('hidden');
         };
 
-        const handleEditSeller = (sellerId) => {
-            const seller = sellers.find(s => s.id === sellerId);
-            if (seller) openSellerModal(seller);
+        const handleSaveRegularUser = (e) => {
+            e.preventDefault();
+            const id = document.getElementById('regular-user-id-input').value;
+            const name = document.getElementById('regular-user-name').value;
+            const username = document.getElementById('regular-user-username').value;
+            const password = document.getElementById('regular-user-password').value;
+            const role = 'user';
+            const usernameExists = users.some(u => u.username === username && u.id !== id);
+            if (usernameExists) {
+                regularUserModalError.textContent = 'Username sudah digunakan.';
+                regularUserModalError.classList.remove('hidden');
+                return;
+            }
+            if (id) {
+                const index = users.findIndex(u => u.id === id);
+                if (index > -1) users[index] = { id, name, username, password, role };
+            } else {
+                const newId = 'user' + new Date().getTime();
+                users.push({ id: newId, name, username, password, role });
+            }
+            generateAccounts();
+            renderAdminDashboard();
+            regularUserModal.classList.add('hidden');
         };
         
-        const handleDeleteSeller = (sellerId) => {
-            if (confirm('Menghapus penjual juga akan menghapus SEMUA produk mereka. Anda yakin?')) {
-                sellers = sellers.filter(s => s.id !== sellerId);
-                menuItems = menuItems.filter(item => item.sellerId !== sellerId);
+        const handleEditUser = (userId) => {
+            const user = users.find(u => u.id === userId);
+            if (user) {
+                if(user.role === 'penjual') openSellerModal(user);
+                else if(user.role === 'user') openRegularUserModal(user);
+            }
+        };
+        
+        const handleDeleteUser = (userId) => {
+            const userToDelete = users.find(u => u.id === userId);
+            if (!userToDelete) return;
+            let confirmationText = 'Yakin hapus user ini?';
+            if (userToDelete.role === 'penjual') {
+                 confirmationText = 'Menghapus penjual akan menghapus semua produknya. Yakin?';
+            }
+            if (confirm(confirmationText)) {
+                users = users.filter(u => u.id !== userId);
+                if (userToDelete.role === 'penjual') {
+                    menuItems = menuItems.filter(item => item.sellerId !== userId);
+                }
                 generateAccounts();
                 renderAdminDashboard();
+                renderMenu();
             }
+        };
+
+        const openRatingModal = (menuId) => {
+            const menuItem = menuItems.find(item => item.id === menuId);
+            if (!menuItem) return;
+            document.getElementById('rating-menu-id').value = menuId;
+            ratingItemName.textContent = menuItem.name;
+            let starsHtml = '';
+            for (let i = 1; i <= 5; i++) {
+                starsHtml += `<span class="rating-star" data-value="${i}"><svg class="w-10 h-10" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg></span>`;
+            }
+            ratingStarsContainer.innerHTML = starsHtml;
+            ratingModal.classList.remove('hidden');
+        };
+        
+        const handleSaveRating = (e) => {
+            e.preventDefault();
+            const menuId = parseInt(document.getElementById('rating-menu-id').value);
+            const selectedStar = document.querySelector('#rating-stars-container .rating-star[data-selected="true"]');
+            if (!selectedStar) {
+                let selectedValue = 0;
+                 document.querySelectorAll('#rating-stars-container .rating-star').forEach(star => {
+                    if (star.classList.contains('text-yellow-400')) {
+                        selectedValue = Math.max(selectedValue, parseInt(star.dataset.value));
+                    }
+                });
+                if (selectedValue === 0) {
+                     alert('Silakan pilih rating bintang.');
+                    return;
+                }
+                 submitRating(menuId, selectedValue);
+            } else {
+                const ratingValue = parseInt(selectedStar.dataset.value);
+                submitRating(menuId, ratingValue);
+            }
+        };
+
+        const submitRating = (menuId, ratingValue) => {
+            const menuItem = menuItems.find(item => item.id === menuId);
+            if (!menuItem) return;
+            const existingRatingIndex = menuItem.ratings.findIndex(r => r.userId === currentUser.id);
+            if (existingRatingIndex > -1) {
+                menuItem.ratings[existingRatingIndex].value = ratingValue;
+            } else {
+                menuItem.ratings.push({ userId: currentUser.id, value: ratingValue });
+            }
+            const totalRating = menuItem.ratings.reduce((sum, r) => sum + r.value, 0);
+            menuItem.avgRating = totalRating / menuItem.ratings.length;
+            ratingModal.classList.add('hidden');
+            renderMenu();
+        };
+
+        const showLoginForm = () => {
+            registerContainer.classList.add('hidden');
+            loginContainer.classList.remove('hidden');
+        };
+
+        const showRegisterForm = () => {
+            loginContainer.classList.add('hidden');
+            registerContainer.classList.remove('hidden');
         };
 
         // --- INITIALIZATION & EVENT LISTENERS ---
         document.addEventListener('DOMContentLoaded', () => {
             generateAccounts();
-
             loginForm.addEventListener('submit', handleLogin);
             registerForm.addEventListener('submit', handleRegister);
+            showRegisterBtn.addEventListener('click', showRegisterForm);
+            showLoginBtn.addEventListener('click', showLoginForm);
             logoutButton.addEventListener('click', handleLogout);
             orderButton.addEventListener('click', placeOrder);
-            
-            showRegisterLink.addEventListener('click', (e) => {
-                e.preventDefault();
-                loginScreen.classList.add('hidden');
-                registerScreen.classList.remove('hidden');
-                loginForm.reset();
-                loginError.textContent = '';
-            });
-            
-            showLoginLink.addEventListener('click', (e) => {
-                e.preventDefault();
-                registerScreen.classList.add('hidden');
-                loginScreen.classList.remove('hidden');
-                registerForm.reset();
-                registerError.textContent = '';
-            });
-
             addMenuButton.addEventListener('click', () => openMenuModal());
-            cancelModalButton.addEventListener('click', closeMenuModal);
             menuForm.addEventListener('submit', handleSaveMenu);
-            
+            cancelModalButton.addEventListener('click', () => menuModal.classList.add('hidden'));
             addSellerButton.addEventListener('click', () => openSellerModal());
-            cancelSellerModalButton.addEventListener('click', closeSellerModal);
             sellerForm.addEventListener('submit', handleSaveSeller);
-            
+            cancelSellerModalButton.addEventListener('click', () => sellerModal.classList.add('hidden'));
+            addRegularUserButton.addEventListener('click', () => openRegularUserModal());
+            regularUserForm.addEventListener('submit', handleSaveRegularUser);
+            cancelRegularUserModalButton.addEventListener('click', () => regularUserModal.classList.add('hidden'));
+            ratingForm.addEventListener('submit', handleSaveRating);
+            cancelRatingModal.addEventListener('click', () => ratingModal.classList.add('hidden'));
             menuImageUpload.addEventListener('change', () => {
                 const file = menuImageUpload.files[0];
                 if (file) {
@@ -1145,20 +1319,43 @@
                     reader.readAsDataURL(file);
                 }
             });
-
             paymentMethodsContainer.addEventListener('click', (e) => {
-                const button = e.target.closest('.payment-method-btn');
-                if (button) {
-                    selectPaymentMethod(button.dataset.payment);
-                }
+                if (e.target.classList.contains('payment-method-btn')) selectPaymentMethod(e.target.dataset.payment);
             });
-            
             closeQrisModalButton.addEventListener('click', () => {
                 qrisModal.classList.add('hidden');
                 finishOrderPlacement();
             });
-            
-            updateView(); // Initial call
+            adminPeriodFilter.addEventListener('click', e => {
+                if(e.target.classList.contains('period-btn')) renderAdminIncomeReport(e.target.dataset.period);
+            });
+            sellerPeriodFilter.addEventListener('click', e => {
+                if(e.target.classList.contains('period-btn')) renderSellerIncomeReport(e.target.dataset.period);
+            });
+            ratingStarsContainer.addEventListener('mouseover', e => {
+                if (e.target.closest('.rating-star')) {
+                    const hoverValue = e.target.closest('.rating-star').dataset.value;
+                    document.querySelectorAll('#rating-stars-container .rating-star').forEach(star => {
+                        star.classList.toggle('text-yellow-400', star.dataset.value <= hoverValue);
+                    });
+                }
+            });
+            ratingStarsContainer.addEventListener('mouseout', () => {
+                 document.querySelectorAll('#rating-stars-container .rating-star:not([data-selected="true"])').forEach(star => {
+                    star.classList.remove('text-yellow-400');
+                });
+            });
+             ratingStarsContainer.addEventListener('click', e => {
+                if (e.target.closest('.rating-star')) {
+                    const selectedValue = e.target.closest('.rating-star').dataset.value;
+                     document.querySelectorAll('#rating-stars-container .rating-star').forEach(star => {
+                        const isSelected = star.dataset.value <= selectedValue;
+                        star.classList.toggle('text-yellow-400', isSelected);
+                        star.dataset.selected = isSelected;
+                    });
+                }
+            });
+            updateView();
         });
     </script>
 </body>
