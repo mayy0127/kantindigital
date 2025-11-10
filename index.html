@@ -10,8 +10,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <!-- Menambahkan library Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- Menambahkan Supabase Client -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         :root {
             --dark-purple: #502688;
@@ -35,67 +33,90 @@
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
-        .hidden { display: none; }
-        .bg-card { background-color: white; }
-        .border-card { border-color: var(--light-pink); }
-         /* Custom scrollbar */
-        ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-thumb { background-color: var(--light-pink); border-radius: 20px; }
-        .rating-star { cursor: pointer; transition: color 0.2s; }
+        .hidden {
+            display: none;
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background-color: var(--light-pink);
+            border-radius: 20px;
+        }
+        .rating-star {
+            cursor: pointer;
+            transition: color 0.2s, transform 0.2s; /* Tambah transisi transform */
+        }
+        .rating-star:hover {
+            transform: scale(1.2); /* Efek hover bintang */
+        }
+        .bg-card {
+            background-color: white;
+        }
+        .border-card{
+            border-color: var(--light-pink);
+        }
     </style>
 </head>
 <body class="bg-cream">
 
-    <!-- Layar Login & Registrasi -->
+    <!-- Global SVG Gradient Definition -->
+    <svg width="0" height="0" style="position:absolute">
+        <defs>
+            <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" style="stop-color:var(--dark-purple);stop-opacity:1" />
+                <stop offset="50%" style="stop-color:var(--light-purple);stop-opacity:1" />
+                <stop offset="100%" style="stop-color:var(--pink);stop-opacity:1" />
+            </linearGradient>
+        </defs>
+    </svg>
+
+    <!-- Login & Register Screen -->
     <div id="auth-screen" class="min-h-screen flex items-center justify-center bg-cream p-4">
-        <div class="bg-card p-8 rounded-lg shadow-lg w-full max-w-sm border border-card">
-            <!-- Form Login -->
+        <div class="bg-card p-8 rounded-xl shadow-xl w-full max-w-sm border border-card"> <!-- rounded-lg -> rounded-xl, shadow-lg -> shadow-xl -->
+            <!-- Login Form -->
             <div id="login-container">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-dark-purple mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" /></svg>
-                <h2 class="text-2xl font-bold text-center text-text-dark mb-6">Login Kantin Digital</h2>
+                 <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" stroke="url(#logoGradient)" />
+                </svg>
+                <h2 class="text-3xl font-bold text-center text-text-dark mb-6">Login Kantin Digital</h2> <!-- text-2xl -> text-3xl -->
                 <div id="login-error" class="text-red-500 text-center mb-4"></div>
                 <form id="login-form">
                     <div class="mb-4">
-                        <label for="username" class="block text-gray-700 mb-2">Email</label>
-                        <input type="email" id="username" class="w-full px-3 py-2 border rounded-lg bg-cream border-light-pink text-text-dark focus:outline-none focus:ring-2 focus:ring-pink" required>
+                        <label for="username" class="block text-gray-700 mb-2">Username</label>
+                        <input type="text" id="username" class="w-full px-3 py-2 border rounded-xl bg-cream border-light-pink text-text-dark focus:outline-none focus:ring-2 focus:ring-pink" required> <!-- rounded-lg -> rounded-xl -->
                     </div>
                     <div class="mb-6">
                         <label for="password" class="block text-gray-700 mb-2">Password</label>
-                        <input type="password" id="password" class="w-full px-3 py-2 border rounded-lg bg-cream border-light-pink text-text-dark focus:outline-none focus:ring-2 focus:ring-pink" required>
+                        <input type="password" id="password" class="w-full px-3 py-2 border rounded-xl bg-cream border-light-pink text-text-dark focus:outline-none focus:ring-2 focus:ring-pink" required> <!-- rounded-lg -> rounded-xl -->
                     </div>
-                    <button type="submit" class="w-full bg-[--dark-purple] text-white font-bold py-2 rounded-lg hover:bg-[--light-purple] transition-colors">Login</button>
+                    <button type="submit" class="w-full bg-[--dark-purple] text-white font-bold py-3 rounded-xl hover:bg-[--light-purple] transition-all duration-300 shadow-lg hover:shadow-md">Login</button> <!-- rounded-lg -> rounded-xl, py-2 -> py-3, tambah transisi & shadow -->
                 </form>
                 <p class="text-center text-sm text-gray-600 mt-4">
                     Belum punya akun? <button id="show-register-btn" class="font-semibold text-[--dark-blue] hover:underline">Daftar di sini</button>
                 </p>
             </div>
-            <!-- Form Registrasi -->
+
+            <!-- Register Form -->
             <div id="register-container" class="hidden">
-                 <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-dark-purple mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" /></svg>
-                <h2 class="text-2xl font-bold text-center text-text-dark mb-6">Daftar Akun Baru</h2>
+                 <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" stroke="url(#logoGradient)" />
+                </svg>
+                <h2 class="text-3xl font-bold text-center text-text-dark mb-6">Daftar Akun User</h2> <!-- text-2xl -> text-3xl -->
                 <div id="register-message" class="text-center mb-4"></div>
                 <form id="register-form">
                     <div class="mb-4">
-                        <label for="register-username" class="block text-gray-700 mb-2">Nama Pengguna (Username)</label>
-                        <input type="text" id="register-username" class="w-full px-3 py-2 border rounded-lg bg-cream border-light-pink text-text-dark focus:outline-none focus:ring-2 focus:ring-pink" required>
+                        <label for="register-username" class="block text-gray-700 mb-2">Username Baru</label>
+                        <input type="text" id="register-username" class="w-full px-3 py-2 border rounded-xl bg-cream border-light-pink text-text-dark focus:outline-none focus:ring-2 focus:ring-pink" required> <!-- rounded-lg -> rounded-xl -->
                     </div>
-                    <div class="mb-4">
-                        <label for="register-email" class="block text-gray-700 mb-2">Email</label>
-                        <input type="email" id="register-email" class="w-full px-3 py-2 border rounded-lg bg-cream border-light-pink text-text-dark focus:outline-none focus:ring-2 focus:ring-pink" required>
-                    </div>
-                    <div class="mb-4">
+                    <div class="mb-6">
                         <label for="register-password" class="block text-gray-700 mb-2">Password</label>
-                        <input type="password" id="register-password" class="w-full px-3 py-2 border rounded-lg bg-cream border-light-pink text-text-dark focus:outline-none focus:ring-2 focus:ring-pink" required>
+                        <input type="password" id="register-password" class="w-full px-3 py-2 border rounded-xl bg-cream border-light-pink text-text-dark focus:outline-none focus:ring-2 focus:ring-pink" required> <!-- rounded-lg -> rounded-xl -->
                     </div>
-                     <div class="mb-6">
-                        <label for="register-role" class="block text-gray-700 mb-2">Daftar sebagai</label>
-                        <select id="register-role" class="w-full px-3 py-2 border rounded-lg bg-cream border-light-pink text-text-dark focus:outline-none focus:ring-2 focus:ring-pink">
-                            <option value="user">Siswa</option>
-                            <option value="penjual">Penjual</option>
-                            <!-- <option value="admin">Admin</option> --> {/* Admin sebaiknya dibuat manual */}
-                        </select>
-                    </div>
-                    <button type="submit" class="w-full bg-[--dark-purple] text-white font-bold py-2 rounded-lg hover:bg-[--light-purple] transition-colors">Daftar</button>
+                    
+                    <button type="submit" class="w-full bg-[--dark-purple] text-white font-bold py-3 rounded-xl hover:bg-[--light-purple] transition-all duration-300 shadow-lg hover:shadow-md">Daftar</button> <!-- rounded-lg -> rounded-xl, py-2 -> py-3, tambah transisi & shadow -->
                 </form>
                 <p class="text-center text-sm text-gray-600 mt-4">
                     Sudah punya akun? <button id="show-login-btn" class="font-semibold text-[--dark-blue] hover:underline">Login di sini</button>
@@ -104,67 +125,152 @@
         </div>
     </div>
 
-    <!-- Layar Aplikasi Utama -->
+    <!-- App Screen -->
     <div id="app-screen" class="hidden">
         <div class="container mx-auto p-4 md:p-8">
+            <!-- Header -->
             <header class="text-center mb-8 relative">
                 <div class="flex items-center justify-center gap-3">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-dark-purple" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" /></svg>
-                    <h1 class="text-4xl font-bold text-text-dark">Kantin Digital</h1>
+                    <!-- Logo -->
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" stroke="url(#logoGradient)" />
+                    </svg>
+                    <h1 class="text-6xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-[--dark-purple] via-[--light-purple] to-[--pink]">Kantin Digital</h1> <!-- text-5xl text-text-dark -> text-6xl text-transparent bg-clip-text bg-gradient-to-r ... -->
                 </div>
-                <p id="header-subtitle" class="text-gray-500 mt-2"></p>
-                <button id="logout-button" class="absolute top-0 right-0 bg-red-500 text-white font-semibold px-4 py-2 rounded-lg hover:bg-red-600">Logout</button>
+                <p id="header-subtitle" class="text-text-dark font-semibold mt-2 text-lg">Pilih makanan favoritmu dan pesan sekarang juga!</p> <!-- text-gray-500 -> text-text-dark font-semibold -->
+                <button id="logout-button" class="absolute top-0 right-0 bg-red-500 text-white font-semibold px-4 py-2 rounded-xl hover:bg-red-600 transition-all duration-300 shadow-md">Logout</button> <!-- rounded-lg -> rounded-xl, tambah transisi & shadow -->
             </header>
 
-            <!-- Dashboard Admin (Hanya tampil jika role admin) -->
+            
             <div id="admin-dashboard" class="hidden">
-                 <h2 class="text-3xl font-bold text-text-dark mb-4">Dashboard Admin</h2>
-                 <!-- Konten Admin Dashboard (Laporan, Grafik, Pengelola) bisa ditambahkan di sini jika diperlukan kembali -->
-                 <div class="mt-12"><h3 class="text-xl font-semibold text-text-dark mb-4">Pengelola Akun</h3><div id="admin-user-list" class="bg-card rounded-lg shadow overflow-x-auto border border-card"></div></div>
-            </div>
-
-            <!-- Konten Utama (Untuk Siswa & Penjual) -->
-            <main id="main-content" class="flex flex-col lg:flex-row gap-8">
-                <!-- Bagian Menu / Produk -->
-                <div class="w-full lg:w-2/3">
-                    <!-- Dashboard Penjual (Hanya tampil jika role penjual) -->
-                    <div id="seller-dashboard" class="hidden mb-8">
-                         <h2 class="text-3xl font-bold text-text-dark mb-4">Dashboard Penjual</h2>
-                         <!-- Konten Seller Dashboard (Laporan, Grafik, Pesanan Masuk) bisa ditambahkan di sini jika diperlukan kembali -->
-                         <div class="bg-card p-6 rounded-lg shadow-lg border border-card mt-8"><h3 class="text-xl font-semibold mb-4 text-text-dark">Pesanan Masuk</h3><div id="seller-orders-container" class="space-y-4 max-h-96 overflow-y-auto"></div></div>
+                <h2 class="text-4xl font-extrabold text-text-dark mb-6">Dashboard Admin</h2> <!-- text-3xl font-bold mb-4 -> text-4xl font-extrabold mb-6 -->
+                <div class="bg-card p-6 rounded-xl shadow-xl mb-8 border border-card"> <!-- rounded-lg shadow-lg -> rounded-xl shadow-xl -->
+                    <div class="flex flex-col sm:flex-row justify-between sm:items-center mb-4">
+                        <h3 class="text-xl font-semibold mb-2 sm:mb-0 text-text-dark">Laporan Profit (10%)</h3>
+                        <div id="admin-period-filter" class="flex gap-1 border rounded-xl p-1 self-start sm:self-center border-card"> <!-- rounded-lg -> rounded-xl -->
+                            <button data-period="day" class="period-btn px-3 py-1.5 text-sm rounded-lg bg-[--dark-purple] text-white font-semibold transition-colors duration-200">Hari Ini</button> <!-- py-1 -> py-1.5, rounded-md -> rounded-lg, tambah transisi -->
+                            <button data-period="month" class="period-btn px-3 py-1.5 text-sm rounded-lg text-white bg-[--light-purple] hover:bg-[--dark-purple] transition-colors duration-200">Bulan Ini</button> <!-- py-1 -> py-1.5, rounded-md -> rounded-lg, tambah transisi -->
+                            <button data-period="year" class="period-btn px-3 py-1.5 text-sm rounded-lg text-white bg-[--light-purple] hover:bg-[--dark-purple] transition-colors duration-200">Tahun Ini</button> <!-- py-1 -> py-1.5, rounded-md -> rounded-lg, tambah transisi -->
+                        </div>
                     </div>
-
-                    <!-- Daftar Menu -->
-                    <div class="flex justify-between items-center mb-4">
-                        <h2 id="menu-title" class="text-2xl font-semibold text-gray-700">Menu Makanan</h2>
-                        <button id="add-menu-button" class="hidden bg-green-500 text-white font-semibold px-4 py-2 rounded-lg hover:bg-green-600">+ Tambah Menu</button>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-center">
+                        <div>
+                            <p class="text-gray-500 text-sm">Total Penjualan</p>
+                            <p id="admin-total-sales" class="text-2xl font-bold text-text-dark">Rp 0</p>
+                        </div>
+                        <div>
+                            <p class="text-gray-500 text-sm">Total Profit</p>
+                            <p id="admin-total-profit" class="text-2xl font-bold text-green-500">Rp 0</p>
+                        </div>
                     </div>
-                    <div id="menu-container" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6"></div>
                 </div>
 
-                <!-- Bagian Keranjang & Riwayat Pesanan (Hanya untuk Siswa) -->
+                
+                <div class="bg-card p-6 rounded-xl shadow-xl mb-8 border border-card"> <!-- rounded-lg shadow-lg -> rounded-xl shadow-xl -->
+                    <h3 class="text-xl font-semibold mb-4 text-text-dark">Grafik Penjualan</h3>
+                    <canvas id="admin-sales-chart"></canvas>
+                </div>
+                
+                <h3 class="text-xl font-semibold mb-4 text-text-dark">Semua Produk Penjual</h3>
+                <div id="admin-product-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                    
+                </div>
+
+                
+                <div class="mt-12 space-y-8">
+                    
+                    <div>
+                         <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-xl font-semibold text-text-dark">Pengelola Siswa</h3>
+                            <button id="add-user-button-admin" class="bg-blue-500 text-white font-semibold px-5 py-2.5 rounded-xl hover:bg-blue-600 transition-all duration-300 shadow-md hover:shadow-lg">+ Tambah Siswa</button> <!-- rounded-lg px-4 py-2 -> rounded-xl px-5 py-2.5, tambah transisi & shadow -->
+                        </div>
+                        <div id="admin-student-list" class="bg-card rounded-xl shadow-xl overflow-x-auto border border-card"> <!-- rounded-lg shadow -> rounded-xl shadow-xl -->
+                            
+                        </div>
+                    </div>
+
+                     
+                     <div>
+                         <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-xl font-semibold text-text-dark">Pengelola Penjual</h3>
+                            <button id="add-seller-button-admin" class="bg-green-500 text-white font-semibold px-5 py-2.5 rounded-xl hover:bg-green-600 transition-all duration-300 shadow-md hover:shadow-lg">+ Tambah Penjual</button> <!-- rounded-lg px-4 py-2 -> rounded-xl px-5 py-2.5, tambah transisi & shadow -->
+                        </div>
+                        <div id="admin-seller-list" class="bg-card rounded-xl shadow-xl overflow-x-auto border border-card"> <!-- rounded-lg shadow -> rounded-xl shadow-xl -->
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            
+            
+             <main id="main-content" class="flex flex-col lg:flex-row gap-8">
+                
+                <div class="w-full lg:w-2/3">
+                    <div id="seller-dashboard" class="hidden mb-8">
+                        <h2 class="text-4xl font-extrabold text-text-dark mb-6">Dashboard Penjual</h2> <!-- text-3xl font-bold mb-4 -> text-4xl font-extrabold mb-6 -->
+                        <div class="bg-card p-6 rounded-xl shadow-xl mb-8 border border-card"> <!-- rounded-lg shadow-lg -> rounded-xl shadow-xl -->
+                            <div class="flex flex-col sm:flex-row justify-between sm:items-center mb-4">
+                                <h3 class="text-xl font-semibold mb-2 sm:mb-0 text-text-dark">Laporan Omset</h3>
+                                <div id="seller-period-filter" class="flex gap-1 border rounded-xl p-1 self-start sm:self-center border-card"> <!-- rounded-lg -> rounded-xl -->
+                                    <button data-period="day" class="period-btn px-3 py-1.5 text-sm rounded-lg bg-[--dark-purple] text-white font-semibold transition-colors duration-200">Hari Ini</button> <!-- py-1 -> py-1.5, rounded-md -> rounded-lg, tambah transisi -->
+                                    <button data-period="month" class="period-btn px-3 py-1.5 text-sm rounded-lg text-white bg-[--light-purple] hover:bg-[--dark-purple] transition-colors duration-200">Bulan Ini</button> <!-- py-1 -> py-1.5, rounded-md -> rounded-lg, tambah transisi -->
+                                    <button data-period="year" class="period-btn px-3 py-1.5 text-sm rounded-lg text-white bg-[--light-purple] hover:bg-[--dark-purple] transition-colors duration-200">Tahun Ini</button> <!-- py-1 -> py-1.5, rounded-md -> rounded-lg, tambah transisi -->
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
+                                <div><p class="text-gray-500 text-sm">Total Omset</p><p id="seller-total-omset" class="text-2xl font-bold text-text-dark">Rp 0</p></div>
+                                <div><p class="text-gray-500 text-sm">Kontribusi Profit (10%)</p><p id="seller-profit-contribution" class="text-2xl font-bold text-red-500">Rp 0</p></div>
+                                <div><p class="text-gray-500 text-sm">Omset Bersih</p><p id="seller-net-omset" class="text-2xl font-bold text-green-500">Rp 0</p></div>
+                            </div>
+                        </div>
+                        
+                        
+                        <div class="bg-card p-6 rounded-xl shadow-xl mb-8 border border-card"><h3 class="text-xl font-semibold mb-4 text-text-dark">Grafik Omset</h3><canvas id="seller-sales-chart"></canvas></div> <!-- rounded-lg shadow-lg -> rounded-xl shadow-xl -->
+
+                        <div class="bg-card p-6 rounded-xl shadow-xl border border-card"><h3 class="text-xl font-semibold mb-4 text-text-dark">Pesanan Masuk</h3><div id="seller-orders-container" class="space-y-4 max-h-96 overflow-y-auto"></div></div> <!-- rounded-lg shadow-lg -> rounded-xl shadow-xl -->
+                    </div>
+
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 id="menu-title" class="text-3xl font-bold text-gray-700">Menu Makanan</h2> <!-- text-2xl font-semibold -> text-3xl font-bold -->
+                        <button id="add-menu-button" class="hidden bg-green-500 text-white font-semibold px-5 py-2.5 rounded-xl hover:bg-green-600 transition-all duration-300 shadow-md hover:shadow-lg">+ Tambah Menu</button> <!-- rounded-lg px-4 py-2 -> rounded-xl px-5 py-2.5, tambah transisi & shadow -->
+                    </div>
+                    <div id="menu-container" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                        
+                    </div>
+                </div>
+
+                
                 <div id="cart-and-orders-section" class="w-full lg:w-1/3">
-                    <div class="bg-card rounded-lg shadow-lg p-6 sticky top-8 border border-card">
+                    <div class="bg-card rounded-xl shadow-xl p-6 border border-card"> <!-- rounded-lg shadow-lg -> rounded-xl shadow-xl -->
                         <h2 class="text-2xl font-semibold text-text-dark mb-4 border-b pb-3 border-card">Keranjang Anda</h2>
                         <div id="cart-items-container" class="space-y-4 mb-4 max-h-80 overflow-y-auto pr-2"></div>
                         <div class="border-t pt-4 space-y-3 border-card">
-                             <div class="mb-4">
+                            <div class="mb-4">
                                 <h3 class="text-md font-semibold text-gray-700 mb-2">Metode Pembayaran</h3>
                                 <div class="flex overflow-x-auto gap-2 pb-2" id="payment-methods">
-                                    <button data-payment="tunai" class="payment-method-btn flex-shrink-0 px-4 border-2 font-semibold py-2 rounded-lg text-sm bg-[--dark-purple] text-white border-transparent">Tunai</button>
-                                    <button data-payment="qris" class="payment-method-btn flex-shrink-0 px-4 border-2 font-semibold py-2 rounded-lg text-sm bg-cream text-text-dark border-light-pink">QRIS</button>
+                                    <button data-payment="tunai" class="payment-method-btn flex-shrink-0 px-4 border-2 font-semibold py-2.5 rounded-xl text-sm bg-[--dark-purple] text-white border-transparent transition-all duration-300">Tunai</button> <!-- py-2 rounded-lg -> py-2.5 rounded-xl, tambah transisi -->
+                                    <button data-payment="qris" class="payment-method-btn flex-shrink-0 px-4 border-2 font-semibold py-2.5 rounded-xl text-sm bg-cream text-text-dark border-light-pink transition-all duration-300">QRIS</button> <!-- py-2 rounded-lg -> py-2.5 rounded-xl, tambah transisi -->
                                 </div>
                             </div>
-                            <div class="flex justify-between items-center text-lg font-semibold text-text-dark"><span>Total</span><span id="cart-total">Rp 0</span></div>
-                            <button id="order-button" class="w-full bg-[--dark-purple] text-white font-bold py-3 rounded-lg hover:bg-[--light-purple]" disabled>Pesan Sekarang</button>
+                            <div class="flex justify-between items-center text-lg font-semibold text-text-dark">
+                                <span>Total</span>
+                                <span id="cart-total">Rp 0</span>
+                            </div>
+                            <button id="order-button" class="w-full bg-[--dark-purple] text-white font-bold py-3 rounded-xl hover:bg-[--light-purple] transition-all duration-300 shadow-lg hover:shadow-md disabled:bg-gray-400 disabled:cursor-not-allowed disabled:shadow-none"> <!-- rounded-lg -> rounded-xl, tambah transisi & shadow, disabled shadow -->
+                                Pesan Sekarang
+                            </button>
                         </div>
                         <div id="order-status" class="mt-4 text-center"></div>
                     </div>
 
+                    
                     <div id="user-orders-section" class="mt-8">
-                        <div class="bg-card rounded-lg shadow-lg p-6 border border-card">
+                        <div class="bg-card rounded-xl shadow-xl p-6 border border-card"> <!-- rounded-lg shadow-lg -> rounded-xl shadow-xl -->
                             <h2 class="text-2xl font-semibold text-text-dark mb-4 border-b pb-3 border-card">Riwayat Pesanan Saya</h2>
-                            <div id="user-orders-container" class="space-y-4 max-h-96 overflow-y-auto"></div>
+                            <div id="user-orders-container" class="space-y-4 max-h-96 overflow-y-auto">
+                                
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -172,87 +278,122 @@
         </div>
     </div>
     
-    <!-- Modals -->
+    
     <div id="menu-modal" class="hidden fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-4 z-50">
-        <div class="bg-card p-6 rounded-lg shadow-xl w-full max-w-md border border-card">
+        <div class="bg-card p-6 rounded-xl shadow-xl w-full max-w-md border border-card"> <!-- rounded-lg -> rounded-xl -->
             <h2 id="modal-title" class="text-2xl font-bold mb-4 text-text-dark">Tambah Menu Baru</h2>
             <form id="menu-form">
                 <input type="hidden" id="menu-id">
-                <div class="mb-4"><label for="menu-name" class="block text-gray-700 mb-1">Nama Menu</label><input type="text" id="menu-name" class="w-full px-3 py-2 border rounded-lg bg-cream border-light-pink" required></div>
-                <div class="mb-4"><label for="menu-price" class="block text-gray-700 mb-1">Harga</label><input type="number" id="menu-price" class="w-full px-3 py-2 border rounded-lg bg-cream border-light-pink" min="0" required></div>
-                <div class="mb-4"><label for="menu-stock" class="block text-gray-700 mb-1">Stok Makanan</label><input type="number" id="menu-stock" class="w-full px-3 py-2 border rounded-lg bg-cream border-light-pink" min="0" required></div>
-                <div class="mb-4"><label for="menu-image-url" class="block text-gray-700 mb-1">URL Gambar Makanan</label><input type="url" id="menu-image-url" class="w-full px-3 py-2 border rounded-lg bg-cream border-light-pink" placeholder="https://..." required></div>
-                <img id="image-preview" src="" alt="Preview" class="w-full h-40 object-cover rounded-lg mb-2 border hidden border-card">
-                <div id="modal-error" class="text-red-500 text-sm mb-4 hidden"></div>
-                <div class="flex justify-end gap-4 mt-6">
-                    <button type="button" id="cancel-modal" class="bg-gray-300 text-gray-800 font-semibold px-4 py-2 rounded-lg hover:bg-gray-400">Batal</button>
-                    <button type="submit" class="bg-[--dark-purple] text-white font-semibold px-4 py-2 rounded-lg hover:bg-[--light-purple]">Simpan</button>
+                <div class="mb-4"><label for="menu-name" class="block text-gray-700 mb-1">Nama Menu</label><input type="text" id="menu-name" class="w-full px-3 py-2 border rounded-xl bg-cream border-light-pink" required></div> <!-- rounded-lg -> rounded-xl -->
+                <div class="mb-4"><label for="menu-price" class="block text-gray-700 mb-1">Harga</label><input type="number" id="menu-price" class="w-full px-3 py-2 border rounded-xl bg-cream border-light-pink" min="0" required></div> <!-- rounded-lg -> rounded-xl -->
+                <div class="mb-4"><label for="menu-stock" class="block text-gray-700 mb-1">Stok Makanan</label><input type="number" id="menu-stock" class="w-full px-3 py-2 border rounded-xl bg-cream border-light-pink" min="0" required></div> <!-- rounded-lg -> rounded-xl -->
+                
+                <div class="mb-4">
+                    <label for="menu-image-file" class="block text-gray-700 mb-1">Foto Makanan</label>
+                    <input type="file" id="menu-image-file" class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:font-semibold file:bg-[--light-purple] file:text-white hover:file:bg-[--dark-purple] cursor-pointer" accept="image/*"> <!-- rounded-lg -> rounded-xl -->
                 </div>
+                <img id="image-preview" src="" alt="Preview" class="w-full h-40 object-cover rounded-xl mb-2 border hidden border-card"> <!-- rounded-lg -> rounded-xl -->
+                <div id="modal-error" class="text-red-500 text-sm mb-4 hidden"></div>
+                <div class="flex justify-end gap-4 mt-6"><button type="button" id="cancel-modal" class="bg-gray-300 text-gray-800 font-semibold px-5 py-2.5 rounded-xl hover:bg-gray-400 transition-all duration-300 shadow-md">Batal</button><button type="submit" class="bg-[--dark-purple] text-white font-semibold px-5 py-2.5 rounded-xl hover:bg-[--light-purple] transition-all duration-300 shadow-md">Simpan</button></div> <!-- rounded-lg px-4 py-2 -> rounded-xl px-5 py-2.5, tambah transisi & shadow -->
             </form>
         </div>
     </div>
-    <div id="user-modal" class="hidden fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-4 z-50">
-        <div class="bg-card p-6 rounded-lg shadow-xl w-full max-w-md border border-card">
+     <div id="user-modal" class="hidden fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-4 z-50">
+        <div class="bg-card p-6 rounded-xl shadow-xl w-full max-w-md border border-card"> <!-- rounded-lg -> rounded-xl -->
             <h2 id="user-modal-title" class="text-2xl font-bold mb-4 text-text-dark">Edit User</h2>
             <form id="user-form" class="space-y-4">
                 <input type="hidden" id="user-id-input">
-                <div><label for="user-username" class="block text-gray-700 mb-1">Username</label><input type="text" id="user-username" class="w-full px-3 py-2 border rounded-lg bg-cream border-light-pink" required></div>
-                <div><label for="user-role" class="block text-gray-700 mb-1">Role</label><select id="user-role" class="w-full px-3 py-2 border rounded-lg bg-cream border-light-pink"><option value="user">Siswa</option><option value="penjual">Penjual</option><option value="admin">Admin</option></select></div>
+                <div><label for="user-username" class="block text-gray-700 mb-1">Username</label><input type="text" id="user-username" class="w-full px-3 py-2 border rounded-xl bg-cream border-light-pink" required></div> <!-- rounded-lg -> rounded-xl -->
+                <div><label for="user-role" class="block text-gray-700 mb-1">Role</label><select id="user-role" class="w-full px-3 py-2 border rounded-xl bg-cream border-light-pink"><option value="user">Siswa</option><option value="penjual">Penjual</option><option value="admin">Admin</option></select></div> <!-- rounded-lg -> rounded-xl -->
+                 
+                 <div class="mb-4">
+                    <label for="user-password" class="block text-gray-700 mb-1">Password Baru (opsional)</label>
+                    <input type="password" id="user-password" class="w-full px-3 py-2 border rounded-xl bg-cream border-light-pink" placeholder="Kosongkan jika tidak ingin ganti"> <!-- rounded-lg -> rounded-xl -->
+                </div>
                 <div id="user-modal-error" class="text-red-500 text-sm"></div>
-                <div class="flex justify-end gap-4 pt-4"><button type="button" id="cancel-user-modal" class="bg-gray-300 text-gray-800 font-semibold px-4 py-2 rounded-lg hover:bg-gray-400">Batal</button><button type="submit" class="bg-[--dark-purple] text-white font-semibold px-4 py-2 rounded-lg hover:bg-[--light-purple]">Simpan</button></div>
+                <div class="flex justify-end gap-4 pt-4"><button type="button" id="cancel-user-modal" class="bg-gray-300 text-gray-800 font-semibold px-5 py-2.5 rounded-xl hover:bg-gray-400 transition-all duration-300 shadow-md">Batal</button><button type="submit" class="bg-[--dark-purple] text-white font-semibold px-5 py-2.5 rounded-xl hover:bg-[--light-purple] transition-all duration-300 shadow-md">Simpan</button></div> <!-- rounded-lg px-4 py-2 -> rounded-xl px-5 py-2.5, tambah transisi & shadow -->
             </form>
         </div>
     </div>
     <div id="qris-modal" class="hidden fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-4 z-50">
-        <div class="bg-card p-6 rounded-lg shadow-xl w-full max-w-sm text-center border border-card">
+        <div class="bg-card p-6 rounded-xl shadow-xl w-full max-w-sm text-center border border-card"> <!-- rounded-lg -> rounded-xl -->
             <h2 id="qris-modal-title" class="text-2xl font-bold mb-4 text-text-dark">Pembayaran QRIS</h2>
             <p class="text-gray-500 mb-4">Silakan scan kode QR ini untuk membayar.</p>
-            <img id="qris-image" src="" alt="QRIS Code" class="mx-auto rounded-lg">
+            <img id="qris-image" src="" alt="QRIS Code" class="mx-auto rounded-xl"> <!-- rounded-lg -> rounded-xl -->
             <p class="font-bold text-xl my-4 text-text-dark" id="qris-total"></p>
-            <button id="close-qris-modal" class="mt-4 w-full bg-[--dark-purple] text-white font-semibold py-2 rounded-lg hover:bg-[--light-purple]">Tutup</button>
+            <button id="close-qris-modal" class="mt-4 w-full bg-[--dark-purple] text-white font-semibold py-2.5 rounded-xl hover:bg-[--light-purple] transition-all duration-300 shadow-md">Tutup</button> <!-- py-2 rounded-lg -> py-2.5 rounded-xl, tambah transisi & shadow -->
         </div>
     </div>
     <div id="rating-modal" class="hidden fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-4 z-50">
-        <div class="bg-card p-6 rounded-lg shadow-xl w-full max-w-sm text-center border border-card">
+        <div class="bg-card p-6 rounded-xl shadow-xl w-full max-w-sm text-center border border-card"> <!-- rounded-lg -> rounded-xl -->
             <h2 class="text-2xl font-bold mb-2 text-text-dark">Beri Rating</h2>
             <p id="rating-item-name" class="text-gray-700 font-semibold mb-4"></p>
             <form id="rating-form">
                 <input type="hidden" id="rating-menu-id">
                 <div id="rating-stars-container" class="flex justify-center text-4xl text-gray-400 mb-6"></div>
-                <div class="flex justify-end gap-4"><button type="button" id="cancel-rating-modal" class="bg-gray-300 text-gray-800 font-semibold px-4 py-2 rounded-lg hover:bg-gray-400">Batal</button><button type="submit" class="bg-yellow-500 text-white font-semibold px-4 py-2 rounded-lg hover:bg-yellow-600">Kirim</button></div>
+                <div class="flex justify-end gap-4"><button type="button" id="cancel-rating-modal" class="bg-gray-300 text-gray-800 font-semibold px-5 py-2.5 rounded-xl hover:bg-gray-400 transition-all duration-300 shadow-md">Batal</button><button type="submit" class="bg-yellow-500 text-white font-semibold px-5 py-2.5 rounded-xl hover:bg-yellow-600 transition-all duration-300 shadow-md">Kirim</button></div> <!-- rounded-lg px-4 py-2 -> rounded-xl px-5 py-2.5, tambah transisi & shadow -->
             </form>
         </div>
     </div>
 
-    <script type="module">
-        // --- KONFIGURASI SUPABASE ---
-        const SUPABASE_URL = 'https://iuvttziqedisrxahyqve.supabase.co'; // GANTI DENGAN URL ANDA
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml1dnR0emlxZWRpc3J4YWh5cXZlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA0NTk1MDMsImV4cCI6MjA3NjAzNTUwM30.qswabi4cX-Bb2sIpg9_tAOUNWbAlpDImhcael1qUHt8'; // GANTI DENGAN KUNCI ANON ANDA
+    <script>
+        // --- DATA DUMMY ---
+        let users = [
+            { id: 'admin01', name: 'Admin Sekolah', username: 'admin123', password: 'admin123', role: 'admin' },
+            { id: 'user01', name: 'Siswa Cerdas', username: 'user123', password: 'user123', role: 'user' },
+            { id: 'seller01', name: 'Kantin Bu Ani', username: 'penjual123', password: 'penjual123', role: 'penjual' }
+        ];
 
-        const { createClient } = supabase;
-        const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        let menuItems = [
+            { id: 1, sellerId: 'seller01', name: 'Nasi Goreng Spesial', price: 25000, stock: 15, image: 'https://placehold.co/600x400/8F57DB/ffffff?text=Nasi+Goreng', ratings: [{userId: 'user01', value: 5}], avgRating: 5 },
+            { id: 2, sellerId: 'seller01', name: 'Mie Ayam Bakso', price: 18000, stock: 20, image: 'https://placehold.co/600x400/FC99AF/ffffff?text=Mie+Ayam', ratings: [{userId: 'user01', value: 4}], avgRating: 4 }
+        ];
         
-        // --- STATE APLIKASI ---
+        // Dummy orders for demonstration
+        let orders = [
+            { id: 1, sellerId: 'seller01', buyerId: 'user01', buyerName: 'Siswa Cerdas', items: [{id: 1, name: 'Nasi Goreng Spesial', quantity: 1}], total: 25000, status: 'Selesai', date: new Date() },
+            { id: 2, sellerId: 'seller01', buyerId: 'user01', buyerName: 'Siswa Cerdas', items: [{id: 2, name: 'Mie Ayam Bakso', quantity: 2}], total: 36000, status: 'Selesai', date: new Date(new Date().setDate(1)) },
+            { id: 3, sellerId: 'seller01', buyerId: 'user01', buyerName: 'Siswa Cerdas', items: [{id: 1, name: 'Nasi Goreng Spesial', quantity: 1}], total: 25000, status: 'Selesai', date: new Date(new Date().setMonth(0, 15)) },
+            { id: 4, sellerId: 'seller01', buyerId: 'user01', buyerName: 'Siswa Cerdas', items: [{id: 2, name: 'Mie Ayam Bakso', quantity: 1}], total: 18000, status: 'Selesai', date: new Date(new Date().setFullYear(new Date().getFullYear() - 1)) }
+        ];
+
+        // --- ACCOUNTS (Dynamically generated for login) ---
+        let accounts = {};
+        const generateAccounts = () => {
+            accounts = {};
+            users.forEach(user => {
+                accounts[user.username] = { password: user.password, role: user.role, id: user.id, name: user.name };
+            });
+        };
+
+        // --- STATE ---
         let cart = [];
         let currentUser = null;
         let selectedPaymentMethod = 'tunai';
         const qrisMethods = ['qris'];
+        let adminChartInstance = null;
+        let sellerChartInstance = null;
 
         // --- DOM ELEMENTS ---
         const authScreen = document.getElementById('auth-screen');
-        const appScreen = document.getElementById('app-screen');
         const loginContainer = document.getElementById('login-container');
         const registerContainer = document.getElementById('register-container');
         const showRegisterBtn = document.getElementById('show-register-btn');
         const showLoginBtn = document.getElementById('show-login-btn');
         const registerForm = document.getElementById('register-form');
         const registerMessage = document.getElementById('register-message');
+        const appScreen = document.getElementById('app-screen');
         const loginForm = document.getElementById('login-form');
         const loginError = document.getElementById('login-error');
         const logoutButton = document.getElementById('logout-button');
         const headerSubtitle = document.getElementById('header-subtitle');
         const adminDashboard = document.getElementById('admin-dashboard');
-        const adminUserList = document.getElementById('admin-user-list');
+        const adminTotalSales = document.getElementById('admin-total-sales');
+        const adminTotalProfit = document.getElementById('admin-total-profit');
+        const adminProductList = document.getElementById('admin-product-list');
+        // Pisahkan User List Admin
+        const adminStudentList = document.getElementById('admin-student-list');
+        const adminSellerList = document.getElementById('admin-seller-list');
         const mainContent = document.getElementById('main-content');
         const sellerDashboard = document.getElementById('seller-dashboard');
         const sellerOrdersContainer = document.getElementById('seller-orders-container');
@@ -270,13 +411,14 @@
         const cancelModalButton = document.getElementById('cancel-modal');
         const modalTitle = document.getElementById('modal-title');
         const modalError = document.getElementById('modal-error');
-        const menuImageUrlInput = document.getElementById('menu-image-url');
+        // Hapus referensi ke menu-image-url
+        // const menuImageUrlInput = document.getElementById('menu-image-url');
         const imagePreview = document.getElementById('image-preview');
         const userModal = document.getElementById('user-modal');
-        const userForm = document.getElementById('user-form');
         const userModalTitle = document.getElementById('user-modal-title');
-        const userModalError = document.getElementById('user-modal-error');
+        const userForm = document.getElementById('user-form');
         const cancelUserModalButton = document.getElementById('cancel-user-modal');
+        const userModalError = document.getElementById('user-modal-error');
         const qrisModal = document.getElementById('qris-modal');
         const qrisModalTitle = document.getElementById('qris-modal-title');
         const qrisTotalElement = document.getElementById('qris-total');
@@ -287,162 +429,161 @@
         const ratingForm = document.getElementById('rating-form');
         const ratingStarsContainer = document.getElementById('rating-stars-container');
         const cancelRatingModal = document.getElementById('cancel-rating-modal');
+        const adminPeriodFilter = document.getElementById('admin-period-filter');
+        const sellerPeriodFilter = document.getElementById('seller-period-filter');
+        const sellerTotalOmset = document.getElementById('seller-total-omset');
+        const sellerProfitContribution = document.getElementById('seller-profit-contribution');
+        const sellerNetOmset = document.getElementById('seller-net-omset');
         const menuTitle = document.getElementById('menu-title');
         const addMenuButton = document.getElementById('add-menu-button');
-
+         // Tombol tambah user/seller di admin
+        const addSellerButtonAdmin = document.getElementById('add-seller-button-admin');
+        const addUserButtonAdmin = document.getElementById('add-user-button-admin');
+        
         // --- HELPER FUNCTIONS ---
         const formatRupiah = (number) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(number || 0);
         
+        // --- FUNGSI HELPER BARU UNTUK GRAFIK ---
+        
+        /**
+         * Menyaring pesanan berdasarkan periode dan (opsional) ID penjual.
+         */
+        const getFilteredOrders = (period, sellerId = null) => {
+            const now = new Date();
+            let relevantOrders = sellerId 
+                ? orders.filter(o => o.sellerId === sellerId) 
+                : orders;
+
+            if (period === 'day') {
+                return relevantOrders.filter(o => new Date(o.date).toDateString() === now.toDateString());
+            } else if (period === 'month') {
+                return relevantOrders.filter(o => 
+                    new Date(o.date).getMonth() === now.getMonth() &&
+                    new Date(o.date).getFullYear() === now.getFullYear()
+                );
+            } else if (period === 'year') {
+                 return relevantOrders.filter(o => 
+                    new Date(o.date).getFullYear() === now.getFullYear()
+                );
+            }
+            return []; // Default
+        };
+        
+        /**
+         * Memproses data pesanan yang sudah difilter menjadi format untuk Chart.js.
+         */
+        const getChartData = (period, filteredOrders) => {
+            const now = new Date();
+            let labels = [];
+            let data = [];
+            let title = '';
+            
+            if (period === 'day') {
+                title = 'Penjualan Hari Ini (per Jam)';
+                labels = Array.from({ length: 24 }, (_, i) => `${i.toString().padStart(2, '0')}:00`);
+                data = Array(24).fill(0);
+                
+                filteredOrders.forEach(order => {
+                    const hour = new Date(order.date).getHours();
+                    data[hour] += order.total;
+                });
+
+            } else if (period === 'month') {
+                title = 'Penjualan Bulan Ini (per Hari)';
+                const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
+                labels = Array.from({ length: daysInMonth }, (_, i) => (i + 1).toString());
+                data = Array(daysInMonth).fill(0);
+
+                filteredOrders.forEach(order => {
+                    const day = new Date(order.date).getDate(); // 1-31
+                    data[day - 1] += order.total; // 0-indexed
+                });
+
+            } else if (period === 'year') {
+                title = 'Penjualan Tahun Ini (per Bulan)';
+                labels = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
+                data = Array(12).fill(0);
+
+                filteredOrders.forEach(order => {
+                    const month = new Date(order.date).getMonth(); // 0-11
+                    data[month] += order.total;
+                });
+            }
+            
+            return { labels, data, title };
+        };
+        
+        // --- FUNGSI RENDER LAMA (helper stars) ---
         const renderStars = (rating) => {
             let starsHtml = '';
             for (let i = 1; i <= 5; i++) {
                 const starClass = i <= rating ? 'text-yellow-400' : 'text-gray-400';
                 starsHtml += `<svg class="w-5 h-5 ${starClass}" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>`;
             }
-            return `<div class="flex items-center">${starsHtml}<span class="text-xs text-gray-500 ml-1">(${(rating || 0).toFixed(1)})</span></div>`;
+            return `<div class="flex items-center gap-0.5">${starsHtml}<span class="text-xs text-gray-500 ml-1.5">(${(rating || 0).toFixed(1)})</span></div>`; /* Tambah gap & spacing */
         };
 
-        const updateView = () => {
-             authScreen.classList.toggle('hidden', !!currentUser);
-             appScreen.classList.toggle('hidden', !currentUser);
+        // --- RENDER FUNCTIONS ---
+        const renderMenu = () => {
+            menuContainer.innerHTML = '';
+            let itemsToDisplay = [];
+            if (!currentUser) return; // Jangan render jika belum login
 
-             if(currentUser){
-                headerSubtitle.textContent = `Selamat datang, ${currentUser.username}!`;
-                adminDashboard.classList.add('hidden');
-                mainContent.classList.remove('hidden'); // Main content selalu tampil jika login
-                sellerDashboard.classList.add('hidden');
-                cartAndOrdersSection.classList.add('hidden');
-                addMenuButton.classList.add('hidden');
-
-                if (currentUser.role === 'admin') {
-                    adminDashboard.classList.remove('hidden');
-                    renderAdminLists();
-                } else if (currentUser.role === 'penjual') {
-                    sellerDashboard.classList.remove('hidden');
-                    addMenuButton.classList.remove('hidden');
-                    menuTitle.textContent = "Produk Anda";
-                    renderSellerOrders();
-                    renderMenu();
-                } else if (currentUser.role === 'user') {
-                    cartAndOrdersSection.classList.remove('hidden');
-                    menuTitle.textContent = "Menu Makanan";
-                    renderMenu();
-                    renderCart();
-                    renderUserOrders();
-                }
-             } else {
-                 cart = []; // Kosongkan keranjang saat logout
-             }
-        };
-
-        const handleLogin = async (e) => {
-            e.preventDefault();
-            const email = document.getElementById('username').value;
-            const password = document.getElementById('password').value;
-            loginError.textContent = '';
-            try {
-                const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
-                if (error) throw error;
-            } catch (error) {
-                loginError.textContent = 'Email atau password salah.';
-                console.error('Login error:', error);
+            if (currentUser.role === 'penjual') {
+                itemsToDisplay = menuItems.filter(item => item.sellerId === currentUser.id);
+            } else { // Admin dan User melihat semua menu
+                itemsToDisplay = menuItems;
             }
-        };
-
-        const handleRegister = async (e) => {
-            e.preventDefault();
-            const username = document.getElementById('register-username').value;
-            const email = document.getElementById('register-email').value;
-            const password = document.getElementById('register-password').value;
-            const role = document.getElementById('register-role').value;
-            registerMessage.textContent = '';
-            try {
-                const { data: { user }, error } = await supabaseClient.auth.signUp({ email, password });
-                if (error) throw error;
-
-                if (user) {
-                    const { error: profileError } = await supabaseClient
-                        .from('profiles')
-                        .insert({ id: user.id, username, role });
-                    if (profileError) throw profileError;
-                    
-                    registerMessage.textContent = 'Pendaftaran berhasil! Silakan login.';
-                    registerMessage.className = 'text-center mb-4 text-green-500';
-                    setTimeout(() => {
-                        showLoginBtn.click();
-                        registerForm.reset();
-                        registerMessage.textContent = '';
-                    }, 2000);
-                }
-            } catch (error) {
-                registerMessage.textContent = 'Gagal mendaftar: ' + (error.message || 'Error tidak diketahui.');
-                registerMessage.className = 'text-center mb-4 text-red-500';
+             if (itemsToDisplay.length === 0) {
+                 menuContainer.innerHTML = `<p class="col-span-full text-center text-gray-500">${currentUser.role === 'penjual' ? 'Anda belum menambahkan menu.' : 'Belum ada menu tersedia.'}</p>`;
+                 return;
             }
-        };
-
-        const handleLogout = async () => {
-            await supabaseClient.auth.signOut();
-            currentUser = null;
-            updateView();
-        };
-
-        async function renderMenu() {
-            menuContainer.innerHTML = '<p class="col-span-full text-center">Memuat menu...</p>';
-            try {
-                let query = supabaseClient.from('menu_items').select('*, profiles(username)');
-                if (currentUser.role === 'penjual') {
-                    query = query.eq('seller_id', currentUser.id);
-                }
-                const { data: menuItemsData, error } = await query.order('created_at', { ascending: false });
-                if (error) throw error;
-                
-                menuContainer.innerHTML = '';
-                if (menuItemsData.length === 0) {
-                     menuContainer.innerHTML = `<p class="col-span-full text-center text-gray-500">${currentUser.role === 'penjual' ? 'Anda belum menambahkan menu.' : 'Belum ada menu tersedia.'}</p>`;
-                     return;
-                }
-
-                menuItemsData.forEach(item => {
-                    const isSellerView = currentUser.role === 'penjual';
-                    const isUserView = currentUser.role === 'user';
-                    const isOutOfStock = item.stock <= 0;
-                    const menuItemElement = document.createElement('div');
-                    menuItemElement.className = `bg-card rounded-lg shadow-lg overflow-hidden flex flex-col relative border border-card ${isOutOfStock ? 'opacity-60' : ''}`;
-                    menuItemElement.innerHTML = `
-                        ${isOutOfStock ? `<div class="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center z-10"><span class="text-white text-xl font-bold">STOK HABIS</span></div>` : ''}
-                        <img src="${item.image || 'https://placehold.co/600x400/cccccc/ffffff?text=Gambar'}" alt="${item.name}" class="w-full h-48 object-cover">
-                        <div class="p-4 flex-grow flex flex-col">
-                            <h3 class="text-lg font-semibold text-text-dark">${item.name}</h3>
-                            ${!isSellerView && item.profiles ? `<p class="text-xs text-gray-500 mb-1">dari ${item.profiles.username || 'Penjual'}</p>` : ''}
-                            <div class="my-2">${renderStars(item.avg_rating)}</div>
-                            <div class="flex justify-between items-center mt-1 mb-4">
-                                <p class="text-pink font-bold">${formatRupiah(item.price)}</p>
-                                <p class="text-sm font-medium ${item.stock < 5 && item.stock > 0 ? 'text-red-500' : 'text-gray-500'}">Stok: ${item.stock}</p>
-                            </div>
-                            <div class="mt-auto">
-                                ${isSellerView ? `
-                                    <div class="flex gap-2">
-                                        <button onclick='openMenuModal(${JSON.stringify(item)})' class="w-full bg-yellow-500 text-white font-semibold py-2 rounded-lg hover:bg-yellow-600">Edit</button>
-                                        <button onclick="handleDeleteMenu(${item.id})" class="w-full bg-red-500 text-white font-semibold py-2 rounded-lg hover:bg-red-600">Hapus</button>
-                                    </div>
-                                ` : `
-                                    <div class="flex gap-2">
-                                        ${isUserView ? `<button onclick="openRatingModal(${item.id})" class="w-full bg-yellow-500 text-white font-semibold py-2 px-3 rounded-lg hover:bg-yellow-600">Beri Rating</button>` : ''}
-                                        <button onclick='addToCart(${JSON.stringify(item)})' class="w-full bg-[--light-purple] text-white font-semibold py-2 px-3 rounded-lg hover:bg-[--dark-purple] disabled:bg-gray-400" ${isOutOfStock ? 'disabled' : ''}>+ Tambah</button>
-                                    </div>
-                                `}
-                            </div>
+            itemsToDisplay.forEach(item => {
+                const isSellerView = currentUser.role === 'penjual' && item.sellerId === currentUser.id;
+                const isUserView = currentUser.role === 'user';
+                const isAdminView = currentUser.role === 'admin';
+                const isOutOfStock = item.stock <= 0;
+                const menuItemElement = document.createElement('div');
+                menuItemElement.className = `bg-card rounded-xl shadow-xl overflow-hidden flex flex-col relative border border-card ${isOutOfStock ? 'opacity-60' : ''} transition-all duration-300 hover:shadow-2xl hover:scale-[1.02]`; /* rounded-lg shadow-lg -> rounded-xl shadow-xl, tambah transisi */
+                menuItemElement.innerHTML = `
+                    ${isOutOfStock ? `<div class="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center z-10 rounded-xl"><span class="text-white text-xl font-bold">STOK HABIS</span></div>` : ''} <!-- Tambah rounded-xl -->
+                    <img src="${item.image || 'https://placehold.co/600x400/cccccc/ffffff?text=Gambar'}" alt="${item.name}" class="w-full h-48 object-cover">
+                    <div class="p-4 flex-grow flex flex-col">
+                        <h3 class="text-lg font-semibold text-text-dark">${item.name}</h3>
+                        ${!isSellerView ? `<p class="text-xs text-gray-500 mb-1">dari ${users.find(u => u.id === item.sellerId)?.name || 'Penjual'}</p>` : ''}
+                        <div class="my-2">${renderStars(item.avgRating)}</div>
+                        <div class="flex justify-between items-center mt-1 mb-4">
+                            <p class="text-pink font-bold">${formatRupiah(item.price)}</p>
+                            <p class="text-sm font-medium ${item.stock < 5 && item.stock > 0 ? 'text-red-500' : 'text-gray-500'}">Stok: ${item.stock}</p>
                         </div>
-                    `;
-                    menuContainer.appendChild(menuItemElement);
-                });
-            } catch (error) {
-                 console.error("Error fetching menu:", error);
-                 menuContainer.innerHTML = '<p class="col-span-full text-center text-red-500">Gagal memuat menu.</p>';
-            }
-        }
+                        <div class="mt-auto">
+                            ${isSellerView ? `
+                                <div class="flex gap-2">
+                                    <button onclick='openMenuModal(${JSON.stringify(item)})' class="w-full bg-yellow-500 text-white font-semibold py-2.5 rounded-xl hover:bg-yellow-600 transition-all duration-300 shadow-md">Edit</button> <!-- py-2 rounded-lg -> py-2.5 rounded-xl, tambah transisi & shadow -->
+                                    <button onclick="handleDeleteMenu(${item.id})" class="w-full bg-red-500 text-white font-semibold py-2.5 rounded-xl hover:bg-red-600 transition-all duration-300 shadow-md">Hapus</button> <!-- py-2 rounded-lg -> py-2.5 rounded-xl, tambah transisi & shadow -->
+                                </div>
+                            ` : ''}
+                             ${isUserView ? `
+                                <div class="flex gap-2">
+                                    <button onclick="openRatingModal(${item.id})" class="w-full bg-yellow-500 text-white font-semibold py-2.5 px-3 rounded-xl hover:bg-yellow-600 transition-all duration-300 shadow-md">Beri Rating</button> <!-- py-2 rounded-lg -> py-2.5 rounded-xl, tambah transisi & shadow -->
+                                    <button onclick='addToCart(${JSON.stringify(item)})' class="w-full bg-[--light-purple] text-white font-semibold py-2.5 px-3 rounded-xl hover:bg-[--dark-purple] disabled:bg-gray-400 disabled:shadow-none transition-all duration-300 shadow-md" ${isOutOfStock ? 'disabled' : ''}>+ Tambah</button> <!-- py-2 rounded-lg -> py-2.5 rounded-xl, tambah transisi & shadow -->
+                                </div>
+                             ` : ''}
+                             
+                        </div>
+                    </div>
+                `;
+                menuContainer.appendChild(menuItemElement);
+            });
+        };
 
         const renderCart = () => {
+             if (!currentUser || currentUser.role !== 'user') {
+                 cartItemsContainer.innerHTML = ''; // Kosongkan jika bukan user
+                 cartTotalElement.textContent = formatRupiah(0);
+                 orderButton.disabled = true;
+                 return;
+             }
             cartItemsContainer.innerHTML = '';
             let total = 0;
             if (cart.length === 0) {
@@ -470,267 +611,335 @@
             orderButton.disabled = cart.length === 0;
         };
 
-        async function renderUserOrders() {
-            if (!currentUser || currentUser.role !== 'user') return;
-            userOrdersContainer.innerHTML = '<p class="text-center">Memuat riwayat...</p>';
-            try {
-                const { data: ordersData, error } = await supabaseClient
-                    .from('orders')
-                    .select('*, menu_items(profiles(username))') // Ambil username penjual
-                    .eq('buyer_id', currentUser.id)
-                    .order('created_at', { ascending: false });
-                if (error) throw error;
-
-                userOrdersContainer.innerHTML = '';
-                if (ordersData.length === 0) {
-                     userOrdersContainer.innerHTML = '<p class="text-gray-500 text-center">Anda belum pernah memesan.</p>';
-                     return;
-                }
-
-                ordersData.forEach(order => {
-                    const orderCard = document.createElement('div');
-                    orderCard.className = 'border-b border-card pb-4 last:border-b-0 fade-in';
-                    const sellerUsername = order.menu_items?.profiles?.username || 'Penjual'; // Ambil username dari relasi
-                    const itemsHtml = order.items.map(item => `<li>${item.quantity}x ${item.name}</li>`).join('');
-                    const statusColor = { 'Baru': 'bg-blue-200 text-blue-800', 'Diproses': 'bg-yellow-200 text-yellow-800', 'Selesai': 'bg-green-200 text-green-800' }[order.status];
-                    orderCard.innerHTML = `
-                        <div class="flex justify-between items-start">
-                            <div>
-                                <p class="font-bold text-text-dark">Pesanan #${order.id} <span class="text-sm font-normal text-gray-500">dari ${sellerUsername}</span></p>
-                                <p class="font-semibold text-lg text-pink">${formatRupiah(order.total)}</p>
-                                <p class="text-xs text-gray-500">${new Date(order.created_at).toLocaleString('id-ID')}</p>
-                            </div>
-                            <span class="text-xs font-bold px-2 py-1 rounded-full ${statusColor}">${order.status}</span>
-                        </div>
-                        <ul class="list-disc list-inside text-sm text-gray-600 my-2">${itemsHtml}</ul>
-                    `;
-                    userOrdersContainer.appendChild(orderCard);
-                });
-            } catch (error) {
-                 console.error("Error fetching user orders:", error);
-                 userOrdersContainer.innerHTML = '<p class="text-red-500 text-center">Gagal memuat riwayat pesanan.</p>';
-            }
-        }
-
-        async function renderSellerOrders() {
+        const renderSellerOrders = () => {
              if (!currentUser || currentUser.role !== 'penjual') return;
-             sellerOrdersContainer.innerHTML = '<p class="text-center">Memuat pesanan masuk...</p>';
-             try {
-                const { data: ordersData, error } = await supabaseClient
-                    .from('orders')
-                    .select('*')
-                    .eq('seller_id', currentUser.id)
-                    .order('created_at', { ascending: false });
-                if (error) throw error;
-
-                 sellerOrdersContainer.innerHTML = '';
-                 if (ordersData.length === 0) {
-                     sellerOrdersContainer.innerHTML = '<p class="text-gray-500 text-center">Belum ada pesanan masuk.</p>';
-                     return;
-                 }
-
-                 ordersData.forEach(order => {
-                    const orderCard = document.createElement('div');
-                    orderCard.className = 'border-b border-card pb-4 last:border-b-0';
-                    const itemsHtml = order.items.map(item => `<li>${item.quantity}x ${item.name}</li>`).join('');
-                    const statusColor = { 'Baru': 'bg-blue-200 text-blue-800', 'Diproses': 'bg-yellow-200 text-yellow-800', 'Selesai': 'bg-green-200 text-green-800' }[order.status];
-                    orderCard.innerHTML = `
-                        <div class="flex justify-between items-start">
-                            <div>
-                                <p class="font-bold text-text-dark">Pesanan #${order.id} <span class="text-sm font-normal text-gray-500">dari ${order.buyer_name}</span></p>
-                                <p class="font-semibold text-lg text-pink">${formatRupiah(order.total)}</p>
-                                <p class="text-xs text-gray-500">${new Date(order.created_at).toLocaleString('id-ID')}</p>
-                            </div>
-                            <span class="text-xs font-bold px-2 py-1 rounded-full ${statusColor}">${order.status}</span>
+            sellerOrdersContainer.innerHTML = '';
+            const myOrders = orders.filter(order => order.sellerId === currentUser.id);
+            if (myOrders.length === 0) {
+                 sellerOrdersContainer.innerHTML = '<p class="text-gray-500 text-center">Belum ada pesanan masuk.</p>';
+                 return;
+            }
+            myOrders.forEach(order => {
+                const orderCard = document.createElement('div');
+                orderCard.className = 'border-b border-card pb-4 last:border-b-0';
+                const itemsHtml = order.items.map(item => `<li>${item.quantity}x ${item.name}</li>`).join('');
+                const statusColor = { 'Baru': 'bg-blue-200 text-blue-800', 'Diproses': 'bg-yellow-200 text-yellow-800', 'Selesai': 'bg-green-200 text-green-800' }[order.status];
+                orderCard.innerHTML = `
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <p class="font-bold text-text-dark">Pesanan #${order.id} <span class="text-sm font-normal text-gray-500">dari ${order.buyerName}</span></p>
+                            <p class="font-semibold text-lg text-pink">${formatRupiah(order.total)}</p>
+                            <p class="text-xs text-gray-500">${new Date(order.date).toLocaleString('id-ID')}</p>
                         </div>
-                        <ul class="list-disc list-inside text-sm text-gray-600 my-2">${itemsHtml}</ul>
-                        ${order.status === 'Baru' ? `<button onclick="updateOrderStatus(${order.id}, 'Diproses')" class="w-full text-sm bg-yellow-500 text-white font-semibold py-1 rounded-lg hover:bg-yellow-600 mt-2">Proses Pesanan</button>` : ''}
-                        ${order.status === 'Diproses' ? `<button onclick="updateOrderStatus(${order.id}, 'Selesai')" class="w-full text-sm bg-green-500 text-white font-semibold py-1 rounded-lg hover:bg-green-600 mt-2">Selesaikan Pesanan</button>` : ''}
-                    `;
-                    sellerOrdersContainer.appendChild(orderCard);
-                });
+                        <span class="text-xs font-bold px-2 py-1 rounded-full ${statusColor}">${order.status}</span>
+                    </div>
+                    <ul class="list-disc list-inside text-sm text-gray-600 my-2">${itemsHtml}</ul>
+                    ${order.status === 'Baru' ? `<button onclick="updateOrderStatus(${order.id}, 'Diproses')" class="w-full text-sm bg-yellow-500 text-white font-semibold py-2 rounded-xl hover:bg-yellow-600 mt-2 transition-all duration-300 shadow-md">Proses Pesanan</button>` : ''} <!-- py-1 rounded-lg -> py-2 rounded-xl, tambah transisi & shadow -->
+                    ${order.status === 'Diproses' ? `<button onclick="updateOrderStatus(${order.id}, 'Selesai')" class="w-full text-sm bg-green-500 text-white font-semibold py-2 rounded-xl hover:bg-green-600 mt-2 transition-all duration-300 shadow-md">Selesaikan Pesanan</button>` : ''} <!-- py-1 rounded-lg -> py-2 rounded-xl, tambah transisi & shadow -->
+                `;
+                sellerOrdersContainer.appendChild(orderCard);
+            });
+        };
 
-             } catch (error) {
-                 console.error("Error fetching seller orders:", error);
-                 sellerOrdersContainer.innerHTML = '<p class="text-red-500 text-center">Gagal memuat pesanan.</p>';
-             }
-        }
-        
-        const finishOrderPlacement = () => {
-            orderStatus.innerHTML = `<p class="text-green-500 font-semibold">Pesanan berhasil dibuat!</p>`;
-            cart = [];
-            renderCart();
-            renderUserOrders(); // Refresh riwayat pesanan
-            setTimeout(() => { orderStatus.innerHTML = ''; }, 3000);
-            renderMenu(); // Refresh menu (untuk update stok)
-        }
-        
-        async function placeOrder() {
-            if (cart.length === 0 || !currentUser) return;
-            orderButton.disabled = true; // Disable tombol selama proses
-            orderStatus.innerHTML = '<p>Memproses pesanan...</p>';
-
-            // 1. Kelompokkan item berdasarkan penjual
-            const ordersBySeller = cart.reduce((acc, item) => {
-                const sellerId = item.seller_id; // Pastikan properti ini ada di item saat addToCart
-                if (!acc[sellerId]) {
-                    acc[sellerId] = { seller_id: sellerId, items: [], total: 0 };
-                }
-                acc[sellerId].items.push({ id: item.id, name: item.name, quantity: item.quantity, price: item.price });
-                acc[sellerId].total += item.price * item.quantity;
-                return acc;
-            }, {});
-
-            // 2. Siapkan data untuk dimasukkan ke tabel orders
-            const orderInserts = Object.values(ordersBySeller).map(orderGroup => ({
-                seller_id: orderGroup.seller_id,
-                buyer_id: currentUser.id,
-                buyer_name: currentUser.username, // Ambil dari currentUser
-                items: orderGroup.items, // Array JSON item
-                total: orderGroup.total,
-                status: 'Baru' // Status awal
-            }));
-
-            try {
-                // 3. Masukkan pesanan ke database
-                const { error: insertError } = await supabaseClient.from('orders').insert(orderInserts);
-                if (insertError) throw insertError;
-
-                // 4. Kurangi stok barang (panggil fungsi PostgreSQL)
-                for (const item of cart) {
-                    const { error: rpcError } = await supabaseClient.rpc('decrement_stock', {
-                        item_id: item.id,
-                        quantity_sold: item.quantity
-                    });
-                    if (rpcError) console.error(`Gagal update stok untuk item ${item.id}:`, rpcError); // Log error tapi lanjutkan
-                }
-                
-                // 5. Tampilkan QRIS jika metode pembayaran = qris
-                if (qrisMethods.includes(selectedPaymentMethod)) {
-                    const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
-                    qrisTotalElement.textContent = formatRupiah(total);
-                    qrisImage.src = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=bayar-${total}-kantin&bgcolor=FFFFFF&color=502688`; // Contoh data QR
-                    qrisModalTitle.textContent = `Pembayaran ${selectedPaymentMethod.toUpperCase()}`;
-                    qrisModal.classList.remove('hidden');
-                    // 'finishOrderPlacement' akan dipanggil saat modal QRIS ditutup
-                } else {
-                    finishOrderPlacement(); // Langsung selesaikan jika bukan QRIS
-                }
-
-            } catch (error) {
-                console.error("Gagal membuat pesanan:", error);
-                orderStatus.innerHTML = `<p class="text-red-500 font-semibold">Gagal membuat pesanan. Coba lagi.</p>`;
-                orderButton.disabled = false; // Aktifkan kembali tombol
+        const renderUserOrders = () => {
+             if (!currentUser || currentUser.role !== 'user') return;
+            userOrdersContainer.innerHTML = '';
+            const myOrders = orders.filter(order => order.buyerId === currentUser.id);
+            if (myOrders.length === 0) {
+                userOrdersContainer.innerHTML = '<p class="text-gray-500 text-center">Anda belum pernah memesan.</p>';
+                return;
             }
-        }
+            myOrders.forEach(order => {
+                const orderCard = document.createElement('div');
+                orderCard.className = 'border-b border-card pb-4 last:border-b-0 fade-in';
+                const sellerName = users.find(s => s.id === order.sellerId)?.name || 'Penjual Terhapus';
+                const itemsHtml = order.items.map(item => `<li>${item.quantity}x ${item.name}</li>`).join('');
+                const statusColor = { 'Baru': 'bg-blue-200 text-blue-800', 'Diproses': 'bg-yellow-200 text-yellow-800', 'Selesai': 'bg-green-200 text-green-800' }[order.status];
+                orderCard.innerHTML = `
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <p class="font-bold text-text-dark">Pesanan #${order.id} <span class="text-sm font-normal text-gray-500">dari ${sellerName}</span></p>
+                            <p class="font-semibold text-lg text-pink">${formatRupiah(order.total)}</p>
+                            <p class="text-xs text-gray-500">${new Date(order.date).toLocaleString('id-ID')}</p>
+                        </div>
+                        <span class="text-xs font-bold px-2 py-1 rounded-full ${statusColor}">${order.status}</span>
+                    </div>
+                    <ul class="list-disc list-inside text-sm text-gray-600 my-2">${itemsHtml}</ul>
+                `;
+                userOrdersContainer.appendChild(orderCard);
+            });
+        };
 
-        async function fetchAllData() {
-            if (!currentUser) return;
-            switch(currentUser.role) {
-                case 'admin':
-                    await renderAdminLists();
-                    break;
-                case 'penjual':
-                    await renderMenu();
-                    await renderSellerOrders();
-                    break;
-                case 'user':
-                    await renderMenu();
-                    await renderUserOrders();
-                    break;
-            }
-        }
-        
-        async function renderAdminLists() {
+        const renderAdminLists = () => {
             if (!currentUser || currentUser.role !== 'admin') return;
-            adminUserList.innerHTML = '<p class="p-4 text-center">Memuat data pengguna...</p>';
-            try {
-                const { data: users, error } = await supabaseClient
-                    .from('profiles')
-                    .select('*')
-                    .order('role'); // Urutkan berdasarkan role
-                if (error) throw error;
-                
-                adminUserList.innerHTML = `
+            
+            const students = users.filter(u => u.role === 'user');
+            const sellers = users.filter(u => u.role === 'penjual');
+
+            const createTableHTML = (userArray) => {
+                if(userArray.length === 0) return '<p class="text-gray-500 text-center p-4">Belum ada pengguna.</p>';
+                return `
                 <table class="w-full text-left min-w-[600px]">
                     <thead class="bg-cream"><tr class="border-b border-card">
                         <th class="p-3 font-semibold text-sm text-gray-600">Username</th>
-                        <th class="p-3 font-semibold text-sm text-gray-600">Role</th>
                         <th class="p-3 font-semibold text-sm text-gray-600">ID</th>
                         <th class="p-3 font-semibold text-sm text-gray-600">Aksi</th>
                     </tr></thead>
-                    <tbody>${users.map(user => `
+                    <tbody>${userArray.map(user => `
                         <tr class="border-b last:border-b-0 hover:bg-cream border-card">
                             <td class="p-3 text-text-dark">${user.username}</td>
-                            <td class="p-3 text-text-dark">${user.role}</td>
                             <td class="p-3 text-xs text-gray-500">${user.id}</td>
                             <td class="p-3 flex gap-2">
-                                <button onclick='openUserModal(${JSON.stringify(user)})' class="text-sm bg-yellow-500 text-white font-semibold px-3 py-1 rounded-lg hover:bg-yellow-600">Edit</button>
-                                <button onclick="handleDeleteUser('${user.id}')" class="text-sm bg-red-500 text-white font-semibold px-3 py-1 rounded-lg hover:bg-red-600">Hapus</button>
+                                <button onclick='openUserModal(${JSON.stringify(user)})' class="text-sm bg-yellow-500 text-white font-semibold px-3 py-1.5 rounded-lg hover:bg-yellow-600 transition-all duration-300 shadow-sm">Edit</button> <!-- py-1 -> py-1.5, tambah transisi & shadow -->
+                                <button onclick="handleDeleteUser('${user.id}')" class="text-sm bg-red-500 text-white font-semibold px-3 py-1.5 rounded-lg hover:bg-red-600 transition-all duration-300 shadow-sm">Hapus</button> <!-- py-1 -> py-1.5, tambah transisi & shadow -->
                             </td></tr>`).join('')}
                     </tbody></table>`;
-            } catch (error) {
-                console.error("Error fetching users for admin:", error);
-                adminUserList.innerHTML = `<p class="p-4 text-red-500 text-center">Gagal mengambil data pengguna.</p>`;
+            };
+
+            adminStudentList.innerHTML = createTableHTML(students);
+            adminSellerList.innerHTML = createTableHTML(sellers);
+        };
+
+        const renderAdminChart = (period = 'day') => {
+            if (adminChartInstance) {
+                adminChartInstance.destroy(); // Hancurkan grafik lama
             }
-        };
+            const ctx = document.getElementById('admin-sales-chart').getContext('2d');
+            const filteredOrders = getFilteredOrders(period, null); // null = semua penjual
+            const chartData = getChartData(period, filteredOrders);
 
-        window.openUserModal = (user) => {
-            userForm.reset();
-            userModalError.textContent = '';
-            userModal.classList.remove('hidden');
-            userModalTitle.textContent = `Edit User: ${user.username}`;
-            document.getElementById('user-id-input').value = user.id;
-            document.getElementById('user-username').value = user.username;
-            document.getElementById('user-role').value = user.role;
-        };
-
-        const handleSaveUser = async (e) => {
-            e.preventDefault();
-            const id = document.getElementById('user-id-input').value;
-            const username = document.getElementById('user-username').value;
-            const role = document.getElementById('user-role').value;
-            userModalError.textContent = '';
-            
-            try {
-                const { error } = await supabaseClient
-                    .from('profiles')
-                    .update({ username, role })
-                    .eq('id', id);
-                if (error) throw error;
-                userModal.classList.add('hidden');
-                renderAdminLists(); // Refresh daftar user
-            } catch(error) {
-                console.error("Error updating user:", error);
-                userModalError.textContent = 'Gagal memperbarui data pengguna.';
-            }
-        };
-
-        window.handleDeleteUser = async (id) => {
-            if (confirm('PERHATIAN: Menghapus akun ini bersifat permanen dan tidak bisa dibatalkan. Yakin?')) {
-                try {
-                    // Di Supabase, menghapus user dari tabel auth akan otomatis menghapus profilnya juga (karena foreign key ON DELETE CASCADE)
-                    const { error } = await supabaseClient.auth.admin.deleteUser(id);
-                    if (error) throw error;
-                    renderAdminLists(); // Refresh daftar user
-                } catch (error) {
-                    alert('Gagal menghapus pengguna. Error: ' + error.message);
+            adminChartInstance = new Chart(ctx, {
+                type: 'bar', // Menggunakan diagram batang
+                data: {
+                    labels: chartData.labels,
+                    datasets: [{
+                        label: 'Total Penjualan',
+                        data: chartData.data,
+                        backgroundColor: 'rgba(80, 38, 136, 0.6)', // var(--dark-purple)
+                        borderColor: 'rgba(80, 38, 136, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        title: { display: true, text: chartData.title },
+                        tooltip: {
+                            callbacks: {
+                                label: (context) => `Penjualan: ${formatRupiah(context.raw)}`
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: (value) => formatRupiah(value)
+                            }
+                        }
+                    }
                 }
+            });
+        };
+        const renderSellerChart = (period = 'day') => {
+             if (sellerChartInstance) {
+                sellerChartInstance.destroy(); // Hancurkan grafik lama
             }
+            if (!currentUser) return;
+            const ctx = document.getElementById('seller-sales-chart').getContext('2d');
+            const filteredOrders = getFilteredOrders(period, currentUser.id); // Hanya penjual ini
+            const chartData = getChartData(period, filteredOrders);
+            
+            sellerChartInstance = new Chart(ctx, {
+                type: 'bar', // Menggunakan diagram batang
+                data: {
+                    labels: chartData.labels,
+                    datasets: [{
+                        label: 'Total Omset',
+                        data: chartData.data,
+                        backgroundColor: 'rgba(252, 153, 175, 0.6)', // var(--pink)
+                        borderColor: 'rgba(252, 153, 175, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        title: { display: true, text: chartData.title },
+                         tooltip: {
+                            callbacks: {
+                                label: (context) => `Omset: ${formatRupiah(context.raw)}`
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                             ticks: {
+                                callback: (value) => formatRupiah(value)
+                            }
+                        }
+                    }
+                }
+            });
+        };
+        const renderAdminIncomeReport = (period = 'day') => {
+            // Update gaya tombol filter
+            adminPeriodFilter.querySelectorAll('.period-btn').forEach(btn => {
+                const isSelected = btn.dataset.period === period;
+                btn.classList.toggle('bg-[--dark-purple]', isSelected);
+                btn.classList.toggle('bg-[--light-purple]', !isSelected);
+            });
+            
+            const filteredOrders = getFilteredOrders(period, null); // Semua penjual
+            const totalSales = filteredOrders.reduce((sum, order) => sum + order.total, 0);
+            const totalProfit = totalSales * 0.10; // 10% profit
+            
+            adminTotalSales.textContent = formatRupiah(totalSales);
+            adminTotalProfit.textContent = formatRupiah(totalProfit);
+            
+            // Panggil render chart setelah laporan di-update
+            renderAdminChart(period);
+        };
+        const renderSellerIncomeReport = (period = 'day') => {
+            if (!currentUser) return;
+            // Update gaya tombol filter
+            sellerPeriodFilter.querySelectorAll('.period-btn').forEach(btn => {
+                const isSelected = btn.dataset.period === period;
+                btn.classList.toggle('bg-[--dark-purple]', isSelected);
+                btn.classList.toggle('bg-[--light-purple]', !isSelected);
+            });
+            
+            const filteredOrders = getFilteredOrders(period, currentUser.id); // Hanya penjual ini
+            const totalOmset = filteredOrders.reduce((sum, order) => sum + order.total, 0);
+            const profitContribution = totalOmset * 0.10;
+            const netOmset = totalOmset - profitContribution;
+            
+            sellerTotalOmset.textContent = formatRupiah(totalOmset);
+            sellerProfitContribution.textContent = formatRupiah(profitContribution);
+            sellerNetOmset.textContent = formatRupiah(netOmset);
+            
+            // Panggil render chart setelah laporan di-update
+            renderSellerChart(period);
+        };
+         const renderAdminDashboardContent = () => {
+             renderAdminIncomeReport(); // Tampilkan laporan default (harian) -> Ini akan memanggil renderAdminChart
+             renderAdminLists(); // Tampilkan daftar pengguna
+             renderAdminProductList(); // Tampilkan daftar semua produk
+        };
+         const renderAdminProductList = () => {
+             adminProductList.innerHTML = '';
+             menuItems.forEach(item => {
+                 const productCard = document.createElement('div');
+                 productCard.className = 'bg-card p-4 rounded-xl shadow-xl border border-card'; /* rounded-lg shadow -> rounded-xl shadow-xl */
+                 const seller = users.find(u => u.id === item.sellerId);
+                 productCard.innerHTML = `
+                    <img src="${item.image || 'https://placehold.co/600x400/cccccc/ffffff?text=Gambar'}" alt="${item.name}" class="w-full h-32 object-cover rounded-lg mb-2"> <!-- rounded -> rounded-lg (biar pas) -->
+                    <p class="font-semibold text-text-dark">${item.name}</p>
+                    <div class="my-1">${renderStars(item.avgRating)}</div>
+                    <p class="text-sm text-gray-500">${formatRupiah(item.price)}</p>
+                    <p class="text-xs text-gray-500">Stok: ${item.stock}</p>
+                    <p class="text-xs font-semibold text-dark-purple mt-1">Penjual: ${seller ? seller.name : 'N/A'}</p>`;
+                 adminProductList.appendChild(productCard);
+             });
+              if (menuItems.length === 0) {
+                  adminProductList.innerHTML = '<p class="text-gray-500 text-center col-span-full">Belum ada produk dari penjual manapun.</p>';
+              }
+        };
+
+        // --- CORE LOGIC ---
+        const updateView = () => {
+             authScreen.classList.toggle('hidden', !!currentUser);
+             appScreen.classList.toggle('hidden', !currentUser);
+
+             if(currentUser){
+                headerSubtitle.textContent = `Selamat datang, ${currentUser.name}!`; // Pakai name
+                adminDashboard.classList.add('hidden');
+                mainContent.classList.add('hidden'); // Sembunyikan main content defaultnya
+                sellerDashboard.classList.add('hidden');
+                cartAndOrdersSection.classList.add('hidden');
+                addMenuButton.classList.add('hidden');
+
+                if (currentUser.role === 'admin') {
+                    adminDashboard.classList.remove('hidden');
+                    renderAdminDashboardContent(); // Panggil fungsi render admin
+                } else if (currentUser.role === 'penjual') {
+                    mainContent.classList.remove('hidden'); // Tampilkan main content untuk penjual
+                    sellerDashboard.classList.remove('hidden');
+                    addMenuButton.classList.remove('hidden');
+                    menuTitle.textContent = "Produk Anda";
+                    renderSellerOrders();
+                    renderMenu();
+                    renderSellerIncomeReport(); // Panggil laporan penjual -> Ini akan memanggil renderSellerChart
+                } else if (currentUser.role === 'user') {
+                     mainContent.classList.remove('hidden'); // Tampilkan main content untuk user
+                    cartAndOrdersSection.classList.remove('hidden');
+                    menuTitle.textContent = "Menu Makanan";
+                    renderMenu();
+                    renderCart();
+                    renderUserOrders();
+                }
+             } else {
+                 cart = []; // Kosongkan keranjang saat logout
+             }
+        };
+
+        const handleLogin = (e) => {
+            e.preventDefault();
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const account = accounts[username];
+            if (account && account.password === password) {
+                currentUser = { id: account.id, username, role: account.role, name: account.name };
+                loginError.textContent = '';
+                loginForm.reset();
+                updateView();
+            } else {
+                loginError.textContent = 'Username atau password salah.';
+            }
+        };
+
+        const handleRegister = (e) => {
+            e.preventDefault();
+            const username = document.getElementById('register-username').value;
+            const password = document.getElementById('register-password').value;
+            const usernameExists = users.some(u => u.username === username);
+            if (usernameExists) {
+                registerMessage.textContent = 'Username sudah digunakan. Coba yang lain.';
+                registerMessage.className = 'text-center mb-4 text-red-500';
+                return;
+            }
+            // Tambahkan user baru (default role 'user')
+            const newId = 'user' + Date.now(); // ID unik sederhana
+            users.push({ id: newId, name: username, username, password, role: 'user' });
+            generateAccounts(); // Update daftar akun
+            registerMessage.textContent = 'Pendaftaran berhasil! Silakan login.';
+            registerMessage.className = 'text-center mb-4 text-green-500';
+            setTimeout(() => {
+                showLoginBtn.click(); // Pindah ke form login
+                registerForm.reset();
+                registerMessage.textContent = '';
+            }, 2000);
+        };
+
+        const handleLogout = () => {
+            currentUser = null;
+            updateView();
         };
         
-        window.addToCart = (item) => {
+        const addToCart = (item) => {
              const itemInCart = cart.find(cartItem => cartItem.id === item.id);
+             const originalItem = menuItems.find(menuItem => menuItem.id === item.id); // Cari stok asli
+
             if (itemInCart) {
-                // Cek stok sebelum menambah
-                if(itemInCart.quantity < item.stock) {
-                     itemInCart.quantity++;
+                if (itemInCart.quantity < originalItem.stock) {
+                    itemInCart.quantity++;
                 } else {
-                    alert(`Stok ${item.name} tidak mencukupi.`);
+                     alert(`Stok ${item.name} tidak mencukupi.`);
                 }
             } else {
-                 if(item.stock > 0) {
-                    cart.push({ ...item, quantity: 1 });
+                 if (originalItem.stock > 0) {
+                     cart.push({ ...item, quantity: 1 });
                  } else {
                      alert(`${item.name} sedang habis.`);
                  }
@@ -738,218 +947,96 @@
             renderCart();
         };
 
-        window.updateQuantity = (itemId, change) => {
+        const updateQuantity = (itemId, change) => {
             const itemInCartIndex = cart.findIndex(item => item.id === itemId);
             if (itemInCartIndex > -1) {
                 const itemInCart = cart[itemInCartIndex];
+                const originalItem = menuItems.find(menuItem => menuItem.id === itemId);
                 const newQuantity = itemInCart.quantity + change;
 
                 if (newQuantity <= 0) {
-                    cart.splice(itemInCartIndex, 1); // Hapus item jika kuantitas <= 0
+                    cart.splice(itemInCartIndex, 1); // Hapus jika jadi 0 atau kurang
+                } else if (newQuantity <= originalItem.stock) {
+                    itemInCart.quantity = newQuantity; // Update jika stok cukup
                 } else {
-                     // Cari info stok asli dari menu item (asumsi menuItems sudah di-fetch)
-                     // Cara lebih baik: fetch ulang menuItems jika perlu, atau simpan di state global
-                     // Untuk simplifikasi, kita anggap stok tidak berubah drastis
-                     // Jika Anda punya state `menuItemsData` global, gunakan itu:
-                     // const originalItem = menuItemsData.find(menu => menu.id === itemId);
-                     // if (originalItem && newQuantity <= originalItem.stock) {
-                     //     itemInCart.quantity = newQuantity;
-                     // } else if (originalItem) {
-                     //     alert(`Stok ${itemInCart.name} hanya tersisa ${originalItem.stock}.`);
-                     // } else {
-                         // Fallback jika item tidak ditemukan (seharusnya tidak terjadi)
-                         itemInCart.quantity = newQuantity;
-                     //}
-                      itemInCart.quantity = newQuantity; // Hapus baris ini jika pakai pengecekan stok di atas
+                     alert(`Stok ${itemInCart.name} hanya tersisa ${originalItem.stock}.`);
                 }
             }
             renderCart();
         };
+        
+        const placeOrder = () => {
+            if (cart.length === 0) return;
+            const ordersBySeller = cart.reduce((acc, item) => {
+                // Gunakan sellerId dari item menu, bukan dari item di cart (jika berbeda)
+                const menuItem = menuItems.find(mi => mi.id === item.id);
+                const sellerId = menuItem ? menuItem.sellerId : 'unknown_seller';
+                if (!acc[sellerId]) acc[sellerId] = [];
+                acc[sellerId].push(item);
+                return acc;
+            }, {});
 
-        window.updateOrderStatus = async (orderId, newStatus) => {
-            try {
-                const { error } = await supabaseClient
-                    .from('orders')
-                    .update({ status: newStatus })
-                    .eq('id', orderId);
-                if (error) throw error;
-                renderSellerOrders(); // Refresh daftar pesanan penjual
-            } catch (error) {
-                console.error("Error updating order status:", error);
-                alert('Gagal memperbarui status pesanan.');
+
+            let newOrders = [];
+            for (const sellerId in ordersBySeller) {
+                const sellerItems = ordersBySeller[sellerId];
+                const sellerTotal = sellerItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
+                 const newOrder = { 
+                    id: orders.length + newOrders.length + 1, // Generate ID baru
+                    sellerId, 
+                    buyerId: currentUser.id, 
+                    buyerName: currentUser.name, 
+                    items: sellerItems.map(i => ({id: i.id, name: i.name, quantity: i.quantity})), 
+                    total: sellerTotal, 
+                    status: 'Baru', 
+                    date: new Date()
+                };
+                 newOrders.push(newOrder);
+
+                 // Kurangi stok
+                 sellerItems.forEach(cartItem => {
+                     const menuItem = menuItems.find(mi => mi.id === cartItem.id);
+                     if (menuItem) {
+                         menuItem.stock -= cartItem.quantity;
+                     }
+                 });
             }
-        };
+            
+            orders.push(...newOrders); // Tambahkan semua order baru ke array orders utama
 
-        // --- INISIALISASI ---
-        document.addEventListener('DOMContentLoaded', () => {
-            // Cek sesi login saat halaman dimuat
-            supabaseClient.auth.getSession().then(({ data: { session } }) => {
-                if (session) {
-                    supabaseClient.from('profiles').select('username, role').eq('id', session.user.id).single()
-                        .then(({ data, error }) => {
-                            if (data) {
-                                currentUser = { id: session.user.id, email: session.user.email, ...data };
-                                fetchAllData();
-                            }
-                            updateView();
-                        });
-                } else {
-                    updateView();
-                }
-            });
-
-            // Listener untuk perubahan status login/logout
-            supabaseClient.auth.onAuthStateChange(async (event, session) => {
-                if (session && session.user) {
-                     const { data, error } = await supabaseClient.from('profiles').select('username, role').eq('id', session.user.id).single();
-                     if (data) {
-                        currentUser = { id: session.user.id, email: session.user.email, ...data };
-                        await fetchAllData();
-                    } else {
-                        // Jika profil tidak ditemukan setelah login (kasus aneh), logout paksa
-                        await handleLogout();
-                    }
-                } else {
-                    currentUser = null;
-                }
-                updateView();
-            });
-
-            // Event listener lainnya
-            loginForm.addEventListener('submit', handleLogin);
-            registerForm.addEventListener('submit', handleRegister);
-            logoutButton.addEventListener('click', handleLogout);
-            orderButton.addEventListener('click', placeOrder);
-            showRegisterBtn.addEventListener('click', () => { loginContainer.classList.add('hidden'); registerContainer.classList.remove('hidden'); });
-            showLoginBtn.addEventListener('click', () => { registerContainer.classList.add('hidden'); loginContainer.classList.remove('hidden'); });
-            userForm.addEventListener('submit', handleSaveUser);
-            cancelUserModalButton.addEventListener('click', () => userModal.classList.add('hidden'));
-            addMenuButton.addEventListener('click', () => openMenuModal()); // Event listener untuk tombol tambah menu
-            menuForm.addEventListener('submit', handleSaveMenu);
-            cancelModalButton.addEventListener('click', () => menuModal.classList.add('hidden'));
-            menuImageUrlInput.addEventListener('input', (e) => { // Preview gambar saat URL diubah
-                const url = e.target.value;
-                if (url) {
-                    imagePreview.src = url;
-                    imagePreview.classList.remove('hidden');
-                } else {
-                    imagePreview.classList.add('hidden');
-                }
-            });
-            closeQrisModalButton.addEventListener('click', () => {
-                qrisModal.classList.add('hidden');
-                finishOrderPlacement(); // Selesaikan order setelah modal ditutup
-            });
-             paymentMethodsContainer.addEventListener('click', (e) => {
-                if (e.target.classList.contains('payment-method-btn')) {
-                    selectPaymentMethod(e.target.dataset.payment);
-                }
-            });
-             ratingForm.addEventListener('submit', handleSaveRating);
-             cancelRatingModal.addEventListener('click', () => ratingModal.classList.add('hidden'));
-             ratingStarsContainer.addEventListener('mouseover', handleStarHover);
-             ratingStarsContainer.addEventListener('mouseout', handleStarMouseOut);
-             ratingStarsContainer.addEventListener('click', handleStarClick);
-
-        });
-         // Fungsi yang perlu diakses dari HTML (onclick) harus ada di scope global (window)
-        window.handleEditMenu = (itemId) => { /* Implementasi edit menu */ };
-        window.handleDeleteMenu = async (itemId) => {
-             if (confirm('Yakin ingin menghapus menu ini?')) {
-                try {
-                    const { error } = await supabaseClient.from('menu_items').delete().eq('id', itemId);
-                    if (error) throw error;
-                    renderMenu(); // Refresh daftar menu
-                } catch (error) {
-                    console.error("Error deleting menu item:", error);
-                    alert('Gagal menghapus menu.');
-                }
-            }
-        };
-        window.openRatingModal = async (menuId) => {
-             try {
-                const { data: menuItem, error } = await supabaseClient.from('menu_items').select('name').eq('id', menuId).single();
-                if (error) throw error;
-                if (!menuItem) return;
-
-                document.getElementById('rating-menu-id').value = menuId;
-                ratingItemName.textContent = menuItem.name;
-
-                // Reset stars
-                let starsHtml = '';
-                for (let i = 1; i <= 5; i++) {
-                    starsHtml += `<span class="rating-star" data-value="${i}"><svg class="w-10 h-10" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg></span>`;
-                }
-                ratingStarsContainer.innerHTML = starsHtml;
-                ratingModal.classList.remove('hidden');
-
-             } catch (error) {
-                 console.error("Error opening rating modal:", error);
-                 alert('Gagal membuka modal rating.');
-             }
-        };
-        window.openMenuModal = (item = null) => {
-            menuForm.reset();
-            imagePreview.classList.add('hidden');
-            modalError.textContent = '';
-            modalError.classList.add('hidden');
-            if (item) {
-                modalTitle.textContent = 'Edit Menu';
-                document.getElementById('menu-id').value = item.id;
-                document.getElementById('menu-name').value = item.name;
-                document.getElementById('menu-price').value = item.price;
-                document.getElementById('menu-stock').value = item.stock;
-                menuImageUrlInput.value = item.image || '';
-                if(item.image) {
-                     imagePreview.src = item.image;
-                     imagePreview.classList.remove('hidden');
-                }
+            if(qrisMethods.includes(selectedPaymentMethod)) {
+                const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+                qrisTotalElement.textContent = formatRupiah(total);
+                 qrisImage.src = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=bayar-${total}-kantin&bgcolor=FFFFFF&color=502688`;
+                qrisModalTitle.textContent = `Pembayaran ${selectedPaymentMethod.toUpperCase()}`;
+                qrisModal.classList.remove('hidden');
             } else {
-                modalTitle.textContent = 'Tambah Menu Baru';
-                document.getElementById('menu-id').value = '';
+                finishOrderPlacement();
             }
-            menuModal.classList.remove('hidden');
         };
 
-        const handleSaveMenu = async (e) => {
-             e.preventDefault();
-             const id = document.getElementById('menu-id').value;
-             const name = document.getElementById('menu-name').value;
-             const price = parseInt(document.getElementById('menu-price').value);
-             const stock = parseInt(document.getElementById('menu-stock').value);
-             const image = menuImageUrlInput.value; // Ambil dari input URL
+        const finishOrderPlacement = () => {
+            orderStatus.innerHTML = `<p class="text-green-500 font-semibold">Pesanan berhasil!</p>`;
+            setTimeout(() => { orderStatus.innerHTML = ''; }, 3000);
+            cart = [];
+            renderCart();
+            renderUserOrders();
+            renderMenu(); // Refresh menu untuk update stok
+             if(currentUser && currentUser.role === 'penjual') renderSellerOrders(); // Refresh order penjual jika perlu
+             if(currentUser && currentUser.role === 'admin') renderAdminProductList(); // Refresh produk di admin
+        }
 
-             modalError.textContent = '';
-             modalError.classList.add('hidden');
-
-            const menuItemData = {
-                 seller_id: currentUser.id,
-                 name,
-                 price,
-                 stock,
-                 image
-             };
-
-             try {
-                let result;
-                 if (id) { // Jika ada ID, berarti update
-                     result = await supabaseClient.from('menu_items').update(menuItemData).eq('id', id);
-                 } else { // Jika tidak ada ID, berarti insert baru
-                     result = await supabaseClient.from('menu_items').insert(menuItemData);
-                 }
-
-                 if (result.error) throw result.error;
-
-                 menuModal.classList.add('hidden');
-                 renderMenu(); // Refresh daftar menu
-             } catch (error) {
-                 console.error("Error saving menu item:", error);
-                 modalError.textContent = 'Gagal menyimpan menu. Pastikan URL gambar valid.';
-                 modalError.classList.remove('hidden');
-             }
+        const updateOrderStatus = (orderId, newStatus) => {
+            const order = orders.find(o => o.id === orderId);
+            if (order && order.sellerId === currentUser.id) { // Pastikan penjual yg benar
+                order.status = newStatus;
+                renderSellerOrders();
+                // Jika ingin update di user view juga (meski tidak terlihat langsung)
+                // renderUserOrders(); 
+            }
         };
-
-         const selectPaymentMethod = (method) => {
+        
+        const selectPaymentMethod = (method) => {
             selectedPaymentMethod = method;
             document.querySelectorAll('.payment-method-btn').forEach(btn => {
                 const isSelected = btn.dataset.payment === method;
@@ -962,86 +1049,358 @@
             });
         };
 
-        const handleSaveRating = async (e) => {
-             e.preventDefault();
-             const menuId = parseInt(document.getElementById('rating-menu-id').value);
-             const selectedStar = ratingStarsContainer.querySelector('.rating-star.text-yellow-400[data-clicked="true"]'); // Cari yang diklik
-             const ratingValue = selectedStar ? parseInt(selectedStar.dataset.value) : 0;
+        window.openMenuModal = (item = null) => {
+            menuForm.reset();
+            imagePreview.classList.add('hidden');
+            imagePreview.src = ''; // Kosongkan preview src
+            modalError.textContent = '';
+            modalError.classList.add('hidden');
+            if (item) {
+                modalTitle.textContent = 'Edit Menu';
+                document.getElementById('menu-id').value = item.id;
+                document.getElementById('menu-name').value = item.name;
+                document.getElementById('menu-price').value = item.price;
+                document.getElementById('menu-stock').value = item.stock;
+                // menuImageUrlInput.value = item.image || ''; // Hapus baris ini
+                if(item.image) {
+                     imagePreview.src = item.image; // Ini sekarang data:URL atau placeholder
+                     imagePreview.classList.remove('hidden');
+                }
+            } else {
+                modalTitle.textContent = 'Tambah Menu Baru';
+                document.getElementById('menu-id').value = '';
+            }
+            menuModal.classList.remove('hidden');
+        };
+        
+        const handleSaveMenu = (e) => {
+            e.preventDefault();
+            const id = document.getElementById('menu-id').value;
+            const name = document.getElementById('menu-name').value;
+            const price = parseInt(document.getElementById('menu-price').value);
+            const stock = parseInt(document.getElementById('menu-stock').value);
+            // Ambil file dari input
+            const file = document.getElementById('menu-image-file').files[0]; 
+
+            modalError.textContent = '';
+            modalError.classList.add('hidden');
+
+             // Validasi input dasar
+             if (!name || isNaN(price) || isNaN(stock) || price < 0 || stock < 0) {
+                 modalError.textContent = 'Nama, harga (positif), dan stok (positif) wajib diisi.';
+                 modalError.classList.remove('hidden');
+                 return;
+             }
+
+             // Validasi file (wajib HANYA jika tambah baru)
+             if (!id && !file) {
+                 modalError.textContent = 'Foto makanan wajib diisi untuk menu baru.';
+                 modalError.classList.remove('hidden');
+                 return;
+             }
+
+            // Fungsi helper untuk menyimpan/update data
+            const saveData = (imageUrl) => {
+                if (id) { // Edit
+                    const index = menuItems.findIndex(item => item.id == id && item.sellerId === currentUser.id);
+                    if (index > -1) {
+                        // Jika imageUrl null, berarti tidak ada file baru, jadi pakai gambar lama
+                        const finalImage = imageUrl ? imageUrl : menuItems[index].image;
+                        menuItems[index] = { ...menuItems[index], name, price, stock, image: finalImage };
+                    } else {
+                         modalError.textContent = 'Menu tidak ditemukan atau Anda tidak berhak mengedit.';
+                         modalError.classList.remove('hidden');
+                         return; 
+                    }
+                } else { // Tambah baru (imageUrl dijamin ada dari logika di bawah)
+                    const newId = menuItems.length > 0 ? Math.max(...menuItems.map(i => i.id)) + 1 : 1;
+                    menuItems.push({ id: newId, sellerId: currentUser.id, name, price, stock, image: imageUrl, ratings: [], avgRating: 0 });
+                }
+                renderMenu();
+                if(currentUser && currentUser.role === 'admin') renderAdminProductList(); // Update juga di admin view
+                menuModal.classList.add('hidden');
+            };
+
+            // Logika penanganan gambar
+            if (file) {
+                // Ada file baru di-upload (baik edit maupun tambah baru)
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const imageBase64 = e.target.result; // Ini adalah data:URL (teks Base64)
+                    saveData(imageBase64); // Simpan dengan gambar baru
+                };
+                reader.onerror = () => {
+                    modalError.textContent = 'Gagal membaca file gambar.';
+                    modalError.classList.remove('hidden');
+                };
+                reader.readAsDataURL(file); // Mulai membaca file
+            } else {
+                // Tidak ada file baru (pasti mode edit, karena sudah divalidasi di atas)
+                saveData(null); // Kirim null, saveData akan urus (pakai gambar lama)
+            }
+        };
+        
+        window.handleDeleteMenu = (itemId) => {
+             if (confirm('Yakin hapus menu ini?')) {
+                 const index = menuItems.findIndex(item => item.id === itemId && item.sellerId === currentUser.id);
+                 if (index > -1) {
+                    menuItems.splice(index, 1);
+                    renderMenu();
+                    if(currentUser && currentUser.role === 'admin') renderAdminProductList(); // Update juga di admin view
+                 } else {
+                     alert("Menu tidak ditemukan atau Anda tidak berhak menghapus.");
+                 }
+            }
+        };
+        
+        window.openUserModal = (user) => {
+             if (!currentUser || currentUser.role !== 'admin') return; // Hanya admin
+            userForm.reset();
+            userModalError.textContent = '';
+            userModal.classList.remove('hidden');
+            userModalTitle.textContent = `Edit User: ${user.username}`;
+            document.getElementById('user-id-input').value = user.id;
+            document.getElementById('user-username').value = user.username;
+            document.getElementById('user-role').value = user.role;
+            // Kosongkan password field saat edit
+             document.getElementById('user-password').value = ''; 
+             document.getElementById('user-password').placeholder = 'Kosongkan jika tidak ingin ganti';
+             document.getElementById('user-password').required = false; // Password tidak wajib saat edit
+        };
+
+         // Fungsi baru untuk membuka modal tambah user
+        const openAddUserModal = (roleToAdd) => {
+             if (!currentUser || currentUser.role !== 'admin') return;
+             userForm.reset();
+             userModalError.textContent = '';
+             userModal.classList.remove('hidden');
+             userModalTitle.textContent = `Tambah ${roleToAdd === 'penjual' ? 'Penjual' : 'Siswa'} Baru`;
+             document.getElementById('user-id-input').value = ''; // Kosongkan ID untuk mode tambah
+             document.getElementById('user-role').value = roleToAdd; // Set role default
+             document.getElementById('user-password').placeholder = 'Password wajib diisi'; // Ubah placeholder
+             document.getElementById('user-password').required = true; // Jadikan password wajib
+        };
+
+
+        const handleSaveUser = (e) => {
+            e.preventDefault();
+             if (!currentUser || currentUser.role !== 'admin') return; // Hanya admin
+
+            const id = document.getElementById('user-id-input').value; // Bisa kosong jika tambah baru
+            const username = document.getElementById('user-username').value;
+            const role = document.getElementById('user-role').value;
+             const password = document.getElementById('user-password').value; // Ambil password baru
+            userModalError.textContent = '';
+
+             // Validasi input
+             if (!username) {
+                 userModalError.textContent = 'Username wajib diisi.';
+                 return;
+             }
+             if (!id && !password) { // Password wajib diisi hanya saat tambah baru
+                  userModalError.textContent = 'Password wajib diisi untuk user baru.';
+                 return;
+             }
+
+             // Cek jika username baru sudah dipakai user lain
+            const usernameExists = users.some(u => u.username === username && u.id !== id);
+             if (usernameExists) {
+                userModalError.textContent = 'Username sudah digunakan.';
+                return;
+            }
+
+             if (id) { // Mode Edit
+                 const userIndex = users.findIndex(u => u.id === id);
+                 if(userIndex === -1) {
+                     userModalError.textContent = 'User tidak ditemukan.';
+                     return;
+                 }
+                 // Update data user
+                 users[userIndex].username = username;
+                 users[userIndex].role = role;
+                 users[userIndex].name = username; // Update nama juga
+                 // Update password HANYA jika diisi
+                 if (password) {
+                      users[userIndex].password = password; // Di dunia nyata, ini harus di-hash
+                 }
+             } else { // Mode Tambah Baru
+                 const newId = (role === 'penjual' ? 'seller' : 'user') + Date.now();
+                 users.push({
+                     id: newId,
+                     name: username,
+                     username: username,
+                     password: password, // Di dunia nyata, ini harus di-hash
+                     role: role
+                 });
+             }
+
+            generateAccounts(); // Regenerate accounts object
+            renderAdminLists(); // Refresh tampilan admin
+            userModal.classList.add('hidden');
+        };
+        
+        window.handleDeleteUser = (userId) => {
+             if (!currentUser || currentUser.role !== 'admin') return; // Hanya admin
+
+            if (userId === currentUser.id) {
+                 alert("Anda tidak bisa menghapus akun Anda sendiri.");
+                 return;
+            }
+            if (confirm('Yakin ingin menghapus user ini? Menghapus penjual juga akan menghapus semua menunya.')) {
+                const initialLength = users.length;
+                const userToDelete = users.find(u => u.id === userId); // Cari user yg akan dihapus
+
+                if (!userToDelete) {
+                     alert("User tidak ditemukan.");
+                     return;
+                }
+
+                users = users.filter(u => u.id !== userId); // Hapus user dari array
+
+                if(users.length < initialLength) {
+                    // Jika user adalah penjual, hapus juga menunya
+                    if (userToDelete.role === 'penjual') {
+                        menuItems = menuItems.filter(item => item.sellerId !== userId);
+                        renderMenu(); // Refresh menu (jika user yg login adalah user biasa)
+                        renderAdminProductList(); // Refresh produk di admin
+                    }
+                    generateAccounts(); // Regenerate accounts
+                    renderAdminLists(); // Refresh daftar user di admin
+                }
+            }
+        };
+
+        window.openRatingModal = (menuId) => {
+            const menuItem = menuItems.find(item => item.id === menuId);
+            if (!menuItem) return;
+            document.getElementById('rating-menu-id').value = menuId;
+            ratingItemName.textContent = menuItem.name;
+            currentRatingSelection = 0; // Reset
+            let starsHtml = '';
+            for (let i = 1; i <= 5; i++) {
+                starsHtml += `<span class="rating-star" data-value="${i}"><svg class="w-10 h-10" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg></span>`;
+            }
+            ratingStarsContainer.innerHTML = starsHtml;
+             highlightStars(0);
+            ratingModal.classList.remove('hidden');
+        };
+        
+        const handleSaveRating = (e) => {
+            e.preventDefault();
+            const menuId = parseInt(document.getElementById('rating-menu-id').value);
+            const ratingValue = currentRatingSelection; 
 
              if (ratingValue === 0) {
                  alert('Silakan pilih jumlah bintang.');
                  return;
              }
-
-             try {
-                 // Upsert: update jika sudah ada, insert jika belum
-                 const { error } = await supabaseClient
-                    .from('ratings')
-                    .upsert({ menu_id: menuId, user_id: currentUser.id, value: ratingValue }, { onConflict: 'menu_id, user_id' });
-
-                 if (error) throw error;
-
-                 // Hitung ulang rata-rata rating
-                 const { data: ratingsData, error: avgError } = await supabaseClient
-                    .from('ratings')
-                    .select('value')
-                    .eq('menu_id', menuId);
-
-                 if (avgError) throw avgError;
-
-                 const totalRating = ratingsData.reduce((sum, r) => sum + r.value, 0);
-                 const avgRating = ratingsData.length > 0 ? totalRating / ratingsData.length : 0;
-
-                 // Update rata-rata rating di tabel menu_items
-                 const { error: updateAvgError } = await supabaseClient
-                    .from('menu_items')
-                    .update({ avg_rating: avgRating })
-                    .eq('id', menuId);
-
-                 if (updateAvgError) throw updateAvgError;
-
-                 ratingModal.classList.add('hidden');
-                 renderMenu(); // Refresh menu untuk menampilkan rating baru
-
-             } catch (error) {
-                 console.error("Error saving rating:", error);
-                 alert('Gagal menyimpan rating.');
-             }
+            
+            const menuItem = menuItems.find(item => item.id === menuId);
+            if (!menuItem) return;
+            
+            const existingRatingIndex = menuItem.ratings.findIndex(r => r.userId === currentUser.id);
+            if (existingRatingIndex > -1) {
+                menuItem.ratings[existingRatingIndex].value = ratingValue;
+            } else {
+                menuItem.ratings.push({ userId: currentUser.id, value: ratingValue });
+            }
+            
+            const totalRating = menuItem.ratings.reduce((sum, r) => sum + r.value, 0);
+            menuItem.avgRating = totalRating / menuItem.ratings.length;
+            
+            ratingModal.classList.add('hidden');
+            renderMenu(); // Refresh menu untuk menampilkan rating baru
+             if(currentUser && currentUser.role === 'admin') renderAdminProductList(); // Update di admin view juga
         };
 
         // --- Fungsi untuk interaksi bintang rating ---
-        let currentRatingSelection = 0; // Menyimpan rating yang dipilih user
-
+        let currentRatingSelection = 0; 
         const highlightStars = (value) => {
-            ratingStarsContainer.querySelectorAll('.rating-star').forEach(star => {
+             ratingStarsContainer.querySelectorAll('.rating-star').forEach(star => {
                 star.classList.toggle('text-yellow-400', star.dataset.value <= value);
                 star.classList.toggle('text-gray-400', star.dataset.value > value);
+                 // Reset clicked status saat hover/mouseout jika belum diklik
+                 if (!star.hasAttribute('data-clicked') || star.getAttribute('data-clicked') === 'false') {
+                     if (star.dataset.value > currentRatingSelection) {
+                         star.removeAttribute('data-clicked');
+                     }
+                 }
             });
         };
-
         const handleStarHover = (e) => {
-            if (e.target.closest('.rating-star')) {
+             if (e.target.closest('.rating-star')) {
                 const hoverValue = e.target.closest('.rating-star').dataset.value;
                 highlightStars(hoverValue);
             }
         };
-
-        const handleStarMouseOut = () => {
-            // Kembali ke rating yang sudah dipilih (jika ada), atau reset
-            highlightStars(currentRatingSelection);
-        };
-
+        const handleStarMouseOut = () => { highlightStars(currentRatingSelection); };
         const handleStarClick = (e) => {
              if (e.target.closest('.rating-star')) {
                 const clickedValue = parseInt(e.target.closest('.rating-star').dataset.value);
-                currentRatingSelection = clickedValue; // Simpan pilihan
-                highlightStars(clickedValue); // Update visual
-                 // Tandai bintang yang diklik
+                currentRatingSelection = clickedValue; 
+                highlightStars(clickedValue); 
                  ratingStarsContainer.querySelectorAll('.rating-star').forEach(star => {
                      star.dataset.clicked = star.dataset.value <= clickedValue ? 'true' : 'false';
                  });
             }
         };
+
+        // --- FUNGSI BARU UNTUK PREVIEW FILE GAMBAR ---
+        const handleImageFileChange = (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    imagePreview.src = event.target.result;
+                    imagePreview.classList.remove('hidden');
+                };
+                reader.readAsDataURL(file);
+            } else {
+                // Jika user batal memilih file, sembunyikan preview (kecuali jika sedang edit)
+                // Biarkan gambar lama (jika ada) tetap tampil saat edit
+                if (!document.getElementById('menu-id').value) {
+                    imagePreview.src = '';
+                    imagePreview.classList.add('hidden');
+                }
+            }
+        };
+
+        // --- INITIALIZATION & EVENT LISTENERS ---
+        document.addEventListener('DOMContentLoaded', () => {
+            generateAccounts(); // Generate daftar akun dari array users
+            updateView(); // Tampilkan view awal (login)
+
+            loginForm.addEventListener('submit', handleLogin);
+            registerForm.addEventListener('submit', handleRegister);
+            showRegisterBtn.addEventListener('click', () => { loginContainer.classList.add('hidden'); registerContainer.classList.remove('hidden'); });
+            showLoginBtn.addEventListener('click', () => { registerContainer.classList.add('hidden'); loginContainer.classList.remove('hidden'); });
+            logoutButton.addEventListener('click', handleLogout);
+            orderButton.addEventListener('click', placeOrder);
+            addMenuButton.addEventListener('click', () => openMenuModal());
+            menuForm.addEventListener('submit', handleSaveMenu);
+            cancelModalButton.addEventListener('click', () => menuModal.classList.add('hidden'));
+            
+            // Hapus event listener lama yang rusak
+            // menuImageUrlInput.addEventListener('input', (e) => { ... });
+            
+            // Tambahkan event listener BARU untuk input file
+            document.getElementById('menu-image-file').addEventListener('change', handleImageFileChange);
+
+            paymentMethodsContainer.addEventListener('click', (e) => { if (e.target.classList.contains('payment-method-btn')) selectPaymentMethod(e.target.dataset.payment); });
+            closeQrisModalButton.addEventListener('click', () => { qrisModal.classList.add('hidden'); finishOrderPlacement(); });
+            adminPeriodFilter.addEventListener('click', e => { if(e.target.classList.contains('period-btn')) renderAdminIncomeReport(e.target.dataset.period); });
+            sellerPeriodFilter.addEventListener('click', e => { if(e.target.classList.contains('period-btn')) renderSellerIncomeReport(e.target.dataset.period); });
+            ratingForm.addEventListener('submit', handleSaveRating);
+            cancelRatingModal.addEventListener('click', () => ratingModal.classList.add('hidden'));
+            ratingStarsContainer.addEventListener('mouseover', handleStarHover);
+            ratingStarsContainer.addEventListener('mouseout', handleStarMouseOut);
+            ratingStarsContainer.addEventListener('click', handleStarClick);
+             userForm.addEventListener('submit', handleSaveUser);
+            cancelUserModalButton.addEventListener('click', () => userModal.classList.add('hidden'));
+             // Event listener untuk tombol tambah user/seller di admin
+             addSellerButtonAdmin.addEventListener('click', () => openAddUserModal('penjual'));
+             addUserButtonAdmin.addEventListener('click', () => openAddUserModal('user'));
+        });
 
     </script>
 </body>
