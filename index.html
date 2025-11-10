@@ -62,24 +62,13 @@
 </head>
 <body class="bg-cream">
 
-    <!-- Global SVG Gradient Definition -->
-    <svg width="0" height="0" style="position:absolute">
-        <defs>
-            <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" style="stop-color:var(--dark-purple);stop-opacity:1" />
-                <stop offset="50%" style="stop-color:var(--light-purple);stop-opacity:1" />
-                <stop offset="100%" style="stop-color:var(--pink);stop-opacity:1" />
-            </linearGradient>
-        </defs>
-    </svg>
-
     <!-- Login & Register Screen -->
     <div id="auth-screen" class="min-h-screen flex items-center justify-center bg-cream p-4">
         <div class="bg-card p-8 rounded-xl shadow-xl w-full max-w-sm border border-card"> <!-- rounded-lg -> rounded-xl, shadow-lg -> shadow-xl -->
             <!-- Login Form -->
             <div id="login-container">
-                 <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" stroke="url(#logoGradient)" />
+                 <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-dark-purple mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
                 </svg>
                 <h2 class="text-3xl font-bold text-center text-text-dark mb-6">Login Kantin Digital</h2> <!-- text-2xl -> text-3xl -->
                 <div id="login-error" class="text-red-500 text-center mb-4"></div>
@@ -101,8 +90,8 @@
 
             <!-- Register Form -->
             <div id="register-container" class="hidden">
-                 <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" stroke="url(#logoGradient)" />
+                 <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-dark-purple mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
                 </svg>
                 <h2 class="text-3xl font-bold text-center text-text-dark mb-6">Daftar Akun User</h2> <!-- text-2xl -> text-3xl -->
                 <div id="register-message" class="text-center mb-4"></div>
@@ -132,12 +121,12 @@
             <header class="text-center mb-8 relative">
                 <div class="flex items-center justify-center gap-3">
                     <!-- Logo -->
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" stroke="url(#logoGradient)" />
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-dark-purple" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
                     </svg>
                     <h1 class="text-6xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-[--dark-purple] via-[--light-purple] to-[--pink]">Kantin Digital</h1> <!-- text-5xl text-text-dark -> text-6xl text-transparent bg-clip-text bg-gradient-to-r ... -->
                 </div>
-                <p id="header-subtitle" class="text-text-dark font-semibold mt-2 text-lg">Pilih makanan favoritmu dan pesan sekarang juga!</p> <!-- text-gray-500 -> text-text-dark font-semibold -->
+                <p id="header-subtitle" class="text-gray-500 mt-2 text-lg">Pilih makanan favoritmu dan pesan sekarang juga!</p> <!-- tambah text-lg -->
                 <button id="logout-button" class="absolute top-0 right-0 bg-red-500 text-white font-semibold px-4 py-2 rounded-xl hover:bg-red-600 transition-all duration-300 shadow-md">Logout</button> <!-- rounded-lg -> rounded-xl, tambah transisi & shadow -->
             </header>
 
