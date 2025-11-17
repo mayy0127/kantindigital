@@ -3,13 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kantin Digital</title>
+    <title>Kantin Digital (Supabase)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <!-- Menambahkan library Chart.js -->
+    <!-- Memuat library Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- MEMUAT SUPABASE CLIENT -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         :root {
             --dark-purple: #502688;
@@ -58,30 +60,58 @@
         .border-card{
             border-color: var(--light-pink);
         }
+        /* Loading Spinner */
+        .loader {
+            border: 4px solid var(--cream);
+            border-top: 4px solid var(--dark-purple);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .loading-overlay {
+            position: fixed;
+            inset: 0;
+            background-color: rgba(255, 255, 255, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+        }
     </style>
 </head>
 <body class="bg-cream">
 
+    <!-- Loading Overlay -->
+    <div id="loading-overlay" class="loading-overlay hidden">
+        <div class="loader"></div>
+    </div>
+
     <!-- Login & Register Screen -->
     <div id="auth-screen" class="min-h-screen flex items-center justify-center bg-cream p-4">
-        <div class="bg-card p-8 rounded-xl shadow-xl w-full max-w-sm border border-card"> <!-- rounded-lg -> rounded-xl, shadow-lg -> shadow-xl -->
+        <div class="bg-card p-8 rounded-xl shadow-xl w-full max-w-sm border border-card">
             <!-- Login Form -->
             <div id="login-container">
                  <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-dark-purple mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
                 </svg>
-                <h2 class="text-3xl font-bold text-center text-text-dark mb-6">Login Kantin Digital</h2> <!-- text-2xl -> text-3xl -->
+                <h2 class="text-3xl font-bold text-center text-text-dark mb-6">Login Kantin Digital</h2>
                 <div id="login-error" class="text-red-500 text-center mb-4"></div>
                 <form id="login-form">
                     <div class="mb-4">
-                        <label for="username" class="block text-gray-700 mb-2">Username</label>
-                        <input type="text" id="username" class="w-full px-3 py-2 border rounded-xl bg-cream border-light-pink text-text-dark focus:outline-none focus:ring-2 focus:ring-pink" required> <!-- rounded-lg -> rounded-xl -->
+                        <!-- DIUBAH: Dari Username ke Email -->
+                        <label for="email" class="block text-gray-700 mb-2">Email</label>
+                        <input type="email" id="email" class="w-full px-3 py-2 border rounded-xl bg-cream border-light-pink text-text-dark focus:outline-none focus:ring-2 focus:ring-pink" required>
                     </div>
                     <div class="mb-6">
                         <label for="password" class="block text-gray-700 mb-2">Password</label>
-                        <input type="password" id="password" class="w-full px-3 py-2 border rounded-xl bg-cream border-light-pink text-text-dark focus:outline-none focus:ring-2 focus:ring-pink" required> <!-- rounded-lg -> rounded-xl -->
+                        <input type="password" id="password" class="w-full px-3 py-2 border rounded-xl bg-cream border-light-pink text-text-dark focus:outline-none focus:ring-2 focus:ring-pink" required>
                     </div>
-                    <button type="submit" class="w-full bg-[--dark-purple] text-white font-bold py-3 rounded-xl hover:bg-[--light-purple] transition-all duration-300 shadow-lg hover:shadow-md">Login</button> <!-- rounded-lg -> rounded-xl, py-2 -> py-3, tambah transisi & shadow -->
+                    <button type="submit" class="w-full bg-[--dark-purple] text-white font-bold py-3 rounded-xl hover:bg-[--light-purple] transition-all duration-300 shadow-lg hover:shadow-md">Login</button>
                 </form>
                 <p class="text-center text-sm text-gray-600 mt-4">
                     Belum punya akun? <button id="show-register-btn" class="font-semibold text-[--dark-blue] hover:underline">Daftar di sini</button>
@@ -93,19 +123,25 @@
                  <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-dark-purple mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
                 </svg>
-                <h2 class="text-3xl font-bold text-center text-text-dark mb-6">Daftar Akun User</h2> <!-- text-2xl -> text-3xl -->
+                <h2 class="text-3xl font-bold text-center text-text-dark mb-6">Daftar Akun User</h2>
                 <div id="register-message" class="text-center mb-4"></div>
                 <form id="register-form">
                     <div class="mb-4">
-                        <label for="register-username" class="block text-gray-700 mb-2">Username Baru</label>
-                        <input type="text" id="register-username" class="w-full px-3 py-2 border rounded-xl bg-cream border-light-pink text-text-dark focus:outline-none focus:ring-2 focus:ring-pink" required> <!-- rounded-lg -> rounded-xl -->
+                        <!-- DIUBAH: Menjadi 'Nama Lengkap' -->
+                        <label for="register-name" class="block text-gray-700 mb-2">Nama Lengkap</label>
+                        <input type="text" id="register-name" class="w-full px-3 py-2 border rounded-xl bg-cream border-light-pink text-text-dark focus:outline-none focus:ring-2 focus:ring-pink" required>
+                    </div>
+                    <div class="mb-4">
+                        <!-- DIUBAH: Menjadi 'Email' -->
+                        <label for="register-email" class="block text-gray-700 mb-2">Email</label>
+                        <input type="email" id="register-email" class="w-full px-3 py-2 border rounded-xl bg-cream border-light-pink text-text-dark focus:outline-none focus:ring-2 focus:ring-pink" required>
                     </div>
                     <div class="mb-6">
                         <label for="register-password" class="block text-gray-700 mb-2">Password</label>
-                        <input type="password" id="register-password" class="w-full px-3 py-2 border rounded-xl bg-cream border-light-pink text-text-dark focus:outline-none focus:ring-2 focus:ring-pink" required> <!-- rounded-lg -> rounded-xl -->
+                        <input type="password" id="register-password" class="w-full px-3 py-2 border rounded-xl bg-cream border-light-pink text-text-dark focus:outline-none focus:ring-2 focus:ring-pink" required>
                     </div>
                     
-                    <button type="submit" class="w-full bg-[--dark-purple] text-white font-bold py-3 rounded-xl hover:bg-[--light-purple] transition-all duration-300 shadow-lg hover:shadow-md">Daftar</button> <!-- rounded-lg -> rounded-xl, py-2 -> py-3, tambah transisi & shadow -->
+                    <button type="submit" class="w-full bg-[--dark-purple] text-white font-bold py-3 rounded-xl hover:bg-[--light-purple] transition-all duration-300 shadow-lg hover:shadow-md">Daftar</button>
                 </form>
                 <p class="text-center text-sm text-gray-600 mt-4">
                     Sudah punya akun? <button id="show-login-btn" class="font-semibold text-[--dark-blue] hover:underline">Login di sini</button>
@@ -120,26 +156,25 @@
             <!-- Header -->
             <header class="text-center mb-8 relative">
                 <div class="flex items-center justify-center gap-3">
-                    <!-- Logo -->
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-dark-purple" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
                     </svg>
-                    <h1 class="text-6xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-[--dark-purple] via-[--light-purple] to-[--pink]">Kantin Digital</h1> <!-- text-5xl text-text-dark -> text-6xl text-transparent bg-clip-text bg-gradient-to-r ... -->
+                    <h1 class="text-6xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-[--dark-purple] via-[--light-purple] to-[--pink]">Kantin Digital</h1>
                 </div>
-                <p id="header-subtitle" class="text-text-dark font-semibold mt-2 text-lg">Pilih makanan favoritmu dan pesan sekarang juga!</p> <!-- text-gray-500 -> text-text-dark font-semibold -->
-                <button id="logout-button" class="absolute top-0 right-0 bg-red-500 text-white font-semibold px-4 py-2 rounded-xl hover:bg-red-600 transition-all duration-300 shadow-md">Logout</button> <!-- rounded-lg -> rounded-xl, tambah transisi & shadow -->
+                <p id="header-subtitle" class="text-text-dark font-semibold mt-2 text-lg">Pilih makanan favoritmu dan pesan sekarang juga!</p>
+                <button id="logout-button" class="absolute top-0 right-0 bg-red-500 text-white font-semibold px-4 py-2 rounded-xl hover:bg-red-600 transition-all duration-300 shadow-md">Logout</button>
             </header>
 
             
             <div id="admin-dashboard" class="hidden">
-                <h2 class="text-4xl font-extrabold text-text-dark mb-6">Dashboard Admin</h2> <!-- text-3xl font-bold mb-4 -> text-4xl font-extrabold mb-6 -->
-                <div class="bg-card p-6 rounded-xl shadow-xl mb-8 border border-card"> <!-- rounded-lg shadow-lg -> rounded-xl shadow-xl -->
+                <h2 class="text-4xl font-extrabold text-text-dark mb-6">Dashboard Admin</h2>
+                <div class="bg-card p-6 rounded-xl shadow-xl mb-8 border border-card">
                     <div class="flex flex-col sm:flex-row justify-between sm:items-center mb-4">
                         <h3 class="text-xl font-semibold mb-2 sm:mb-0 text-text-dark">Laporan Profit (10%)</h3>
-                        <div id="admin-period-filter" class="flex gap-1 border rounded-xl p-1 self-start sm:self-center border-card"> <!-- rounded-lg -> rounded-xl -->
-                            <button data-period="day" class="period-btn px-3 py-1.5 text-sm rounded-lg bg-[--dark-purple] text-white font-semibold transition-colors duration-200">Hari Ini</button> <!-- py-1 -> py-1.5, rounded-md -> rounded-lg, tambah transisi -->
-                            <button data-period="month" class="period-btn px-3 py-1.5 text-sm rounded-lg text-white bg-[--light-purple] hover:bg-[--dark-purple] transition-colors duration-200">Bulan Ini</button> <!-- py-1 -> py-1.5, rounded-md -> rounded-lg, tambah transisi -->
-                            <button data-period="year" class="period-btn px-3 py-1.5 text-sm rounded-lg text-white bg-[--light-purple] hover:bg-[--dark-purple] transition-colors duration-200">Tahun Ini</button> <!-- py-1 -> py-1.5, rounded-md -> rounded-lg, tambah transisi -->
+                        <div id="admin-period-filter" class="flex gap-1 border rounded-xl p-1 self-start sm:self-center border-card">
+                            <button data-period="day" class="period-btn px-3 py-1.5 text-sm rounded-lg bg-[--dark-purple] text-white font-semibold transition-colors duration-200">Hari Ini</button>
+                            <button data-period="month" class="period-btn px-3 py-1.5 text-sm rounded-lg text-white bg-[--light-purple] hover:bg-[--dark-purple] transition-colors duration-200">Bulan Ini</button>
+                            <button data-period="year" class="period-btn px-3 py-1.5 text-sm rounded-lg text-white bg-[--light-purple] hover:bg-[--dark-purple] transition-colors duration-200">Tahun Ini</button>
                         </div>
                     </div>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-center">
@@ -155,14 +190,14 @@
                 </div>
 
                 
-                <div class="bg-card p-6 rounded-xl shadow-xl mb-8 border border-card"> <!-- rounded-lg shadow-lg -> rounded-xl shadow-xl -->
+                <div class="bg-card p-6 rounded-xl shadow-xl mb-8 border border-card">
                     <h3 class="text-xl font-semibold mb-4 text-text-dark">Grafik Penjualan</h3>
                     <canvas id="admin-sales-chart"></canvas>
                 </div>
                 
                 <h3 class="text-xl font-semibold mb-4 text-text-dark">Semua Produk Penjual</h3>
                 <div id="admin-product-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                    
+                    <!-- Data dari Supabase -->
                 </div>
 
                 
@@ -171,10 +206,10 @@
                     <div>
                          <div class="flex justify-between items-center mb-4">
                             <h3 class="text-xl font-semibold text-text-dark">Pengelola Siswa</h3>
-                            <button id="add-user-button-admin" class="bg-blue-500 text-white font-semibold px-5 py-2.5 rounded-xl hover:bg-blue-600 transition-all duration-300 shadow-md hover:shadow-lg">+ Tambah Siswa</button> <!-- rounded-lg px-4 py-2 -> rounded-xl px-5 py-2.5, tambah transisi & shadow -->
+                            <button id="add-user-button-admin" class="bg-blue-500 text-white font-semibold px-5 py-2.5 rounded-xl hover:bg-blue-600 transition-all duration-300 shadow-md hover:shadow-lg hidden">+ Tambah Siswa</button> <!-- Disembunyikan, pendaftaran mandiri -->
                         </div>
-                        <div id="admin-student-list" class="bg-card rounded-xl shadow-xl overflow-x-auto border border-card"> <!-- rounded-lg shadow -> rounded-xl shadow-xl -->
-                            
+                        <div id="admin-student-list" class="bg-card rounded-xl shadow-xl overflow-x-auto border border-card">
+                            <!-- Data dari Supabase -->
                         </div>
                     </div>
 
@@ -182,10 +217,10 @@
                      <div>
                          <div class="flex justify-between items-center mb-4">
                             <h3 class="text-xl font-semibold text-text-dark">Pengelola Penjual</h3>
-                            <button id="add-seller-button-admin" class="bg-green-500 text-white font-semibold px-5 py-2.5 rounded-xl hover:bg-green-600 transition-all duration-300 shadow-md hover:shadow-lg">+ Tambah Penjual</button> <!-- rounded-lg px-4 py-2 -> rounded-xl px-5 py-2.5, tambah transisi & shadow -->
+                            <button id="add-seller-button-admin" class="bg-green-500 text-white font-semibold px-5 py-2.5 rounded-xl hover:bg-green-600 transition-all duration-300 shadow-md hover:shadow-lg hidden">+ Tambah Penjual</button> <!-- Disembunyikan, pendaftaran mandiri -->
                         </div>
-                        <div id="admin-seller-list" class="bg-card rounded-xl shadow-xl overflow-x-auto border border-card"> <!-- rounded-lg shadow -> rounded-xl shadow-xl -->
-                            
+                        <div id="admin-seller-list" class="bg-card rounded-xl shadow-xl overflow-x-auto border border-card">
+                            <!-- Data dari Supabase -->
                         </div>
                     </div>
                 </div>
@@ -197,14 +232,14 @@
                 
                 <div class="w-full lg:w-2/3">
                     <div id="seller-dashboard" class="hidden mb-8">
-                        <h2 class="text-4xl font-extrabold text-text-dark mb-6">Dashboard Penjual</h2> <!-- text-3xl font-bold mb-4 -> text-4xl font-extrabold mb-6 -->
-                        <div class="bg-card p-6 rounded-xl shadow-xl mb-8 border border-card"> <!-- rounded-lg shadow-lg -> rounded-xl shadow-xl -->
+                        <h2 class="text-4xl font-extrabold text-text-dark mb-6">Dashboard Penjual</h2>
+                        <div class="bg-card p-6 rounded-xl shadow-xl mb-8 border border-card">
                             <div class="flex flex-col sm:flex-row justify-between sm:items-center mb-4">
                                 <h3 class="text-xl font-semibold mb-2 sm:mb-0 text-text-dark">Laporan Omset</h3>
-                                <div id="seller-period-filter" class="flex gap-1 border rounded-xl p-1 self-start sm:self-center border-card"> <!-- rounded-lg -> rounded-xl -->
-                                    <button data-period="day" class="period-btn px-3 py-1.5 text-sm rounded-lg bg-[--dark-purple] text-white font-semibold transition-colors duration-200">Hari Ini</button> <!-- py-1 -> py-1.5, rounded-md -> rounded-lg, tambah transisi -->
-                                    <button data-period="month" class="period-btn px-3 py-1.5 text-sm rounded-lg text-white bg-[--light-purple] hover:bg-[--dark-purple] transition-colors duration-200">Bulan Ini</button> <!-- py-1 -> py-1.5, rounded-md -> rounded-lg, tambah transisi -->
-                                    <button data-period="year" class="period-btn px-3 py-1.5 text-sm rounded-lg text-white bg-[--light-purple] hover:bg-[--dark-purple] transition-colors duration-200">Tahun Ini</button> <!-- py-1 -> py-1.5, rounded-md -> rounded-lg, tambah transisi -->
+                                <div id="seller-period-filter" class="flex gap-1 border rounded-xl p-1 self-start sm:self-center border-card">
+                                    <button data-period="day" class="period-btn px-3 py-1.5 text-sm rounded-lg bg-[--dark-purple] text-white font-semibold transition-colors duration-200">Hari Ini</button>
+                                    <button data-period="month" class="period-btn px-3 py-1.5 text-sm rounded-lg text-white bg-[--light-purple] hover:bg-[--dark-purple] transition-colors duration-200">Bulan Ini</button>
+                                    <button data-period="year" class="period-btn px-3 py-1.5 text-sm rounded-lg text-white bg-[--light-purple] hover:bg-[--dark-purple] transition-colors duration-200">Tahun Ini</button>
                                 </div>
                             </div>
                             <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
@@ -215,38 +250,38 @@
                         </div>
                         
                         
-                        <div class="bg-card p-6 rounded-xl shadow-xl mb-8 border border-card"><h3 class="text-xl font-semibold mb-4 text-text-dark">Grafik Omset</h3><canvas id="seller-sales-chart"></canvas></div> <!-- rounded-lg shadow-lg -> rounded-xl shadow-xl -->
+                        <div class="bg-card p-6 rounded-xl shadow-xl mb-8 border border-card"><h3 class="text-xl font-semibold mb-4 text-text-dark">Grafik Omset</h3><canvas id="seller-sales-chart"></canvas></div>
 
-                        <div class="bg-card p-6 rounded-xl shadow-xl border border-card"><h3 class="text-xl font-semibold mb-4 text-text-dark">Pesanan Masuk</h3><div id="seller-orders-container" class="space-y-4 max-h-96 overflow-y-auto"></div></div> <!-- rounded-lg shadow-lg -> rounded-xl shadow-xl -->
+                        <div class="bg-card p-6 rounded-xl shadow-xl border border-card"><h3 class="text-xl font-semibold mb-4 text-text-dark">Pesanan Masuk</h3><div id="seller-orders-container" class="space-y-4 max-h-96 overflow-y-auto"></div></div>
                     </div>
 
                     <div class="flex justify-between items-center mb-4">
-                        <h2 id="menu-title" class="text-3xl font-bold text-gray-700">Menu Makanan</h2> <!-- text-2xl font-semibold -> text-3xl font-bold -->
-                        <button id="add-menu-button" class="hidden bg-green-500 text-white font-semibold px-5 py-2.5 rounded-xl hover:bg-green-600 transition-all duration-300 shadow-md hover:shadow-lg">+ Tambah Menu</button> <!-- rounded-lg px-4 py-2 -> rounded-xl px-5 py-2.5, tambah transisi & shadow -->
+                        <h2 id="menu-title" class="text-3xl font-bold text-gray-700">Menu Makanan</h2>
+                        <button id="add-menu-button" class="hidden bg-green-500 text-white font-semibold px-5 py-2.5 rounded-xl hover:bg-green-600 transition-all duration-300 shadow-md hover:shadow-lg">+ Tambah Menu</button>
                     </div>
                     <div id="menu-container" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                        
+                        <!-- Data dari Supabase -->
                     </div>
                 </div>
 
                 
                 <div id="cart-and-orders-section" class="w-full lg:w-1/3">
-                    <div class="bg-card rounded-xl shadow-xl p-6 border border-card"> <!-- rounded-lg shadow-lg -> rounded-xl shadow-xl -->
+                    <div class="bg-card rounded-xl shadow-xl p-6 border border-card">
                         <h2 class="text-2xl font-semibold text-text-dark mb-4 border-b pb-3 border-card">Keranjang Anda</h2>
                         <div id="cart-items-container" class="space-y-4 mb-4 max-h-80 overflow-y-auto pr-2"></div>
                         <div class="border-t pt-4 space-y-3 border-card">
                             <div class="mb-4">
                                 <h3 class="text-md font-semibold text-gray-700 mb-2">Metode Pembayaran</h3>
                                 <div class="flex overflow-x-auto gap-2 pb-2" id="payment-methods">
-                                    <button data-payment="tunai" class="payment-method-btn flex-shrink-0 px-4 border-2 font-semibold py-2.5 rounded-xl text-sm bg-[--dark-purple] text-white border-transparent transition-all duration-300">Tunai</button> <!-- py-2 rounded-lg -> py-2.5 rounded-xl, tambah transisi -->
-                                    <button data-payment="qris" class="payment-method-btn flex-shrink-0 px-4 border-2 font-semibold py-2.5 rounded-xl text-sm bg-cream text-text-dark border-light-pink transition-all duration-300">QRIS</button> <!-- py-2 rounded-lg -> py-2.5 rounded-xl, tambah transisi -->
+                                    <button data-payment="tunai" class="payment-method-btn flex-shrink-0 px-4 border-2 font-semibold py-2.5 rounded-xl text-sm bg-[--dark-purple] text-white border-transparent transition-all duration-300">Tunai</button>
+                                    <button data-payment="qris" class="payment-method-btn flex-shrink-0 px-4 border-2 font-semibold py-2.5 rounded-xl text-sm bg-cream text-text-dark border-light-pink transition-all duration-300">QRIS</button>
                                 </div>
                             </div>
                             <div class="flex justify-between items-center text-lg font-semibold text-text-dark">
                                 <span>Total</span>
                                 <span id="cart-total">Rp 0</span>
                             </div>
-                            <button id="order-button" class="w-full bg-[--dark-purple] text-white font-bold py-3 rounded-xl hover:bg-[--light-purple] transition-all duration-300 shadow-lg hover:shadow-md disabled:bg-gray-400 disabled:cursor-not-allowed disabled:shadow-none"> <!-- rounded-lg -> rounded-xl, tambah transisi & shadow, disabled shadow -->
+                            <button id="order-button" class="w-full bg-[--dark-purple] text-white font-bold py-3 rounded-xl hover:bg-[--light-purple] transition-all duration-300 shadow-lg hover:shadow-md disabled:bg-gray-400 disabled:cursor-not-allowed disabled:shadow-none">
                                 Pesan Sekarang
                             </button>
                         </div>
@@ -255,10 +290,10 @@
 
                     
                     <div id="user-orders-section" class="mt-8">
-                        <div class="bg-card rounded-xl shadow-xl p-6 border border-card"> <!-- rounded-lg shadow-lg -> rounded-xl shadow-xl -->
+                        <div class="bg-card rounded-xl shadow-xl p-6 border border-card">
                             <h2 class="text-2xl font-semibold text-text-dark mb-4 border-b pb-3 border-card">Riwayat Pesanan Saya</h2>
                             <div id="user-orders-container" class="space-y-4 max-h-96 overflow-y-auto">
-                                
+                                <!-- Data dari Supabase -->
                             </div>
                         </div>
                     </div>
@@ -269,101 +304,82 @@
     
     
     <div id="menu-modal" class="hidden fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-4 z-50">
-        <div class="bg-card p-6 rounded-xl shadow-xl w-full max-w-md border border-card"> <!-- rounded-lg -> rounded-xl -->
+        <div class="bg-card p-6 rounded-xl shadow-xl w-full max-w-md border border-card">
             <h2 id="modal-title" class="text-2xl font-bold mb-4 text-text-dark">Tambah Menu Baru</h2>
             <form id="menu-form">
                 <input type="hidden" id="menu-id">
-                <div class="mb-4"><label for="menu-name" class="block text-gray-700 mb-1">Nama Menu</label><input type="text" id="menu-name" class="w-full px-3 py-2 border rounded-xl bg-cream border-light-pink" required></div> <!-- rounded-lg -> rounded-xl -->
-                <div class="mb-4"><label for="menu-price" class="block text-gray-700 mb-1">Harga</label><input type="number" id="menu-price" class="w-full px-3 py-2 border rounded-xl bg-cream border-light-pink" min="0" required></div> <!-- rounded-lg -> rounded-xl -->
-                <div class="mb-4"><label for="menu-stock" class="block text-gray-700 mb-1">Stok Makanan</label><input type="number" id="menu-stock" class="w-full px-3 py-2 border rounded-xl bg-cream border-light-pink" min="0" required></div> <!-- rounded-lg -> rounded-xl -->
+                <div class="mb-4"><label for="menu-name" class="block text-gray-700 mb-1">Nama Menu</label><input type="text" id="menu-name" class="w-full px-3 py-2 border rounded-xl bg-cream border-light-pink" required></div>
+                <div class="mb-4"><label for="menu-price" class="block text-gray-700 mb-1">Harga</label><input type="number" id="menu-price" class="w-full px-3 py-2 border rounded-xl bg-cream border-light-pink" min="0" required></div>
+                <div class="mb-4"><label for="menu-stock" class="block text-gray-700 mb-1">Stok Makanan</label><input type="number" id="menu-stock" class="w-full px-3 py-2 border rounded-xl bg-cream border-light-pink" min="0" required></div>
                 
                 <div class="mb-4">
                     <label for="menu-image-file" class="block text-gray-700 mb-1">Foto Makanan</label>
-                    <input type="file" id="menu-image-file" class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:font-semibold file:bg-[--light-purple] file:text-white hover:file:bg-[--dark-purple] cursor-pointer" accept="image/*"> <!-- rounded-lg -> rounded-xl -->
+                    <input type="file" id="menu-image-file" class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:font-semibold file:bg-[--light-purple] file:text-white hover:file:bg-[--dark-purple] cursor-pointer" accept="image/*">
                 </div>
-                <img id="image-preview" src="" alt="Preview" class="w-full h-40 object-cover rounded-xl mb-2 border hidden border-card"> <!-- rounded-lg -> rounded-xl -->
+                <img id="image-preview" src="" alt="Preview" class="w-full h-40 object-cover rounded-xl mb-2 border hidden border-card">
                 <div id="modal-error" class="text-red-500 text-sm mb-4 hidden"></div>
-                <div class="flex justify-end gap-4 mt-6"><button type="button" id="cancel-modal" class="bg-gray-300 text-gray-800 font-semibold px-5 py-2.5 rounded-xl hover:bg-gray-400 transition-all duration-300 shadow-md">Batal</button><button type="submit" class="bg-[--dark-purple] text-white font-semibold px-5 py-2.5 rounded-xl hover:bg-[--light-purple] transition-all duration-300 shadow-md">Simpan</button></div> <!-- rounded-lg px-4 py-2 -> rounded-xl px-5 py-2.5, tambah transisi & shadow -->
+                <div class="flex justify-end gap-4 mt-6"><button type="button" id="cancel-modal" class="bg-gray-300 text-gray-800 font-semibold px-5 py-2.5 rounded-xl hover:bg-gray-400 transition-all duration-300 shadow-md">Batal</button><button type="submit" class="bg-[--dark-purple] text-white font-semibold px-5 py-2.5 rounded-xl hover:bg-[--light-purple] transition-all duration-300 shadow-md">Simpan</button></div>
             </form>
         </div>
     </div>
      <div id="user-modal" class="hidden fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-4 z-50">
-        <div class="bg-card p-6 rounded-xl shadow-xl w-full max-w-md border border-card"> <!-- rounded-lg -> rounded-xl -->
+        <div class="bg-card p-6 rounded-xl shadow-xl w-full max-w-md border border-card">
             <h2 id="user-modal-title" class="text-2xl font-bold mb-4 text-text-dark">Edit User</h2>
             <form id="user-form" class="space-y-4">
                 <input type="hidden" id="user-id-input">
-                <div><label for="user-username" class="block text-gray-700 mb-1">Username</label><input type="text" id="user-username" class="w-full px-3 py-2 border rounded-xl bg-cream border-light-pink" required></div> <!-- rounded-lg -> rounded-xl -->
-                <div><label for="user-role" class="block text-gray-700 mb-1">Role</label><select id="user-role" class="w-full px-3 py-2 border rounded-xl bg-cream border-light-pink"><option value="user">Siswa</option><option value="penjual">Penjual</option><option value="admin">Admin</option></select></div> <!-- rounded-lg -> rounded-xl -->
+                <div><label for="user-username" class="block text-gray-700 mb-1">Username</label><input type="text" id="user-username" class="w-full px-3 py-2 border rounded-xl bg-cream border-light-pink" required></div>
+                <div><label for="user-role" class="block text-gray-700 mb-1">Role</label><select id="user-role" class="w-full px-3 py-2 border rounded-xl bg-cream border-light-pink"><option value="user">Siswa</option><option value="penjual">Penjual</option><option value="admin">Admin</option></select></div>
                  
-                 <div class="mb-4">
+                 <div class="mb-4 hidden"> <!-- DIHILANGKAN: Admin tidak boleh mengganti password -->
                     <label for="user-password" class="block text-gray-700 mb-1">Password Baru (opsional)</label>
-                    <input type="password" id="user-password" class="w-full px-3 py-2 border rounded-xl bg-cream border-light-pink" placeholder="Kosongkan jika tidak ingin ganti"> <!-- rounded-lg -> rounded-xl -->
+                    <input type="password" id="user-password" class="w-full px-3 py-2 border rounded-xl bg-cream border-light-pink" placeholder="Kosongkan jika tidak ingin ganti">
                 </div>
                 <div id="user-modal-error" class="text-red-500 text-sm"></div>
-                <div class="flex justify-end gap-4 pt-4"><button type="button" id="cancel-user-modal" class="bg-gray-300 text-gray-800 font-semibold px-5 py-2.5 rounded-xl hover:bg-gray-400 transition-all duration-300 shadow-md">Batal</button><button type="submit" class="bg-[--dark-purple] text-white font-semibold px-5 py-2.5 rounded-xl hover:bg-[--light-purple] transition-all duration-300 shadow-md">Simpan</button></div> <!-- rounded-lg px-4 py-2 -> rounded-xl px-5 py-2.5, tambah transisi & shadow -->
+                <div class="flex justify-end gap-4 pt-4"><button type="button" id="cancel-user-modal" class="bg-gray-300 text-gray-800 font-semibold px-5 py-2.5 rounded-xl hover:bg-gray-400 transition-all duration-300 shadow-md">Batal</button><button type="submit" class="bg-[--dark-purple] text-white font-semibold px-5 py-2.5 rounded-xl hover:bg-[--light-purple] transition-all duration-300 shadow-md">Simpan</button></div>
             </form>
         </div>
     </div>
     <div id="qris-modal" class="hidden fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-4 z-50">
-        <div class="bg-card p-6 rounded-xl shadow-xl w-full max-w-sm text-center border border-card"> <!-- rounded-lg -> rounded-xl -->
+        <div class="bg-card p-6 rounded-xl shadow-xl w-full max-w-sm text-center border border-card">
             <h2 id="qris-modal-title" class="text-2xl font-bold mb-4 text-text-dark">Pembayaran QRIS</h2>
             <p class="text-gray-500 mb-4">Silakan scan kode QR ini untuk membayar.</p>
-            <img id="qris-image" src="" alt="QRIS Code" class="mx-auto rounded-xl"> <!-- rounded-lg -> rounded-xl -->
+            <img id="qris-image" src="" alt="QRIS Code" class="mx-auto rounded-xl">
             <p class="font-bold text-xl my-4 text-text-dark" id="qris-total"></p>
-            <button id="close-qris-modal" class="mt-4 w-full bg-[--dark-purple] text-white font-semibold py-2.5 rounded-xl hover:bg-[--light-purple] transition-all duration-300 shadow-md">Tutup</button> <!-- py-2 rounded-lg -> py-2.5 rounded-xl, tambah transisi & shadow -->
+            <button id="close-qris-modal" class="mt-4 w-full bg-[--dark-purple] text-white font-semibold py-2.5 rounded-xl hover:bg-[--light-purple] transition-all duration-300 shadow-md">Tutup</button>
         </div>
     </div>
     <div id="rating-modal" class="hidden fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-4 z-50">
-        <div class="bg-card p-6 rounded-xl shadow-xl w-full max-w-sm text-center border border-card"> <!-- rounded-lg -> rounded-xl -->
+        <div class="bg-card p-6 rounded-xl shadow-xl w-full max-w-sm text-center border border-card">
             <h2 class="text-2xl font-bold mb-2 text-text-dark">Beri Rating</h2>
             <p id="rating-item-name" class="text-gray-700 font-semibold mb-4"></p>
             <form id="rating-form">
                 <input type="hidden" id="rating-menu-id">
                 <div id="rating-stars-container" class="flex justify-center text-4xl text-gray-400 mb-6"></div>
-                <div class="flex justify-end gap-4"><button type="button" id="cancel-rating-modal" class="bg-gray-300 text-gray-800 font-semibold px-5 py-2.5 rounded-xl hover:bg-gray-400 transition-all duration-300 shadow-md">Batal</button><button type="submit" class="bg-yellow-500 text-white font-semibold px-5 py-2.5 rounded-xl hover:bg-yellow-600 transition-all duration-300 shadow-md">Kirim</button></div> <!-- rounded-lg px-4 py-2 -> rounded-xl px-5 py-2.5, tambah transisi & shadow -->
+                <div class="flex justify-end gap-4"><button type="button" id="cancel-rating-modal" class="bg-gray-300 text-gray-800 font-semibold px-5 py-2.5 rounded-xl hover:bg-gray-400 transition-all duration-300 shadow-md">Batal</button><button type="submit" class="bg-yellow-500 text-white font-semibold px-5 py-2.5 rounded-xl hover:bg-yellow-600 transition-all duration-300 shadow-md">Kirim</button></div>
             </form>
         </div>
     </div>
 
     <script>
-        // --- DATA DUMMY ---
-        let users = [
-            { id: 'admin01', name: 'Admin Sekolah', username: 'admin123', password: 'admin123', role: 'admin' },
-            { id: 'user01', name: 'Siswa Cerdas', username: 'user123', password: 'user123', role: 'user' },
-            { id: 'seller01', name: 'Kantin Bu Ani', username: 'penjual123', password: 'penjual123', role: 'penjual' }
-        ];
+        // --- KONFIGURASI SUPABASE ---
+        const SUPABASE_URL = 'https://gkbetmyealeevogqbkpt.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdrYmV0bXllYWxlZXZvZ3Fia3B0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAzMDA4OTcsImV4cCI6MjA3NTg3Njg5N30.yz72Ms5hUD2wRHxnI-bpJIUxuvIi9oL0A0kVOt7mM4E';
+        // --- (Salin dari Panduan README) ---
 
-        let menuItems = [
-            { id: 1, sellerId: 'seller01', name: 'Nasi Goreng Spesial', price: 25000, stock: 15, image: 'https://placehold.co/600x400/8F57DB/ffffff?text=Nasi+Goreng', ratings: [{userId: 'user01', value: 5}], avgRating: 5 },
-            { id: 2, sellerId: 'seller01', name: 'Mie Ayam Bakso', price: 18000, stock: 20, image: 'https://placehold.co/600x400/FC99AF/ffffff?text=Mie+Ayam', ratings: [{userId: 'user01', value: 4}], avgRating: 4 }
-        ];
-        
-        // Dummy orders for demonstration
-        let orders = [
-            { id: 1, sellerId: 'seller01', buyerId: 'user01', buyerName: 'Siswa Cerdas', items: [{id: 1, name: 'Nasi Goreng Spesial', quantity: 1}], total: 25000, status: 'Selesai', date: new Date() },
-            { id: 2, sellerId: 'seller01', buyerId: 'user01', buyerName: 'Siswa Cerdas', items: [{id: 2, name: 'Mie Ayam Bakso', quantity: 2}], total: 36000, status: 'Selesai', date: new Date(new Date().setDate(1)) },
-            { id: 3, sellerId: 'seller01', buyerId: 'user01', buyerName: 'Siswa Cerdas', items: [{id: 1, name: 'Nasi Goreng Spesial', quantity: 1}], total: 25000, status: 'Selesai', date: new Date(new Date().setMonth(0, 15)) },
-            { id: 4, sellerId: 'seller01', buyerId: 'user01', buyerName: 'Siswa Cerdas', items: [{id: 2, name: 'Mie Ayam Bakso', quantity: 1}], total: 18000, status: 'Selesai', date: new Date(new Date().setFullYear(new Date().getFullYear() - 1)) }
-        ];
+        const { createClient } = supabase;
+        let supabaseClient; // Deklarasikan di sini, tapi jangan inisialisasi
 
-        // --- ACCOUNTS (Dynamically generated for login) ---
-        let accounts = {};
-        const generateAccounts = () => {
-            accounts = {};
-            users.forEach(user => {
-                accounts[user.username] = { password: user.password, role: user.role, id: user.id, name: user.name };
-            });
-        };
 
         // --- STATE ---
-        let cart = [];
-        let currentUser = null;
+        let cart = []; // Tetap lokal, karena keranjang hanya sementara
+        let currentUser = null; // Akan diisi oleh Supabase Auth + profile
         let selectedPaymentMethod = 'tunai';
         const qrisMethods = ['qris'];
         let adminChartInstance = null;
         let sellerChartInstance = null;
 
         // --- DOM ELEMENTS ---
+        const loadingOverlay = document.getElementById('loading-overlay');
         const authScreen = document.getElementById('auth-screen');
         const loginContainer = document.getElementById('login-container');
         const registerContainer = document.getElementById('register-container');
@@ -380,7 +396,6 @@
         const adminTotalSales = document.getElementById('admin-total-sales');
         const adminTotalProfit = document.getElementById('admin-total-profit');
         const adminProductList = document.getElementById('admin-product-list');
-        // Pisahkan User List Admin
         const adminStudentList = document.getElementById('admin-student-list');
         const adminSellerList = document.getElementById('admin-seller-list');
         const mainContent = document.getElementById('main-content');
@@ -400,8 +415,6 @@
         const cancelModalButton = document.getElementById('cancel-modal');
         const modalTitle = document.getElementById('modal-title');
         const modalError = document.getElementById('modal-error');
-        // Hapus referensi ke menu-image-url
-        // const menuImageUrlInput = document.getElementById('menu-image-url');
         const imagePreview = document.getElementById('image-preview');
         const userModal = document.getElementById('user-modal');
         const userModalTitle = document.getElementById('user-modal-title');
@@ -425,41 +438,51 @@
         const sellerNetOmset = document.getElementById('seller-net-omset');
         const menuTitle = document.getElementById('menu-title');
         const addMenuButton = document.getElementById('add-menu-button');
-         // Tombol tambah user/seller di admin
-        const addSellerButtonAdmin = document.getElementById('add-seller-button-admin');
-        const addUserButtonAdmin = document.getElementById('add-user-button-admin');
         
         // --- HELPER FUNCTIONS ---
         const formatRupiah = (number) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(number || 0);
         
-        // --- FUNGSI HELPER BARU UNTUK GRAFIK ---
+        const showLoading = (show) => {
+            loadingOverlay.classList.toggle('hidden', !show);
+        };
         
-        /**
-         * Menyaring pesanan berdasarkan periode dan (opsional) ID penjual.
-         */
-        const getFilteredOrders = (period, sellerId = null) => {
+        // --- FUNGSI HELPER BARU UNTUK GRAFIK (SUPABASE) ---
+        
+        const getFilteredOrders = async (period, sellerId = null) => {
             const now = new Date();
-            let relevantOrders = sellerId 
-                ? orders.filter(o => o.sellerId === sellerId) 
-                : orders;
+            let startDate, endDate;
+            endDate = new Date(); // Sampai sekarang
 
             if (period === 'day') {
-                return relevantOrders.filter(o => new Date(o.date).toDateString() === now.toDateString());
+                startDate = new Date(now.setHours(0, 0, 0, 0));
             } else if (period === 'month') {
-                return relevantOrders.filter(o => 
-                    new Date(o.date).getMonth() === now.getMonth() &&
-                    new Date(o.date).getFullYear() === now.getFullYear()
-                );
+                startDate = new Date(now.getFullYear(), now.getMonth(), 1);
             } else if (period === 'year') {
-                 return relevantOrders.filter(o => 
-                    new Date(o.date).getFullYear() === now.getFullYear()
-                );
+                startDate = new Date(now.getFullYear(), 0, 1);
             }
-            return []; // Default
+
+            let query = supabaseClient
+                .from('orders')
+                .select('total, created_at')
+                .gte('created_at', startDate.toISOString())
+                .lte('created_at', endDate.toISOString());
+
+            if (sellerId) {
+                query = query.eq('seller_id', sellerId);
+            }
+
+            const { data, error } = await query;
+            if (error) {
+                console.error('Error fetching filtered orders:', error);
+                return [];
+            }
+            // Ubah format data agar kompatibel dengan fungsi chart lama
+            return data.map(o => ({ total: o.total, date: new Date(o.created_at) }));
         };
         
         /**
          * Memproses data pesanan yang sudah difilter menjadi format untuk Chart.js.
+         * (Fungsi ini tidak berubah, karena data inputnya sudah disamakan)
          */
         const getChartData = (period, filteredOrders) => {
             const now = new Date();
@@ -509,38 +532,61 @@
                 const starClass = i <= rating ? 'text-yellow-400' : 'text-gray-400';
                 starsHtml += `<svg class="w-5 h-5 ${starClass}" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>`;
             }
-            return `<div class="flex items-center gap-0.5">${starsHtml}<span class="text-xs text-gray-500 ml-1.5">(${(rating || 0).toFixed(1)})</span></div>`; /* Tambah gap & spacing */
+            return `<div class="flex items-center gap-0.5">${starsHtml}<span class="text-xs text-gray-500 ml-1.5">(${(rating || 0).toFixed(1)})</span></div>`;
         };
 
-        // --- RENDER FUNCTIONS ---
-        const renderMenu = () => {
-            menuContainer.innerHTML = '';
-            let itemsToDisplay = [];
-            if (!currentUser) return; // Jangan render jika belum login
+        // --- RENDER FUNCTIONS (SUPABASE) ---
+        const renderMenu = async () => {
+            menuContainer.innerHTML = '<p class="col-span-full text-center text-gray-500">Memuat menu...</p>';
+            
+            // Ambil semua menu, dan join dengan data penjual (profiles)
+            // PERBAIKAN: Menambahkan '!menu_items_seller_id_fkey' untuk mengatasi ambiguitas
+            const { data: menuItems, error } = await supabaseClient
+                .from('menu_items')
+                .select(`
+                    *,
+                    profiles!menu_items_seller_id_fkey ( name )
+                `);
 
+            if (error) {
+                console.error('Error fetching menu:', error);
+                menuContainer.innerHTML = '<p class="col-span-full text-center text-red-500">Gagal memuat menu.</p>';
+                return;
+            }
+
+            let itemsToDisplay = [];
             if (currentUser.role === 'penjual') {
-                itemsToDisplay = menuItems.filter(item => item.sellerId === currentUser.id);
+                itemsToDisplay = menuItems.filter(item => item.seller_id === currentUser.id);
             } else { // Admin dan User melihat semua menu
                 itemsToDisplay = menuItems;
             }
-             if (itemsToDisplay.length === 0) {
+            
+            menuContainer.innerHTML = ''; // Kosongkan lagi
+            
+            if (itemsToDisplay.length === 0) {
                  menuContainer.innerHTML = `<p class="col-span-full text-center text-gray-500">${currentUser.role === 'penjual' ? 'Anda belum menambahkan menu.' : 'Belum ada menu tersedia.'}</p>`;
                  return;
             }
+            
             itemsToDisplay.forEach(item => {
-                const isSellerView = currentUser.role === 'penjual' && item.sellerId === currentUser.id;
+                const isSellerView = currentUser.role === 'penjual' && item.seller_id === currentUser.id;
                 const isUserView = currentUser.role === 'user';
                 const isAdminView = currentUser.role === 'admin';
                 const isOutOfStock = item.stock <= 0;
+                
+                // Ambil nama penjual dari data join
+                // PERBAIKAN: Menggunakan nama relasi yang benar
+                const sellerName = item.profiles?.name || 'Penjual';
+
                 const menuItemElement = document.createElement('div');
-                menuItemElement.className = `bg-card rounded-xl shadow-xl overflow-hidden flex flex-col relative border border-card ${isOutOfStock ? 'opacity-60' : ''} transition-all duration-300 hover:shadow-2xl hover:scale-[1.02]`; /* rounded-lg shadow-lg -> rounded-xl shadow-xl, tambah transisi */
+                menuItemElement.className = `bg-card rounded-xl shadow-xl overflow-hidden flex flex-col relative border border-card ${isOutOfStock ? 'opacity-60' : ''} transition-all duration-300 hover:shadow-2xl hover:scale-[1.02]`;
                 menuItemElement.innerHTML = `
-                    ${isOutOfStock ? `<div class="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center z-10 rounded-xl"><span class="text-white text-xl font-bold">STOK HABIS</span></div>` : ''} <!-- Tambah rounded-xl -->
-                    <img src="${item.image || 'https://placehold.co/600x400/cccccc/ffffff?text=Gambar'}" alt="${item.name}" class="w-full h-48 object-cover">
+                    ${isOutOfStock ? `<div class="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center z-10 rounded-xl"><span class="text-white text-xl font-bold">STOK HABIS</span></div>` : ''}
+                    <img src="${item.image_url || 'https://placehold.co/600x400/cccccc/ffffff?text=Gambar'}" alt="${item.name}" class="w-full h-48 object-cover">
                     <div class="p-4 flex-grow flex flex-col">
                         <h3 class="text-lg font-semibold text-text-dark">${item.name}</h3>
-                        ${!isSellerView ? `<p class="text-xs text-gray-500 mb-1">dari ${users.find(u => u.id === item.sellerId)?.name || 'Penjual'}</p>` : ''}
-                        <div class="my-2">${renderStars(item.avgRating)}</div>
+                        ${!isSellerView ? `<p class="text-xs text-gray-500 mb-1">dari ${sellerName}</p>` : ''}
+                        <div class="my-2">${renderStars(item.avg_rating)}</div>
                         <div class="flex justify-between items-center mt-1 mb-4">
                             <p class="text-pink font-bold">${formatRupiah(item.price)}</p>
                             <p class="text-sm font-medium ${item.stock < 5 && item.stock > 0 ? 'text-red-500' : 'text-gray-500'}">Stok: ${item.stock}</p>
@@ -548,17 +594,16 @@
                         <div class="mt-auto">
                             ${isSellerView ? `
                                 <div class="flex gap-2">
-                                    <button onclick='openMenuModal(${JSON.stringify(item)})' class="w-full bg-yellow-500 text-white font-semibold py-2.5 rounded-xl hover:bg-yellow-600 transition-all duration-300 shadow-md">Edit</button> <!-- py-2 rounded-lg -> py-2.5 rounded-xl, tambah transisi & shadow -->
-                                    <button onclick="handleDeleteMenu(${item.id})" class="w-full bg-red-500 text-white font-semibold py-2.5 rounded-xl hover:bg-red-600 transition-all duration-300 shadow-md">Hapus</button> <!-- py-2 rounded-lg -> py-2.5 rounded-xl, tambah transisi & shadow -->
+                                    <button onclick='openMenuModal(${JSON.stringify(item)})' class="w-full bg-yellow-500 text-white font-semibold py-2.5 rounded-xl hover:bg-yellow-600 transition-all duration-300 shadow-md">Edit</button>
+                                    <button onclick="handleDeleteMenu(${item.id})" class="w-full bg-red-500 text-white font-semibold py-2.5 rounded-xl hover:bg-red-600 transition-all duration-300 shadow-md">Hapus</button>
                                 </div>
                             ` : ''}
                              ${isUserView ? `
                                 <div class="flex gap-2">
-                                    <button onclick="openRatingModal(${item.id})" class="w-full bg-yellow-500 text-white font-semibold py-2.5 px-3 rounded-xl hover:bg-yellow-600 transition-all duration-300 shadow-md">Beri Rating</button> <!-- py-2 rounded-lg -> py-2.5 rounded-xl, tambah transisi & shadow -->
-                                    <button onclick='addToCart(${JSON.stringify(item)})' class="w-full bg-[--light-purple] text-white font-semibold py-2.5 px-3 rounded-xl hover:bg-[--dark-purple] disabled:bg-gray-400 disabled:shadow-none transition-all duration-300 shadow-md" ${isOutOfStock ? 'disabled' : ''}>+ Tambah</button> <!-- py-2 rounded-lg -> py-2.5 rounded-xl, tambah transisi & shadow -->
+                                    <button onclick="openRatingModal(${item.id}, '${item.name}')" class="w-full bg-yellow-500 text-white font-semibold py-2.5 px-3 rounded-xl hover:bg-yellow-600 transition-all duration-300 shadow-md">Beri Rating</button>
+                                    <button onclick='addToCart(${JSON.stringify(item)})' class="w-full bg-[--light-purple] text-white font-semibold py-2.5 px-3 rounded-xl hover:bg-[--dark-purple] disabled:bg-gray-400 disabled:shadow-none transition-all duration-300 shadow-md" ${isOutOfStock ? 'disabled' : ''}>+ Tambah</button>
                                 </div>
                              ` : ''}
-                             
                         </div>
                     </div>
                 `;
@@ -568,7 +613,7 @@
 
         const renderCart = () => {
              if (!currentUser || currentUser.role !== 'user') {
-                 cartItemsContainer.innerHTML = ''; // Kosongkan jika bukan user
+                 cartItemsContainer.innerHTML = '';
                  cartTotalElement.textContent = formatRupiah(0);
                  orderButton.disabled = true;
                  return;
@@ -600,48 +645,92 @@
             orderButton.disabled = cart.length === 0;
         };
 
-        const renderSellerOrders = () => {
+        const renderSellerOrders = async () => {
              if (!currentUser || currentUser.role !== 'penjual') return;
-            sellerOrdersContainer.innerHTML = '';
-            const myOrders = orders.filter(order => order.sellerId === currentUser.id);
+            sellerOrdersContainer.innerHTML = '<p class="text-gray-500 text-center">Memuat pesanan...</p>';
+            
+            // Ambil pesanan DAN nama pembeli (dari tabel profiles)
+            // PERBAIKAN: Mengatasi ambiguitas dengan '!orders_buyer_id_fkey' dan memberi alias 'buyer'
+            const { data: myOrders, error } = await supabaseClient
+                .from('orders')
+                .select(`
+                    *,
+                    buyer:profiles!orders_buyer_id_fkey ( name )
+                `)
+                .eq('seller_id', currentUser.id)
+                .order('created_at', { ascending: false });
+
+            if (error) {
+                console.error('Error fetching seller orders:', error);
+                sellerOrdersContainer.innerHTML = '<p class="text-red-500 text-center">Gagal memuat pesanan.</p>';
+                return;
+            }
+
             if (myOrders.length === 0) {
                  sellerOrdersContainer.innerHTML = '<p class="text-gray-500 text-center">Belum ada pesanan masuk.</p>';
                  return;
             }
+            
+            sellerOrdersContainer.innerHTML = ''; // Kosongkan
+            
             myOrders.forEach(order => {
                 const orderCard = document.createElement('div');
                 orderCard.className = 'border-b border-card pb-4 last:border-b-0';
+                // 'items' sekarang adalah JSONB
                 const itemsHtml = order.items.map(item => `<li>${item.quantity}x ${item.name}</li>`).join('');
                 const statusColor = { 'Baru': 'bg-blue-200 text-blue-800', 'Diproses': 'bg-yellow-200 text-yellow-800', 'Selesai': 'bg-green-200 text-green-800' }[order.status];
+                // PERBAIKAN: Menggunakan alias 'buyer'
+                const buyerName = order.buyer?.name || 'Siswa';
+                
                 orderCard.innerHTML = `
                     <div class="flex justify-between items-start">
                         <div>
-                            <p class="font-bold text-text-dark">Pesanan #${order.id} <span class="text-sm font-normal text-gray-500">dari ${order.buyerName}</span></p>
+                            <p class="font-bold text-text-dark">Pesanan #${order.id} <span class="text-sm font-normal text-gray-500">dari ${buyerName}</span></p>
                             <p class="font-semibold text-lg text-pink">${formatRupiah(order.total)}</p>
-                            <p class="text-xs text-gray-500">${new Date(order.date).toLocaleString('id-ID')}</p>
+                            <p class="text-xs text-gray-500">${new Date(order.created_at).toLocaleString('id-ID')}</p>
                         </div>
                         <span class="text-xs font-bold px-2 py-1 rounded-full ${statusColor}">${order.status}</span>
                     </div>
                     <ul class="list-disc list-inside text-sm text-gray-600 my-2">${itemsHtml}</ul>
-                    ${order.status === 'Baru' ? `<button onclick="updateOrderStatus(${order.id}, 'Diproses')" class="w-full text-sm bg-yellow-500 text-white font-semibold py-2 rounded-xl hover:bg-yellow-600 mt-2 transition-all duration-300 shadow-md">Proses Pesanan</button>` : ''} <!-- py-1 rounded-lg -> py-2 rounded-xl, tambah transisi & shadow -->
-                    ${order.status === 'Diproses' ? `<button onclick="updateOrderStatus(${order.id}, 'Selesai')" class="w-full text-sm bg-green-500 text-white font-semibold py-2 rounded-xl hover:bg-green-600 mt-2 transition-all duration-300 shadow-md">Selesaikan Pesanan</button>` : ''} <!-- py-1 rounded-lg -> py-2 rounded-xl, tambah transisi & shadow -->
+                    ${order.status === 'Baru' ? `<button onclick="updateOrderStatus(${order.id}, 'Diproses')" class="w-full text-sm bg-yellow-500 text-white font-semibold py-2 rounded-xl hover:bg-yellow-600 mt-2 transition-all duration-300 shadow-md">Proses Pesanan</button>` : ''}
+                    ${order.status === 'Diproses' ? `<button onclick="updateOrderStatus(${order.id}, 'Selesai')" class="w-full text-sm bg-green-500 text-white font-semibold py-2 rounded-xl hover:bg-green-600 mt-2 transition-all duration-300 shadow-md">Selesaikan Pesanan</button>` : ''}
                 `;
                 sellerOrdersContainer.appendChild(orderCard);
             });
         };
 
-        const renderUserOrders = () => {
+        const renderUserOrders = async () => {
              if (!currentUser || currentUser.role !== 'user') return;
-            userOrdersContainer.innerHTML = '';
-            const myOrders = orders.filter(order => order.buyerId === currentUser.id);
+            userOrdersContainer.innerHTML = '<p class="text-gray-500 text-center">Memuat riwayat...</p>';
+            
+            // Ambil pesanan DAN nama penjual (dari tabel profiles)
+            // PERBAIKAN: Mengatasi ambiguitas dengan '!orders_seller_id_fkey'
+            const { data: myOrders, error } = await supabaseClient
+                .from('orders')
+                .select(`
+                    *,
+                    seller:profiles!orders_seller_id_fkey ( name )
+                `)
+                .eq('buyer_id', currentUser.id)
+                .order('created_at', { ascending: false });
+
+            if (error) {
+                console.error('Error fetching user orders:', error);
+                userOrdersContainer.innerHTML = '<p class="text-red-500 text-center">Gagal memuat riwayat.</p>';
+                return;
+            }
+            
             if (myOrders.length === 0) {
                 userOrdersContainer.innerHTML = '<p class="text-gray-500 text-center">Anda belum pernah memesan.</p>';
                 return;
             }
+            
+            userOrdersContainer.innerHTML = ''; // Kosongkan
+            
             myOrders.forEach(order => {
                 const orderCard = document.createElement('div');
                 orderCard.className = 'border-b border-card pb-4 last:border-b-0 fade-in';
-                const sellerName = users.find(s => s.id === order.sellerId)?.name || 'Penjual Terhapus';
+                const sellerName = order.seller?.name || 'Penjual Terhapus';
                 const itemsHtml = order.items.map(item => `<li>${item.quantity}x ${item.name}</li>`).join('');
                 const statusColor = { 'Baru': 'bg-blue-200 text-blue-800', 'Diproses': 'bg-yellow-200 text-yellow-800', 'Selesai': 'bg-green-200 text-green-800' }[order.status];
                 orderCard.innerHTML = `
@@ -649,7 +738,7 @@
                         <div>
                             <p class="font-bold text-text-dark">Pesanan #${order.id} <span class="text-sm font-normal text-gray-500">dari ${sellerName}</span></p>
                             <p class="font-semibold text-lg text-pink">${formatRupiah(order.total)}</p>
-                            <p class="text-xs text-gray-500">${new Date(order.date).toLocaleString('id-ID')}</p>
+                            <p class="text-xs text-gray-500">${new Date(order.created_at).toLocaleString('id-ID')}</p>
                         </div>
                         <span class="text-xs font-bold px-2 py-1 rounded-full ${statusColor}">${order.status}</span>
                     </div>
@@ -659,9 +748,18 @@
             });
         };
 
-        const renderAdminLists = () => {
+        const renderAdminLists = async () => {
             if (!currentUser || currentUser.role !== 'admin') return;
             
+            const { data: users, error } = await supabaseClient
+                .from('profiles')
+                .select('*');
+            
+            if (error) {
+                console.error('Error fetching users:', error);
+                return;
+            }
+
             const students = users.filter(u => u.role === 'user');
             const sellers = users.filter(u => u.role === 'penjual');
 
@@ -670,17 +768,17 @@
                 return `
                 <table class="w-full text-left min-w-[600px]">
                     <thead class="bg-cream"><tr class="border-b border-card">
-                        <th class="p-3 font-semibold text-sm text-gray-600">Username</th>
+                        <th class="p-3 font-semibold text-sm text-gray-600">Nama / Username</th>
                         <th class="p-3 font-semibold text-sm text-gray-600">ID</th>
                         <th class="p-3 font-semibold text-sm text-gray-600">Aksi</th>
                     </tr></thead>
                     <tbody>${userArray.map(user => `
                         <tr class="border-b last:border-b-0 hover:bg-cream border-card">
-                            <td class="p-3 text-text-dark">${user.username}</td>
+                            <td class="p-3 text-text-dark">${user.name || user.username}</td>
                             <td class="p-3 text-xs text-gray-500">${user.id}</td>
                             <td class="p-3 flex gap-2">
-                                <button onclick='openUserModal(${JSON.stringify(user)})' class="text-sm bg-yellow-500 text-white font-semibold px-3 py-1.5 rounded-lg hover:bg-yellow-600 transition-all duration-300 shadow-sm">Edit</button> <!-- py-1 -> py-1.5, tambah transisi & shadow -->
-                                <button onclick="handleDeleteUser('${user.id}')" class="text-sm bg-red-500 text-white font-semibold px-3 py-1.5 rounded-lg hover:bg-red-600 transition-all duration-300 shadow-sm">Hapus</button> <!-- py-1 -> py-1.5, tambah transisi & shadow -->
+                                <button onclick='openUserModal(${JSON.stringify(user)})' class="text-sm bg-yellow-500 text-white font-semibold px-3 py-1.5 rounded-lg hover:bg-yellow-600 transition-all duration-300 shadow-sm">Edit</button>
+                                <button onclick="handleDeleteUser('${user.id}')" class="text-sm bg-red-500 text-white font-semibold px-3 py-1.5 rounded-lg hover:bg-red-600 transition-all duration-300 shadow-sm">Hapus</button>
                             </td></tr>`).join('')}
                     </tbody></table>`;
             };
@@ -691,20 +789,21 @@
 
         const renderAdminChart = (period = 'day') => {
             if (adminChartInstance) {
-                adminChartInstance.destroy(); // Hancurkan grafik lama
+                adminChartInstance.destroy();
             }
             const ctx = document.getElementById('admin-sales-chart').getContext('2d');
-            const filteredOrders = getFilteredOrders(period, null); // null = semua penjual
+            // Data sudah di-fetch oleh renderAdminIncomeReport
+            const filteredOrders = window.adminFilteredOrders || [];
             const chartData = getChartData(period, filteredOrders);
 
             adminChartInstance = new Chart(ctx, {
-                type: 'bar', // Menggunakan diagram batang
+                type: 'bar',
                 data: {
                     labels: chartData.labels,
                     datasets: [{
                         label: 'Total Penjualan',
                         data: chartData.data,
-                        backgroundColor: 'rgba(80, 38, 136, 0.6)', // var(--dark-purple)
+                        backgroundColor: 'rgba(80, 38, 136, 0.6)',
                         borderColor: 'rgba(80, 38, 136, 1)',
                         borderWidth: 1
                     }]
@@ -732,21 +831,22 @@
         };
         const renderSellerChart = (period = 'day') => {
              if (sellerChartInstance) {
-                sellerChartInstance.destroy(); // Hancurkan grafik lama
+                sellerChartInstance.destroy();
             }
             if (!currentUser) return;
             const ctx = document.getElementById('seller-sales-chart').getContext('2d');
-            const filteredOrders = getFilteredOrders(period, currentUser.id); // Hanya penjual ini
+            // Data sudah di-fetch oleh renderSellerIncomeReport
+            const filteredOrders = window.sellerFilteredOrders || [];
             const chartData = getChartData(period, filteredOrders);
             
             sellerChartInstance = new Chart(ctx, {
-                type: 'bar', // Menggunakan diagram batang
+                type: 'bar',
                 data: {
                     labels: chartData.labels,
                     datasets: [{
                         label: 'Total Omset',
                         data: chartData.data,
-                        backgroundColor: 'rgba(252, 153, 175, 0.6)', // var(--pink)
+                        backgroundColor: 'rgba(252, 153, 175, 0.6)',
                         borderColor: 'rgba(252, 153, 175, 1)',
                         borderWidth: 1
                     }]
@@ -772,34 +872,38 @@
                 }
             });
         };
-        const renderAdminIncomeReport = (period = 'day') => {
-            // Update gaya tombol filter
+        const renderAdminIncomeReport = async (period = 'day') => {
+            showLoading(true);
             adminPeriodFilter.querySelectorAll('.period-btn').forEach(btn => {
                 const isSelected = btn.dataset.period === period;
                 btn.classList.toggle('bg-[--dark-purple]', isSelected);
                 btn.classList.toggle('bg-[--light-purple]', !isSelected);
             });
             
-            const filteredOrders = getFilteredOrders(period, null); // Semua penjual
+            const filteredOrders = await getFilteredOrders(period, null); // Semua penjual
+            window.adminFilteredOrders = filteredOrders; // Simpan untuk chart
+            
             const totalSales = filteredOrders.reduce((sum, order) => sum + order.total, 0);
-            const totalProfit = totalSales * 0.10; // 10% profit
+            const totalProfit = totalSales * 0.10;
             
             adminTotalSales.textContent = formatRupiah(totalSales);
             adminTotalProfit.textContent = formatRupiah(totalProfit);
             
-            // Panggil render chart setelah laporan di-update
             renderAdminChart(period);
+            showLoading(false);
         };
-        const renderSellerIncomeReport = (period = 'day') => {
+        const renderSellerIncomeReport = async (period = 'day') => {
             if (!currentUser) return;
-            // Update gaya tombol filter
+            showLoading(true);
             sellerPeriodFilter.querySelectorAll('.period-btn').forEach(btn => {
                 const isSelected = btn.dataset.period === period;
                 btn.classList.toggle('bg-[--dark-purple]', isSelected);
                 btn.classList.toggle('bg-[--light-purple]', !isSelected);
             });
             
-            const filteredOrders = getFilteredOrders(period, currentUser.id); // Hanya penjual ini
+            const filteredOrders = await getFilteredOrders(period, currentUser.id); // Hanya penjual ini
+            window.sellerFilteredOrders = filteredOrders; // Simpan untuk chart
+
             const totalOmset = filteredOrders.reduce((sum, order) => sum + order.total, 0);
             const profitContribution = totalOmset * 0.10;
             const netOmset = totalOmset - profitContribution;
@@ -808,27 +912,45 @@
             sellerProfitContribution.textContent = formatRupiah(profitContribution);
             sellerNetOmset.textContent = formatRupiah(netOmset);
             
-            // Panggil render chart setelah laporan di-update
             renderSellerChart(period);
+            showLoading(false);
         };
          const renderAdminDashboardContent = () => {
-             renderAdminIncomeReport(); // Tampilkan laporan default (harian) -> Ini akan memanggil renderAdminChart
-             renderAdminLists(); // Tampilkan daftar pengguna
-             renderAdminProductList(); // Tampilkan daftar semua produk
+             renderAdminIncomeReport(); // Default harian
+             renderAdminLists();
+             renderAdminProductList();
         };
-         const renderAdminProductList = () => {
+         const renderAdminProductList = async () => {
+             adminProductList.innerHTML = '<p class="text-gray-500 text-center col-span-full">Memuat produk...</p>';
+             
+             // PERBAIKAN: Mengatasi ambiguitas dengan '!menu_items_seller_id_fkey'
+             const { data: menuItems, error } = await supabaseClient
+                .from('menu_items')
+                .select(`
+                    *,
+                    profiles!menu_items_seller_id_fkey ( name )
+                `);
+
+             if (error) {
+                 console.error('Error fetching menu for admin:', error);
+                 adminProductList.innerHTML = '<p class="text-red-500 text-center col-span-full">Gagal memuat produk.</p>';
+                 return;
+             }
+             
              adminProductList.innerHTML = '';
+             
              menuItems.forEach(item => {
                  const productCard = document.createElement('div');
-                 productCard.className = 'bg-card p-4 rounded-xl shadow-xl border border-card'; /* rounded-lg shadow -> rounded-xl shadow-xl */
-                 const seller = users.find(u => u.id === item.sellerId);
+                 productCard.className = 'bg-card p-4 rounded-xl shadow-xl border border-card';
+                 // PERBAIKAN: Menggunakan nama relasi yang benar
+                 const sellerName = item.profiles?.name || 'N/A';
                  productCard.innerHTML = `
-                    <img src="${item.image || 'https://placehold.co/600x400/cccccc/ffffff?text=Gambar'}" alt="${item.name}" class="w-full h-32 object-cover rounded-lg mb-2"> <!-- rounded -> rounded-lg (biar pas) -->
+                    <img src="${item.image_url || 'https://placehold.co/600x400/cccccc/ffffff?text=Gambar'}" alt="${item.name}" class="w-full h-32 object-cover rounded-lg mb-2">
                     <p class="font-semibold text-text-dark">${item.name}</p>
-                    <div class="my-1">${renderStars(item.avgRating)}</div>
+                    <div class="my-1">${renderStars(item.avg_rating)}</div>
                     <p class="text-sm text-gray-500">${formatRupiah(item.price)}</p>
                     <p class="text-xs text-gray-500">Stok: ${item.stock}</p>
-                    <p class="text-xs font-semibold text-dark-purple mt-1">Penjual: ${seller ? seller.name : 'N/A'}</p>`;
+                    <p class="text-xs font-semibold text-dark-purple mt-1">Penjual: ${sellerName}</p>`;
                  adminProductList.appendChild(productCard);
              });
               if (menuItems.length === 0) {
@@ -836,99 +958,146 @@
               }
         };
 
-        // --- CORE LOGIC ---
+        // --- CORE LOGIC (SUPABASE) ---
         const updateView = () => {
              authScreen.classList.toggle('hidden', !!currentUser);
              appScreen.classList.toggle('hidden', !currentUser);
 
              if(currentUser){
-                headerSubtitle.textContent = `Selamat datang, ${currentUser.name}!`; // Pakai name
+                headerSubtitle.textContent = `Selamat datang, ${currentUser.name}!`;
                 adminDashboard.classList.add('hidden');
-                mainContent.classList.add('hidden'); // Sembunyikan main content defaultnya
+                mainContent.classList.add('hidden');
                 sellerDashboard.classList.add('hidden');
                 cartAndOrdersSection.classList.add('hidden');
                 addMenuButton.classList.add('hidden');
 
+                showLoading(true); // Tampilkan loading saat ganti view
+
                 if (currentUser.role === 'admin') {
                     adminDashboard.classList.remove('hidden');
-                    renderAdminDashboardContent(); // Panggil fungsi render admin
+                    renderAdminDashboardContent(); // Async
                 } else if (currentUser.role === 'penjual') {
-                    mainContent.classList.remove('hidden'); // Tampilkan main content untuk penjual
+                    mainContent.classList.remove('hidden');
                     sellerDashboard.classList.remove('hidden');
                     addMenuButton.classList.remove('hidden');
                     menuTitle.textContent = "Produk Anda";
-                    renderSellerOrders();
-                    renderMenu();
-                    renderSellerIncomeReport(); // Panggil laporan penjual -> Ini akan memanggil renderSellerChart
+                    renderSellerOrders(); // Async
+                    renderMenu(); // Async
+                    renderSellerIncomeReport(); // Async
                 } else if (currentUser.role === 'user') {
-                     mainContent.classList.remove('hidden'); // Tampilkan main content untuk user
+                     mainContent.classList.remove('hidden');
                     cartAndOrdersSection.classList.remove('hidden');
                     menuTitle.textContent = "Menu Makanan";
-                    renderMenu();
-                    renderCart();
-                    renderUserOrders();
+                    renderMenu(); // Async
+                    renderCart(); // Lokal, cepat
+                    renderUserOrders(); // Async
                 }
+                showLoading(false); // Sembunyikan loading
              } else {
-                 cart = []; // Kosongkan keranjang saat logout
+                 cart = [];
              }
         };
 
-        const handleLogin = (e) => {
+        const handleLogin = async (e) => {
             e.preventDefault();
-            const username = document.getElementById('username').value;
+            showLoading(true);
+            const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
-            const account = accounts[username];
-            if (account && account.password === password) {
-                currentUser = { id: account.id, username, role: account.role, name: account.name };
+            
+            const { data, error } = await supabaseClient.auth.signInWithPassword({
+                email: email,
+                password: password,
+            });
+
+            if (error) {
+                loginError.textContent = 'Email atau password salah.';
+            } else {
+                // onAuthStateChange akan menangani pembaruan UI
                 loginError.textContent = '';
                 loginForm.reset();
-                updateView();
-            } else {
-                loginError.textContent = 'Username atau password salah.';
             }
+            showLoading(false);
         };
 
-        const handleRegister = (e) => {
+        const handleRegister = async (e) => {
             e.preventDefault();
-            const username = document.getElementById('register-username').value;
+            showLoading(true);
+            const name = document.getElementById('register-name').value;
+            const email = document.getElementById('register-email').value;
             const password = document.getElementById('register-password').value;
-            const usernameExists = users.some(u => u.username === username);
-            if (usernameExists) {
-                registerMessage.textContent = 'Username sudah digunakan. Coba yang lain.';
+
+            // Daftar user baru di Supabase Auth
+            const { data: authData, error: authError } = await supabaseClient.auth.signUp({
+                email: email,
+                password: password,
+                options: {
+                    // Masukkan data tambahan (nama, role) ke metadata
+                    data: {
+                        name: name,
+                        role: 'user' // Default role
+                    }
+                }
+            });
+
+            if (authError) {
+                registerMessage.textContent = authError.message;
                 registerMessage.className = 'text-center mb-4 text-red-500';
-                return;
+            } else {
+                // Buat profil di tabel 'profiles' (Jika trigger SQL gagal/tidak diatur)
+                // Sebenarnya trigger SQL di Langkah 4 harusnya sudah menangani ini
+                const { error: profileError } = await supabaseClient
+                    .from('profiles')
+                    .insert({
+                        id: authData.user.id,
+                        email: email,
+                        name: name,
+                        role: 'user'
+                    });
+
+                if (profileError) {
+                     registerMessage.textContent = 'Gagal membuat profil: ' + profileError.message;
+                     registerMessage.className = 'text-center mb-4 text-red-500';
+                } else {
+                    registerMessage.textContent = 'Pendaftaran berhasil! Silakan login.';
+                    registerMessage.className = 'text-center mb-4 text-green-500';
+                    setTimeout(() => {
+                        showLoginBtn.click();
+                        registerForm.reset();
+                        registerMessage.textContent = '';
+                    }, 2000);
+                }
             }
-            // Tambahkan user baru (default role 'user')
-            const newId = 'user' + Date.now(); // ID unik sederhana
-            users.push({ id: newId, name: username, username, password, role: 'user' });
-            generateAccounts(); // Update daftar akun
-            registerMessage.textContent = 'Pendaftaran berhasil! Silakan login.';
-            registerMessage.className = 'text-center mb-4 text-green-500';
-            setTimeout(() => {
-                showLoginBtn.click(); // Pindah ke form login
-                registerForm.reset();
-                registerMessage.textContent = '';
-            }, 2000);
+            showLoading(false);
         };
 
-        const handleLogout = () => {
+        const handleLogout = async () => {
+            showLoading(true);
+            await supabaseClient.auth.signOut();
             currentUser = null;
-            updateView();
+            updateView(); // onAuthStateChange juga akan menangani ini
+            showLoading(false);
         };
         
         const addToCart = (item) => {
              const itemInCart = cart.find(cartItem => cartItem.id === item.id);
-             const originalItem = menuItems.find(menuItem => menuItem.id === item.id); // Cari stok asli
-
+             // 'item' dari Supabase sudah punya stok
             if (itemInCart) {
-                if (itemInCart.quantity < originalItem.stock) {
+                if (itemInCart.quantity < item.stock) {
                     itemInCart.quantity++;
                 } else {
                      alert(`Stok ${item.name} tidak mencukupi.`);
                 }
             } else {
-                 if (originalItem.stock > 0) {
-                     cart.push({ ...item, quantity: 1 });
+                 if (item.stock > 0) {
+                     // Salin properti yang relevan ke keranjang
+                     cart.push({
+                         id: item.id,
+                         name: item.name,
+                         price: item.price,
+                         stock: item.stock, // Simpan stok asli untuk validasi
+                         seller_id: item.seller_id,
+                         quantity: 1
+                     });
                  } else {
                      alert(`${item.name} sedang habis.`);
                  }
@@ -940,58 +1109,68 @@
             const itemInCartIndex = cart.findIndex(item => item.id === itemId);
             if (itemInCartIndex > -1) {
                 const itemInCart = cart[itemInCartIndex];
-                const originalItem = menuItems.find(menuItem => menuItem.id === itemId);
                 const newQuantity = itemInCart.quantity + change;
 
                 if (newQuantity <= 0) {
-                    cart.splice(itemInCartIndex, 1); // Hapus jika jadi 0 atau kurang
-                } else if (newQuantity <= originalItem.stock) {
-                    itemInCart.quantity = newQuantity; // Update jika stok cukup
+                    cart.splice(itemInCartIndex, 1);
+                } else if (newQuantity <= itemInCart.stock) { // Validasi stok dari item di keranjang
+                    itemInCart.quantity = newQuantity;
                 } else {
-                     alert(`Stok ${itemInCart.name} hanya tersisa ${originalItem.stock}.`);
+                     alert(`Stok ${itemInCart.name} hanya tersisa ${itemInCart.stock}.`);
                 }
             }
             renderCart();
         };
         
-        const placeOrder = () => {
+        const placeOrder = async () => {
             if (cart.length === 0) return;
+            showLoading(true);
+            
+            // Kelompokkan pesanan berdasarkan seller_id
             const ordersBySeller = cart.reduce((acc, item) => {
-                // Gunakan sellerId dari item menu, bukan dari item di cart (jika berbeda)
-                const menuItem = menuItems.find(mi => mi.id === item.id);
-                const sellerId = menuItem ? menuItem.sellerId : 'unknown_seller';
+                const sellerId = item.seller_id;
                 if (!acc[sellerId]) acc[sellerId] = [];
                 acc[sellerId].push(item);
                 return acc;
             }, {});
 
-
-            let newOrders = [];
+            let newOrdersData = [];
             for (const sellerId in ordersBySeller) {
                 const sellerItems = ordersBySeller[sellerId];
                 const sellerTotal = sellerItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
-                 const newOrder = { 
-                    id: orders.length + newOrders.length + 1, // Generate ID baru
-                    sellerId, 
-                    buyerId: currentUser.id, 
-                    buyerName: currentUser.name, 
-                    items: sellerItems.map(i => ({id: i.id, name: i.name, quantity: i.quantity})), 
+                 
+                newOrdersData.push({ 
+                    seller_id: sellerId, 
+                    buyer_id: currentUser.id,
+                    // Simpan hanya data item yg relevan dalam format JSONB
+                    items: sellerItems.map(i => ({id: i.id, name: i.name, quantity: i.quantity, price: i.price})), 
                     total: sellerTotal, 
-                    status: 'Baru', 
-                    date: new Date()
-                };
-                 newOrders.push(newOrder);
+                    status: 'Baru'
+                    // created_at akan diisi oleh Supabase
+                });
 
-                 // Kurangi stok
-                 sellerItems.forEach(cartItem => {
-                     const menuItem = menuItems.find(mi => mi.id === cartItem.id);
-                     if (menuItem) {
-                         menuItem.stock -= cartItem.quantity;
-                     }
-                 });
+                 // Kurangi stok (Ini harusnya transaksi, tapi kita lakukan satu per satu)
+                 for (const cartItem of sellerItems) {
+                     const newStock = cartItem.stock - cartItem.quantity;
+                     const { error: stockError } = await supabaseClient
+                        .from('menu_items')
+                        .update({ stock: newStock })
+                        .eq('id', cartItem.id);
+                     if (stockError) console.error('Error updating stock:', stockError);
+                 }
             }
             
-            orders.push(...newOrders); // Tambahkan semua order baru ke array orders utama
+            // Masukkan semua pesanan baru ke tabel 'orders'
+            const { error: orderError } = await supabaseClient
+                .from('orders')
+                .insert(newOrdersData);
+
+            if (orderError) {
+                console.error('Error placing order:', orderError);
+                orderStatus.innerHTML = `<p class="text-red-500 font-semibold">Gagal membuat pesanan.</p>`;
+                showLoading(false);
+                return;
+            }
 
             if(qrisMethods.includes(selectedPaymentMethod)) {
                 const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
@@ -1002,6 +1181,7 @@
             } else {
                 finishOrderPlacement();
             }
+            showLoading(false);
         };
 
         const finishOrderPlacement = () => {
@@ -1009,20 +1189,26 @@
             setTimeout(() => { orderStatus.innerHTML = ''; }, 3000);
             cart = [];
             renderCart();
-            renderUserOrders();
+            renderUserOrders(); // Refresh riwayat pesanan
             renderMenu(); // Refresh menu untuk update stok
-             if(currentUser && currentUser.role === 'penjual') renderSellerOrders(); // Refresh order penjual jika perlu
-             if(currentUser && currentUser.role === 'admin') renderAdminProductList(); // Refresh produk di admin
+             if(currentUser && currentUser.role === 'admin') renderAdminProductList();
         }
 
-        const updateOrderStatus = (orderId, newStatus) => {
-            const order = orders.find(o => o.id === orderId);
-            if (order && order.sellerId === currentUser.id) { // Pastikan penjual yg benar
-                order.status = newStatus;
-                renderSellerOrders();
-                // Jika ingin update di user view juga (meski tidak terlihat langsung)
-                // renderUserOrders(); 
+        const updateOrderStatus = async (orderId, newStatus) => {
+            showLoading(true);
+            const { error } = await supabaseClient
+                .from('orders')
+                .update({ status: newStatus })
+                .eq('id', orderId)
+                .eq('seller_id', currentUser.id); // Pastikan hanya penjual yg benar
+            
+            if (error) {
+                console.error('Error updating status:', error);
+                alert('Gagal memperbarui status.');
+            } else {
+                renderSellerOrders(); // Refresh daftar pesanan penjual
             }
+            showLoading(false);
         };
         
         const selectPaymentMethod = (method) => {
@@ -1041,18 +1227,19 @@
         window.openMenuModal = (item = null) => {
             menuForm.reset();
             imagePreview.classList.add('hidden');
-            imagePreview.src = ''; // Kosongkan preview src
+            imagePreview.src = '';
             modalError.textContent = '';
             modalError.classList.add('hidden');
+            document.getElementById('menu-image-file').value = null; // Reset input file
+
             if (item) {
                 modalTitle.textContent = 'Edit Menu';
                 document.getElementById('menu-id').value = item.id;
                 document.getElementById('menu-name').value = item.name;
                 document.getElementById('menu-price').value = item.price;
                 document.getElementById('menu-stock').value = item.stock;
-                // menuImageUrlInput.value = item.image || ''; // Hapus baris ini
-                if(item.image) {
-                     imagePreview.src = item.image; // Ini sekarang data:URL atau placeholder
+                if(item.image_url) {
+                     imagePreview.src = item.image_url;
                      imagePreview.classList.remove('hidden');
                 }
             } else {
@@ -1062,208 +1249,189 @@
             menuModal.classList.remove('hidden');
         };
         
-        const handleSaveMenu = (e) => {
+        const handleSaveMenu = async (e) => {
             e.preventDefault();
+            showLoading(true);
+            
             const id = document.getElementById('menu-id').value;
             const name = document.getElementById('menu-name').value;
             const price = parseInt(document.getElementById('menu-price').value);
             const stock = parseInt(document.getElementById('menu-stock').value);
-            // Ambil file dari input
             const file = document.getElementById('menu-image-file').files[0]; 
 
             modalError.textContent = '';
             modalError.classList.add('hidden');
 
-             // Validasi input dasar
              if (!name || isNaN(price) || isNaN(stock) || price < 0 || stock < 0) {
                  modalError.textContent = 'Nama, harga (positif), dan stok (positif) wajib diisi.';
                  modalError.classList.remove('hidden');
+                 showLoading(false);
                  return;
              }
+             
+             let imageUrl = document.getElementById('image-preview').src; // Ambil URL gambar lama (jika ada)
 
-             // Validasi file (wajib HANYA jika tambah baru)
-             if (!id && !file) {
+             // 1. Handle Upload Gambar (jika ada file baru)
+             if (file) {
+                // PERBAIKAN: Menyederhanakan file path.
+                // Ini membutuhkan RLS Policy yang lebih sederhana di Supabase Storage,
+                // seperti 'auth.role() = "authenticated"' untuk operasi INSERT.
+                const filePath = `public/${Date.now()}-${file.name}`;
+                
+                const { error: uploadError } = await supabaseClient.storage
+                    .from('menu-images') // Nama bucket
+                    .upload(filePath, file);
+
+                if (uploadError) {
+                    console.error('Error uploading image:', uploadError);
+                    modalError.textContent = 'Gagal mengunggah gambar: ' + uploadError.message;
+                    modalError.classList.remove('hidden');
+                    showLoading(false);
+                    return;
+                }
+                
+                // Dapatkan URL publik dari gambar yang baru di-upload
+                const { data: publicUrlData } = supabaseClient.storage
+                    .from('menu-images')
+                    .getPublicUrl(filePath);
+                
+                imageUrl = publicUrlData.publicUrl;
+             } else if (!id) {
+                // Wajib upload gambar jika ini menu BARU
                  modalError.textContent = 'Foto makanan wajib diisi untuk menu baru.';
                  modalError.classList.remove('hidden');
+                 showLoading(false);
                  return;
              }
 
-            // Fungsi helper untuk menyimpan/update data
-            const saveData = (imageUrl) => {
-                if (id) { // Edit
-                    const index = menuItems.findIndex(item => item.id == id && item.sellerId === currentUser.id);
-                    if (index > -1) {
-                        // Jika imageUrl null, berarti tidak ada file baru, jadi pakai gambar lama
-                        const finalImage = imageUrl ? imageUrl : menuItems[index].image;
-                        menuItems[index] = { ...menuItems[index], name, price, stock, image: finalImage };
-                    } else {
-                         modalError.textContent = 'Menu tidak ditemukan atau Anda tidak berhak mengedit.';
-                         modalError.classList.remove('hidden');
-                         return; 
-                    }
-                } else { // Tambah baru (imageUrl dijamin ada dari logika di bawah)
-                    const newId = menuItems.length > 0 ? Math.max(...menuItems.map(i => i.id)) + 1 : 1;
-                    menuItems.push({ id: newId, sellerId: currentUser.id, name, price, stock, image: imageUrl, ratings: [], avgRating: 0 });
-                }
-                renderMenu();
-                if(currentUser && currentUser.role === 'admin') renderAdminProductList(); // Update juga di admin view
-                menuModal.classList.add('hidden');
+            // 2. Simpan data menu ke tabel 'menu_items'
+            const menuData = {
+                name: name,
+                price: price,
+                stock: stock,
+                image_url: imageUrl,
+                seller_id: currentUser.id // Selalu set seller_id
             };
 
-            // Logika penanganan gambar
-            if (file) {
-                // Ada file baru di-upload (baik edit maupun tambah baru)
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    const imageBase64 = e.target.result; // Ini adalah data:URL (teks Base64)
-                    saveData(imageBase64); // Simpan dengan gambar baru
-                };
-                reader.onerror = () => {
-                    modalError.textContent = 'Gagal membaca file gambar.';
-                    modalError.classList.remove('hidden');
-                };
-                reader.readAsDataURL(file); // Mulai membaca file
+            let query;
+            if (id) {
+                // Edit Menu
+                query = supabaseClient.from('menu_items').update(menuData).eq('id', id);
             } else {
-                // Tidak ada file baru (pasti mode edit, karena sudah divalidasi di atas)
-                saveData(null); // Kirim null, saveData akan urus (pakai gambar lama)
+                // Tambah Menu Baru
+                query = supabaseClient.from('menu_items').insert(menuData);
             }
+
+            const { error: saveError } = await query;
+
+            if (saveError) {
+                console.error('Error saving menu:', saveError);
+                modalError.textContent = 'Gagal menyimpan menu: ' + saveError.message;
+                modalError.classList.remove('hidden');
+            } else {
+                renderMenu();
+                if(currentUser && currentUser.role === 'admin') renderAdminProductList();
+                menuModal.classList.add('hidden');
+            }
+            
+            showLoading(false);
         };
         
-        window.handleDeleteMenu = (itemId) => {
+        window.handleDeleteMenu = async (itemId) => {
              if (confirm('Yakin hapus menu ini?')) {
-                 const index = menuItems.findIndex(item => item.id === itemId && item.sellerId === currentUser.id);
-                 if (index > -1) {
-                    menuItems.splice(index, 1);
+                 showLoading(true);
+                 const { error } = await supabaseClient
+                    .from('menu_items')
+                    .delete()
+                    .eq('id', itemId)
+                    .eq('seller_id', currentUser.id); // Pastikan hanya penjual yg benar
+                
+                if (error) {
+                    console.error('Error deleting menu:', error);
+                    alert('Gagal menghapus menu.');
+                } else {
                     renderMenu();
-                    if(currentUser && currentUser.role === 'admin') renderAdminProductList(); // Update juga di admin view
-                 } else {
-                     alert("Menu tidak ditemukan atau Anda tidak berhak menghapus.");
-                 }
+                    if(currentUser && currentUser.role === 'admin') renderAdminProductList();
+                }
+                 showLoading(false);
             }
         };
         
         window.openUserModal = (user) => {
-             if (!currentUser || currentUser.role !== 'admin') return; // Hanya admin
+             if (!currentUser || currentUser.role !== 'admin') return;
             userForm.reset();
             userModalError.textContent = '';
             userModal.classList.remove('hidden');
-            userModalTitle.textContent = `Edit User: ${user.username}`;
+            userModalTitle.textContent = `Edit User: ${user.name || user.username}`;
             document.getElementById('user-id-input').value = user.id;
             document.getElementById('user-username').value = user.username;
             document.getElementById('user-role').value = user.role;
-            // Kosongkan password field saat edit
-             document.getElementById('user-password').value = ''; 
-             document.getElementById('user-password').placeholder = 'Kosongkan jika tidak ingin ganti';
-             document.getElementById('user-password').required = false; // Password tidak wajib saat edit
         };
 
-         // Fungsi baru untuk membuka modal tambah user
-        const openAddUserModal = (roleToAdd) => {
-             if (!currentUser || currentUser.role !== 'admin') return;
-             userForm.reset();
-             userModalError.textContent = '';
-             userModal.classList.remove('hidden');
-             userModalTitle.textContent = `Tambah ${roleToAdd === 'penjual' ? 'Penjual' : 'Siswa'} Baru`;
-             document.getElementById('user-id-input').value = ''; // Kosongkan ID untuk mode tambah
-             document.getElementById('user-role').value = roleToAdd; // Set role default
-             document.getElementById('user-password').placeholder = 'Password wajib diisi'; // Ubah placeholder
-             document.getElementById('user-password').required = true; // Jadikan password wajib
-        };
-
-
-        const handleSaveUser = (e) => {
+        const handleSaveUser = async (e) => {
             e.preventDefault();
-             if (!currentUser || currentUser.role !== 'admin') return; // Hanya admin
+             if (!currentUser || currentUser.role !== 'admin') return;
+            showLoading(true);
 
-            const id = document.getElementById('user-id-input').value; // Bisa kosong jika tambah baru
+            const id = document.getElementById('user-id-input').value;
             const username = document.getElementById('user-username').value;
             const role = document.getElementById('user-role').value;
-             const password = document.getElementById('user-password').value; // Ambil password baru
             userModalError.textContent = '';
 
-             // Validasi input
              if (!username) {
                  userModalError.textContent = 'Username wajib diisi.';
+                 showLoading(false);
                  return;
              }
-             if (!id && !password) { // Password wajib diisi hanya saat tambah baru
-                  userModalError.textContent = 'Password wajib diisi untuk user baru.';
-                 return;
+             
+             // Admin hanya bisa update 'profiles', bukan 'auth.users'
+             const { error } = await supabaseClient
+                .from('profiles')
+                .update({
+                    username: username,
+                    name: username, // Samakan nama & username
+                    role: role
+                })
+                .eq('id', id);
+
+             if (error) {
+                 console.error('Error updating user:', error);
+                 userModalError.textContent = 'Gagal update user: ' + error.message;
+             } else {
+                 renderAdminLists(); // Refresh tampilan admin
+                 userModal.classList.add('hidden');
              }
-
-             // Cek jika username baru sudah dipakai user lain
-            const usernameExists = users.some(u => u.username === username && u.id !== id);
-             if (usernameExists) {
-                userModalError.textContent = 'Username sudah digunakan.';
-                return;
-            }
-
-             if (id) { // Mode Edit
-                 const userIndex = users.findIndex(u => u.id === id);
-                 if(userIndex === -1) {
-                     userModalError.textContent = 'User tidak ditemukan.';
-                     return;
-                 }
-                 // Update data user
-                 users[userIndex].username = username;
-                 users[userIndex].role = role;
-                 users[userIndex].name = username; // Update nama juga
-                 // Update password HANYA jika diisi
-                 if (password) {
-                      users[userIndex].password = password; // Di dunia nyata, ini harus di-hash
-                 }
-             } else { // Mode Tambah Baru
-                 const newId = (role === 'penjual' ? 'seller' : 'user') + Date.now();
-                 users.push({
-                     id: newId,
-                     name: username,
-                     username: username,
-                     password: password, // Di dunia nyata, ini harus di-hash
-                     role: role
-                 });
-             }
-
-            generateAccounts(); // Regenerate accounts object
-            renderAdminLists(); // Refresh tampilan admin
-            userModal.classList.add('hidden');
+            showLoading(false);
         };
         
-        window.handleDeleteUser = (userId) => {
-             if (!currentUser || currentUser.role !== 'admin') return; // Hanya admin
+        window.handleDeleteUser = async (userId) => {
+             if (!currentUser || currentUser.role !== 'admin') return;
 
             if (userId === currentUser.id) {
                  alert("Anda tidak bisa menghapus akun Anda sendiri.");
                  return;
             }
-            if (confirm('Yakin ingin menghapus user ini? Menghapus penjual juga akan menghapus semua menunya.')) {
-                const initialLength = users.length;
-                const userToDelete = users.find(u => u.id === userId); // Cari user yg akan dihapus
-
-                if (!userToDelete) {
-                     alert("User tidak ditemukan.");
-                     return;
+            if (confirm('Yakin ingin menghapus user ini? Ini akan menghapus data profil, tapi TIDAK auth user-nya (lakukan di dashboard Supabase).')) {
+                showLoading(true);
+                // Hanya hapus dari tabel 'profiles'. Menghapus auth user butuh akses admin API.
+                const { error } = await supabaseClient
+                    .from('profiles')
+                    .delete()
+                    .eq('id', userId);
+                
+                if (error) {
+                    alert('Gagal menghapus profil user: ' + error.message);
+                } else {
+                    // TODO: Hapus juga menu dan order terkait jika perlu (cascading delete)
+                    renderAdminLists();
                 }
-
-                users = users.filter(u => u.id !== userId); // Hapus user dari array
-
-                if(users.length < initialLength) {
-                    // Jika user adalah penjual, hapus juga menunya
-                    if (userToDelete.role === 'penjual') {
-                        menuItems = menuItems.filter(item => item.sellerId !== userId);
-                        renderMenu(); // Refresh menu (jika user yg login adalah user biasa)
-                        renderAdminProductList(); // Refresh produk di admin
-                    }
-                    generateAccounts(); // Regenerate accounts
-                    renderAdminLists(); // Refresh daftar user di admin
-                }
+                showLoading(false);
             }
         };
 
-        window.openRatingModal = (menuId) => {
-            const menuItem = menuItems.find(item => item.id === menuId);
-            if (!menuItem) return;
+        window.openRatingModal = (menuId, itemName) => {
             document.getElementById('rating-menu-id').value = menuId;
-            ratingItemName.textContent = menuItem.name;
+            ratingItemName.textContent = itemName;
             currentRatingSelection = 0; // Reset
             let starsHtml = '';
             for (let i = 1; i <= 5; i++) {
@@ -1274,41 +1442,66 @@
             ratingModal.classList.remove('hidden');
         };
         
-        const handleSaveRating = (e) => {
+        const handleSaveRating = async (e) => {
             e.preventDefault();
+            showLoading(true);
             const menuId = parseInt(document.getElementById('rating-menu-id').value);
             const ratingValue = currentRatingSelection; 
 
              if (ratingValue === 0) {
                  alert('Silakan pilih jumlah bintang.');
+                 showLoading(false);
                  return;
              }
             
-            const menuItem = menuItems.find(item => item.id === menuId);
-            if (!menuItem) return;
+            // 1. Simpan atau update rating di tabel 'ratings'
+            // 'upsert' akan insert jika belum ada, atau update jika sudah ada
+            const { error: upsertError } = await supabaseClient
+                .from('ratings')
+                .upsert(
+                    { menu_id: menuId, user_id: currentUser.id, value: ratingValue },
+                    { onConflict: 'menu_id, user_id' } // Kunci unik
+                );
+
+            if (upsertError) {
+                console.error('Error saving rating:', upsertError);
+                alert('Gagal menyimpan rating.');
+                showLoading(false);
+                return;
+            }
+
+            // 2. Hitung ulang rata-rata rating
+            const { data: ratings, error: ratingError } = await supabaseClient
+                .from('ratings')
+                .select('value')
+                .eq('menu_id', menuId);
             
-            const existingRatingIndex = menuItem.ratings.findIndex(r => r.userId === currentUser.id);
-            if (existingRatingIndex > -1) {
-                menuItem.ratings[existingRatingIndex].value = ratingValue;
+            if (ratingError) {
+                 console.error('Error fetching new average:', ratingError);
+                 // Lanjutkan saja, setidaknya rating sudah tersimpan
             } else {
-                menuItem.ratings.push({ userId: currentUser.id, value: ratingValue });
+                const totalRating = ratings.reduce((sum, r) => sum + r.value, 0);
+                const avgRating = totalRating / ratings.length;
+
+                // 3. Update 'avg_rating' di tabel 'menu_items'
+                await supabaseClient
+                    .from('menu_items')
+                    .update({ avg_rating: avgRating })
+                    .eq('id', menuId);
             }
             
-            const totalRating = menuItem.ratings.reduce((sum, r) => sum + r.value, 0);
-            menuItem.avgRating = totalRating / menuItem.ratings.length;
-            
             ratingModal.classList.add('hidden');
-            renderMenu(); // Refresh menu untuk menampilkan rating baru
-             if(currentUser && currentUser.role === 'admin') renderAdminProductList(); // Update di admin view juga
+            renderMenu(); // Refresh menu
+             if(currentUser && currentUser.role === 'admin') renderAdminProductList();
+            showLoading(false);
         };
 
-        // --- Fungsi untuk interaksi bintang rating ---
+        // --- Fungsi untuk interaksi bintang rating (Tidak berubah) ---
         let currentRatingSelection = 0; 
         const highlightStars = (value) => {
              ratingStarsContainer.querySelectorAll('.rating-star').forEach(star => {
                 star.classList.toggle('text-yellow-400', star.dataset.value <= value);
                 star.classList.toggle('text-gray-400', star.dataset.value > value);
-                 // Reset clicked status saat hover/mouseout jika belum diklik
                  if (!star.hasAttribute('data-clicked') || star.getAttribute('data-clicked') === 'false') {
                      if (star.dataset.value > currentRatingSelection) {
                          star.removeAttribute('data-clicked');
@@ -1316,25 +1509,17 @@
                  }
             });
         };
-        const handleStarHover = (e) => {
-             if (e.target.closest('.rating-star')) {
-                const hoverValue = e.target.closest('.rating-star').dataset.value;
-                highlightStars(hoverValue);
-            }
-        };
+        const handleStarHover = (e) => { if (e.target.closest('.rating-star')) highlightStars(e.target.closest('.rating-star').dataset.value); };
         const handleStarMouseOut = () => { highlightStars(currentRatingSelection); };
         const handleStarClick = (e) => {
              if (e.target.closest('.rating-star')) {
-                const clickedValue = parseInt(e.target.closest('.rating-star').dataset.value);
-                currentRatingSelection = clickedValue; 
-                highlightStars(clickedValue); 
-                 ratingStarsContainer.querySelectorAll('.rating-star').forEach(star => {
-                     star.dataset.clicked = star.dataset.value <= clickedValue ? 'true' : 'false';
-                 });
+                currentRatingSelection = parseInt(e.target.closest('.rating-star').dataset.value);
+                highlightStars(currentRatingSelection); 
+                 ratingStarsContainer.querySelectorAll('.rating-star').forEach(star => { star.dataset.clicked = star.dataset.value <= currentRatingSelection ? 'true' : 'false'; });
             }
         };
 
-        // --- FUNGSI BARU UNTUK PREVIEW FILE GAMBAR ---
+        // --- FUNGSI PREVIEW FILE GAMBAR (Tidak berubah) ---
         const handleImageFileChange = (e) => {
             const file = e.target.files[0];
             if (file) {
@@ -1345,19 +1530,92 @@
                 };
                 reader.readAsDataURL(file);
             } else {
-                // Jika user batal memilih file, sembunyikan preview (kecuali jika sedang edit)
-                // Biarkan gambar lama (jika ada) tetap tampil saat edit
                 if (!document.getElementById('menu-id').value) {
                     imagePreview.src = '';
                     imagePreview.classList.add('hidden');
                 }
             }
         };
+        
+        // --- Fungsi untuk mengambil profil user ---
+        const fetchUserProfile = async (userId) => {
+            const { data, error } = await supabaseClient
+                .from('profiles')
+                .select('*')
+                .eq('id', userId)
+                .single(); // Ambil satu baris
+            
+            if (error) {
+                // PERBAIKAN: Jangan log error jika itu "0 rows" (PGRST116), itu kasus yang valid
+                if (error.code !== 'PGRST116') {
+                    console.error('Error fetching profile:', error);
+                }
+                return null;
+            }
+            return data;
+        };
+
 
         // --- INITIALIZATION & EVENT LISTENERS ---
         document.addEventListener('DOMContentLoaded', () => {
-            generateAccounts(); // Generate daftar akun dari array users
-            updateView(); // Tampilkan view awal (login)
+            
+            // Cek jika Kunci Supabase sudah diisi
+            if (SUPABASE_URL === 'URL_PROYEK_ANDA_DISINI' || SUPABASE_KEY === 'KUNCI_ANON_PUBLIK_ANDA_DISINI') {
+                document.body.innerHTML = `<div class="p-8 bg-red-100 text-red-800 rounded-lg max-w-lg mx-auto mt-10">
+                    <h1 class="text-2xl font-bold mb-4">Konfigurasi Diperlukan!</h1>
+                    <p>Anda belum mengatur Supabase. Silakan buka file \`README_SUPABASE.md\` dan ikuti petunjuknya. Setelah itu, salin <b>URL Proyek</b> dan <b>Kunci Anon Publik</b> Anda ke bagian atas blok &lt;script&gt; di file \`index.html\`.</p>
+                </div>`;
+                return;
+            }
+
+            // PINDAHKAN INISIALISASI KE SINI:
+            // Inisialisasi Supabase client HANYA setelah kuncinya divalidasi
+            supabaseClient = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+            // --- INI ADALAH BAGIAN UTAMA BARU ---
+            // Pantau perubahan status autentikasi
+            supabaseClient.auth.onAuthStateChange(async (event, session) => {
+                showLoading(true);
+                if (session && session.user) {
+                    // Pengguna berhasil login
+                    // Ambil profil kustom mereka (untuk mendapatkan role)
+                    const profile = await fetchUserProfile(session.user.id);
+                    if (profile) {
+                        currentUser = {
+                            id: session.user.id,
+                            email: session.user.email,
+                            ...profile // Ini akan menambahkan 'name', 'role', 'username'
+                        };
+                    } else {
+                        // PERBAIKAN: Ini menangani galat "0 rows" (PGRST116)
+                        // Jika profil tidak ditemukan (race condition), buat profil secara manual.
+                        console.warn('Profil tidak ditemukan (race condition), membuat profil baru...');
+                         const { data: newProfile, error: createError } = await supabaseClient.from('profiles').insert({
+                            id: session.user.id,
+                            email: session.user.email,
+                            // Ambil nama & role dari metadata (diset saat daftar)
+                            name: session.user.user_metadata?.name || session.user.email, 
+                            role: session.user.user_metadata?.role || 'user'
+                        }).select().single();
+                        
+                        if(createError) {
+                            console.error('Gagal membuat profil fallback:', createError);
+                        } else if (newProfile) {
+                             currentUser = {
+                                id: newProfile.id,
+                                email: newProfile.email,
+                                ...newProfile
+                            };
+                        }
+                    }
+                } else {
+                    // Pengguna logout
+                    currentUser = null;
+                }
+                updateView(); // Update seluruh UI berdasarkan status currentUser
+                showLoading(false);
+            });
+            // --- AKHIR BAGIAN UTAMA BARU ---
 
             loginForm.addEventListener('submit', handleLogin);
             registerForm.addEventListener('submit', handleRegister);
@@ -1369,10 +1627,6 @@
             menuForm.addEventListener('submit', handleSaveMenu);
             cancelModalButton.addEventListener('click', () => menuModal.classList.add('hidden'));
             
-            // Hapus event listener lama yang rusak
-            // menuImageUrlInput.addEventListener('input', (e) => { ... });
-            
-            // Tambahkan event listener BARU untuk input file
             document.getElementById('menu-image-file').addEventListener('change', handleImageFileChange);
 
             paymentMethodsContainer.addEventListener('click', (e) => { if (e.target.classList.contains('payment-method-btn')) selectPaymentMethod(e.target.dataset.payment); });
@@ -1386,9 +1640,6 @@
             ratingStarsContainer.addEventListener('click', handleStarClick);
              userForm.addEventListener('submit', handleSaveUser);
             cancelUserModalButton.addEventListener('click', () => userModal.classList.add('hidden'));
-             // Event listener untuk tombol tambah user/seller di admin
-             addSellerButtonAdmin.addEventListener('click', () => openAddUserModal('penjual'));
-             addUserButtonAdmin.addEventListener('click', () => openAddUserModal('user'));
         });
 
     </script>
