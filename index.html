@@ -82,6 +82,20 @@
             justify-content: center;
             z-index: 100;
         }
+
+        /* PENAMBAHAN: Animasi "Terbang ke Keranjang" */
+        .fly-to-cart-clone {
+            position: fixed;
+            z-index: 9999;
+            border-radius: 0.75rem; /* rounded-xl */
+            object-fit: cover;
+            transition: all 0.7s cubic-bezier(0.5, -0.5, 1, 0.5);
+            /* cubic-bezier(0.5, -0.5, 1, 0.5) 
+              Ini adalah kurva 'ease-in-back' kustom
+              yang membuat gambar "terbang ke atas" sedikit sebelum
+              "jatuh" ke keranjang, memberikan efek busur yang bagus.
+            */
+        }
     </style>
 </head>
 <body class="bg-cream">
@@ -92,26 +106,40 @@
     </div>
 
     <!-- Login & Register Screen -->
-    <div id="auth-screen" class="min-h-screen flex items-center justify-center bg-cream p-4">
-        <div class="bg-card p-8 rounded-xl shadow-xl w-full max-w-sm border border-card">
+    <!-- PERBAIKAN: Mengganti background dan layout flex -->
+    <div id="auth-screen" class="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-[--dark-purple] via-[--light-purple] to-[--pink] p-4">
+        
+        <!-- PENAMBAHAN: Judul utama di luar kartu -->
+        <div class="flex items-center justify-center gap-3 mb-8">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+            </svg>
+            <h1 class="text-5xl font-extrabold text-white">
+                Kantin Digital
+            </h1>
+        </div>
+
+        <!-- PERBAIKAN: Mengganti style kartu (bg-white/90, backdrop-blur, shadow-2xl, border-white/30, fade-in) -->
+        <div class="bg-white/90 backdrop-blur-lg p-8 rounded-xl shadow-2xl w-full max-w-sm border border-white/30 fade-in">
             <!-- Login Form -->
             <div id="login-container">
-                 <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-dark-purple mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-                </svg>
-                <h2 class="text-3xl font-bold text-center text-text-dark mb-6">Login Kantin Digital</h2>
+                 <!-- PERBAIKAN: Ikon SVG dihapus dari sini -->
+                <!-- PERBAIKAN: Judul di dalam kartu diubah -->
+                <h2 class="text-3xl font-bold text-center text-text-dark mb-6">Selamat Datang Kembali</h2>
                 <div id="login-error" class="text-red-500 text-center mb-4"></div>
                 <form id="login-form">
                     <div class="mb-4">
                         <!-- DIUBAH: Dari Username ke Email -->
                         <label for="email" class="block text-gray-700 mb-2">Email</label>
-                        <input type="email" id="email" class="w-full px-3 py-2 border rounded-xl bg-cream border-light-pink text-text-dark focus:outline-none focus:ring-2 focus:ring-pink" required>
+                        <!-- PERBAIKAN: Tambahkan placeholder dan focus:scale-105 -->
+                        <input type="email" id="email" class="w-full px-3 py-2 border rounded-xl bg-cream border-light-pink text-text-dark focus:outline-none focus:ring-2 focus:ring-pink transition-all duration-300 focus:scale-105" placeholder="nama@email.com" required>
                     </div>
                     <div class="mb-6">
                         <label for="password" class="block text-gray-700 mb-2">Password</label>
-                        <input type="password" id="password" class="w-full px-3 py-2 border rounded-xl bg-cream border-light-pink text-text-dark focus:outline-none focus:ring-2 focus:ring-pink" required>
+                        <!-- PERBAIKAN: Tambahkan placeholder dan focus:scale-105 -->
+                        <input type="password" id="password" class="w-full px-3 py-2 border rounded-xl bg-cream border-light-pink text-text-dark focus:outline-none focus:ring-2 focus:ring-pink transition-all duration-300 focus:scale-105" placeholder="••••••••" required>
                     </div>
-                    <button type="submit" class="w-full bg-[--dark-purple] text-white font-bold py-3 rounded-xl hover:bg-[--light-purple] transition-all duration-300 shadow-lg hover:shadow-md">Login</button>
+                    <button type="submit" class="w-full bg-[--dark-purple] text-white font-bold py-3 rounded-xl hover:bg-[--light-purple] transition-all duration-300 shadow-lg hover:shadow-md transform active:scale-95">Login</button>
                 </form>
                 <p class="text-center text-sm text-gray-600 mt-4">
                     Belum punya akun? <button id="show-register-btn" class="font-semibold text-[--dark-blue] hover:underline">Daftar di sini</button>
@@ -120,28 +148,30 @@
 
             <!-- Register Form -->
             <div id="register-container" class="hidden">
-                 <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-dark-purple mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-                </svg>
-                <h2 class="text-3xl font-bold text-center text-text-dark mb-6">Daftar Akun User</h2>
+                 <!-- PERBAIKAN: Ikon SVG dihapus dari sini -->
+                <!-- PERBAIKAN: Judul di dalam kartu diubah -->
+                <h2 class="text-3xl font-bold text-center text-text-dark mb-6">Buat Akun Baru</h2>
                 <div id="register-message" class="text-center mb-4"></div>
                 <form id="register-form">
                     <div class="mb-4">
                         <!-- DIUBAH: Menjadi 'Nama Lengkap' -->
                         <label for="register-name" class="block text-gray-700 mb-2">Nama Lengkap</label>
-                        <input type="text" id="register-name" class="w-full px-3 py-2 border rounded-xl bg-cream border-light-pink text-text-dark focus:outline-none focus:ring-2 focus:ring-pink" required>
+                        <!-- PERBAIKAN: Tambahkan placeholder dan focus:scale-105 -->
+                        <input type="text" id="register-name" class="w-full px-3 py-2 border rounded-xl bg-cream border-light-pink text-text-dark focus:outline-none focus:ring-2 focus:ring-pink transition-all duration-300 focus:scale-105" placeholder="Nama Lengkap Anda" required>
                     </div>
                     <div class="mb-4">
                         <!-- DIUBAH: Menjadi 'Email' -->
                         <label for="register-email" class="block text-gray-700 mb-2">Email</label>
-                        <input type="email" id="register-email" class="w-full px-3 py-2 border rounded-xl bg-cream border-light-pink text-text-dark focus:outline-none focus:ring-2 focus:ring-pink" required>
+                        <!-- PERBAIKAN: Tambahkan placeholder dan focus:scale-105 -->
+                        <input type="email" id="register-email" class="w-full px-3 py-2 border rounded-xl bg-cream border-light-pink text-text-dark focus:outline-none focus:ring-2 focus:ring-pink transition-all duration-300 focus:scale-105" placeholder="nama@email.com" required>
                     </div>
                     <div class="mb-6">
                         <label for="register-password" class="block text-gray-700 mb-2">Password</label>
-                        <input type="password" id="register-password" class="w-full px-3 py-2 border rounded-xl bg-cream border-light-pink text-text-dark focus:outline-none focus:ring-2 focus:ring-pink" required>
+                        <!-- PERBAIKAN: Tambahkan placeholder dan focus:scale-105 -->
+                        <input type="password" id="register-password" class="w-full px-3 py-2 border rounded-xl bg-cream border-light-pink text-text-dark focus:outline-none focus:ring-2 focus:ring-pink transition-all duration-300 focus:scale-105" placeholder="Minimal 6 karakter" required>
                     </div>
                     
-                    <button type="submit" class="w-full bg-[--dark-purple] text-white font-bold py-3 rounded-xl hover:bg-[--light-purple] transition-all duration-300 shadow-lg hover:shadow-md">Daftar</button>
+                    <button type="submit" class="w-full bg-[--dark-purple] text-white font-bold py-3 rounded-xl hover:bg-[--light-purple] transition-all duration-300 shadow-lg hover:shadow-md transform active:scale-95">Daftar</button>
                 </form>
                 <p class="text-center text-sm text-gray-600 mt-4">
                     Sudah punya akun? <button id="show-login-btn" class="font-semibold text-[--dark-blue] hover:underline">Login di sini</button>
@@ -154,27 +184,34 @@
     <div id="app-screen" class="hidden">
         <div class="container mx-auto p-4 md:p-8">
             <!-- Header -->
-            <header class="text-center mb-8 relative">
+            <!-- PERBAIKAN: Header diubah menjadi banner gradien yang senada dengan login -->
+            <header class="text-center mb-8 relative bg-gradient-to-r from-[--dark-purple] via-[--light-purple] to-[--pink] p-6 md:p-8 rounded-xl shadow-xl">
                 <div class="flex items-center justify-center gap-3">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-dark-purple" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <!-- PERBAIKAN: Ubah warna ikon jadi putih -->
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
                     </svg>
-                    <h1 class="text-6xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-[--dark-purple] via-[--light-purple] to-[--pink]">Kantin Digital</h1>
+                    <!-- PERBAIKAN: Ubah judul jadi putih (hapus bg-clip-text) -->
+                    <h1 class="text-6xl font-extrabold text-white">Kantin Digital</h1>
                 </div>
-                <p id="header-subtitle" class="text-text-dark font-semibold mt-2 text-lg">Pilih makanan favoritmu dan pesan sekarang juga!</p>
-                <button id="logout-button" class="absolute top-0 right-0 bg-red-500 text-white font-semibold px-4 py-2 rounded-xl hover:bg-red-600 transition-all duration-300 shadow-md">Logout</button>
+                <!-- PERBAIKAN: Ubah subjudul jadi putih/transparan -->
+                <p id="header-subtitle" class="text-white/90 font-semibold mt-2 text-lg">Pilih makanan favoritmu dan pesan sekarang juga!</p>
+                <!-- PERBAIKAN: Sesuaikan posisi tombol logout agar pas dengan padding baru -->
+                <button id="logout-button" class="absolute top-6 right-6 bg-red-500 text-white font-semibold px-4 py-2 rounded-xl hover:bg-red-600 transition-all duration-300 shadow-md transform active:scale-95">Logout</button>
             </header>
 
             
-            <div id="admin-dashboard" class="hidden">
+            <!-- PERBAIKAN: Tambahkan 'fade-in' -->
+            <div id="admin-dashboard" class="hidden fade-in">
                 <h2 class="text-4xl font-extrabold text-text-dark mb-6">Dashboard Admin</h2>
                 <div class="bg-card p-6 rounded-xl shadow-xl mb-8 border border-card">
                     <div class="flex flex-col sm:flex-row justify-between sm:items-center mb-4">
                         <h3 class="text-xl font-semibold mb-2 sm:mb-0 text-text-dark">Laporan Profit (10%)</h3>
                         <div id="admin-period-filter" class="flex gap-1 border rounded-xl p-1 self-start sm:self-center border-card">
-                            <button data-period="day" class="period-btn px-3 py-1.5 text-sm rounded-lg bg-[--dark-purple] text-white font-semibold transition-colors duration-200">Hari Ini</button>
-                            <button data-period="month" class="period-btn px-3 py-1.5 text-sm rounded-lg text-white bg-[--light-purple] hover:bg-[--dark-purple] transition-colors duration-200">Bulan Ini</button>
-                            <button data-period="year" class="period-btn px-3 py-1.5 text-sm rounded-lg text-white bg-[--light-purple] hover:bg-[--dark-purple] transition-colors duration-200">Tahun Ini</button>
+                            <!-- PERBAIKAN: Tambahkan 'transition-all', 'transform', 'active:scale-95' -->
+                            <button data-period="day" class="period-btn px-3 py-1.5 text-sm rounded-lg bg-[--dark-purple] text-white font-semibold transition-all duration-200 transform active:scale-95">Hari Ini</button>
+                            <button data-period="month" class="period-btn px-3 py-1.5 text-sm rounded-lg text-white bg-[--light-purple] hover:bg-[--dark-purple] transition-all duration-200 transform active:scale-95">Bulan Ini</button>
+                            <button data-period="year" class="period-btn px-3 py-1.5 text-sm rounded-lg text-white bg-[--light-purple] hover:bg-[--dark-purple] transition-all duration-200 transform active:scale-95">Tahun Ini</button>
                         </div>
                     </div>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-center">
@@ -218,7 +255,7 @@
                          <div class="flex justify-between items-center mb-4">
                             <h3 class="text-xl font-semibold text-text-dark">Pengelola Penjual</h3>
                             <!-- PERBAIKAN: Menghapus kelas 'hidden' -->
-                            <button id="add-seller-button-admin" class="bg-green-500 text-white font-semibold px-5 py-2.5 rounded-xl hover:bg-green-600 transition-all duration-300 shadow-md hover:shadow-lg">+ Tambah Penjual</button>
+                            <button id="add-seller-button-admin" class="bg-green-500 text-white font-semibold px-5 py-2.5 rounded-xl hover:bg-green-600 transition-all duration-300 shadow-md hover:shadow-lg transform active:scale-95">+ Tambah Penjual</button>
                         </div>
                         <div id="admin-seller-list" class="bg-card rounded-xl shadow-xl overflow-x-auto border border-card">
                             <!-- Data dari Supabase -->
@@ -232,15 +269,17 @@
              <main id="main-content" class="flex flex-col lg:flex-row gap-8">
                 
                 <div class="w-full lg:w-2/3">
-                    <div id="seller-dashboard" class="hidden mb-8">
+                    <!-- PERBAIKAN: Tambahkan 'fade-in' -->
+                    <div id="seller-dashboard" class="hidden mb-8 fade-in">
                         <h2 class="text-4xl font-extrabold text-text-dark mb-6">Dashboard Penjual</h2>
                         <div class="bg-card p-6 rounded-xl shadow-xl mb-8 border border-card">
                             <div class="flex flex-col sm:flex-row justify-between sm:items-center mb-4">
                                 <h3 class="text-xl font-semibold mb-2 sm:mb-0 text-text-dark">Laporan Omset</h3>
                                 <div id="seller-period-filter" class="flex gap-1 border rounded-xl p-1 self-start sm:self-center border-card">
-                                    <button data-period="day" class="period-btn px-3 py-1.5 text-sm rounded-lg bg-[--dark-purple] text-white font-semibold transition-colors duration-200">Hari Ini</button>
-                                    <button data-period="month" class="period-btn px-3 py-1.5 text-sm rounded-lg text-white bg-[--light-purple] hover:bg-[--dark-purple] transition-colors duration-200">Bulan Ini</button>
-                                    <button data-period="year" class="period-btn px-3 py-1.5 text-sm rounded-lg text-white bg-[--light-purple] hover:bg-[--dark-purple] transition-colors duration-200">Tahun Ini</button>
+                                    <!-- PERBAIKAN: Tambahkan 'transition-all', 'transform', 'active:scale-95' -->
+                                    <button data-period="day" class="period-btn px-3 py-1.5 text-sm rounded-lg bg-[--dark-purple] text-white font-semibold transition-all duration-200 transform active:scale-95">Hari Ini</button>
+                                    <button data-period="month" class="period-btn px-3 py-1.5 text-sm rounded-lg text-white bg-[--light-purple] hover:bg-[--dark-purple] transition-all duration-200 transform active:scale-95">Bulan Ini</button>
+                                    <button data-period="year" class="period-btn px-3 py-1.5 text-sm rounded-lg text-white bg-[--light-purple] hover:bg-[--dark-purple] transition-all duration-200 transform active:scale-95">Tahun Ini</button>
                                 </div>
                             </div>
                             <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
@@ -258,7 +297,7 @@
 
                     <div class="flex justify-between items-center mb-4">
                         <h2 id="menu-title" class="text-3xl font-bold text-gray-700">Menu Makanan</h2>
-                        <button id="add-menu-button" class="hidden bg-green-500 text-white font-semibold px-5 py-2.5 rounded-xl hover:bg-green-600 transition-all duration-300 shadow-md hover:shadow-lg">+ Tambah Menu</button>
+                        <button id="add-menu-button" class="hidden bg-green-500 text-white font-semibold px-5 py-2.5 rounded-xl hover:bg-green-600 transition-all duration-300 shadow-md hover:shadow-lg transform active:scale-95">+ Tambah Menu</button>
                     </div>
                     <div id="menu-container" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
                         <!-- Data dari Supabase -->
@@ -274,15 +313,15 @@
                             <div class="mb-4">
                                 <h3 class="text-md font-semibold text-gray-700 mb-2">Metode Pembayaran</h3>
                                 <div class="flex overflow-x-auto gap-2 pb-2" id="payment-methods">
-                                    <button data-payment="tunai" class="payment-method-btn flex-shrink-0 px-4 border-2 font-semibold py-2.5 rounded-xl text-sm bg-[--dark-purple] text-white border-transparent transition-all duration-300">Tunai</button>
-                                    <button data-payment="qris" class="payment-method-btn flex-shrink-0 px-4 border-2 font-semibold py-2.5 rounded-xl text-sm bg-cream text-text-dark border-light-pink transition-all duration-300">QRIS</button>
+                                    <button data-payment="tunai" class="payment-method-btn flex-shrink-0 px-4 border-2 font-semibold py-2.5 rounded-xl text-sm bg-[--dark-purple] text-white border-transparent transition-all duration-300 transform active:scale-95">Tunai</button>
+                                    <button data-payment="qris" class="payment-method-btn flex-shrink-0 px-4 border-2 font-semibold py-2.5 rounded-xl text-sm bg-cream text-text-dark border-light-pink transition-all duration-300 transform active:scale-95">QRIS</button>
                                 </div>
                             </div>
                             <div class="flex justify-between items-center text-lg font-semibold text-text-dark">
                                 <span>Total</span>
                                 <span id="cart-total">Rp 0</span>
                             </div>
-                            <button id="order-button" class="w-full bg-[--dark-purple] text-white font-bold py-3 rounded-xl hover:bg-[--light-purple] transition-all duration-300 shadow-lg hover:shadow-md disabled:bg-gray-400 disabled:cursor-not-allowed disabled:shadow-none">
+                            <button id="order-button" class="w-full bg-[--dark-purple] text-white font-bold py-3 rounded-xl hover:bg-[--light-purple] transition-all duration-300 shadow-lg hover:shadow-md disabled:bg-gray-400 disabled:cursor-not-allowed disabled:shadow-none transform active:scale-95">
                                 Pesan Sekarang
                             </button>
                         </div>
@@ -309,9 +348,9 @@
             <h2 id="modal-title" class="text-2xl font-bold mb-4 text-text-dark">Tambah Menu Baru</h2>
             <form id="menu-form">
                 <input type="hidden" id="menu-id">
-                <div class="mb-4"><label for="menu-name" class="block text-gray-700 mb-1">Nama Menu</label><input type="text" id="menu-name" class="w-full px-3 py-2 border rounded-xl bg-cream border-light-pink" required></div>
-                <div class="mb-4"><label for="menu-price" class="block text-gray-700 mb-1">Harga</label><input type="number" id="menu-price" class="w-full px-3 py-2 border rounded-xl bg-cream border-light-pink" min="0" required></div>
-                <div class="mb-4"><label for="menu-stock" class="block text-gray-700 mb-1">Stok Makanan</label><input type="number" id="menu-stock" class="w-full px-3 py-2 border rounded-xl bg-cream border-light-pink" min="0" required></div>
+                <div class="mb-4"><label for="menu-name" class="block text-gray-700 mb-1">Nama Menu</label><input type="text" id="menu-name" class="w-full px-3 py-2 border rounded-xl bg-cream border-light-pink transition-all duration-300" required></div>
+                <div class="mb-4"><label for="menu-price" class="block text-gray-700 mb-1">Harga</label><input type="number" id="menu-price" class="w-full px-3 py-2 border rounded-xl bg-cream border-light-pink transition-all duration-300" min="0" required></div>
+                <div class="mb-4"><label for="menu-stock" class="block text-gray-700 mb-1">Stok Makanan</label><input type="number" id="menu-stock" class="w-full px-3 py-2 border rounded-xl bg-cream border-light-pink transition-all duration-300" min="0" required></div>
                 
                 <div class="mb-4">
                     <label for="menu-image-file" class="block text-gray-700 mb-1">Foto Makanan</label>
@@ -319,7 +358,7 @@
                 </div>
                 <img id="image-preview" src="" alt="Preview" class="w-full h-40 object-cover rounded-xl mb-2 border hidden border-card">
                 <div id="modal-error" class="text-red-500 text-sm mb-4 hidden"></div>
-                <div class="flex justify-end gap-4 mt-6"><button type="button" id="cancel-modal" class="bg-gray-300 text-gray-800 font-semibold px-5 py-2.5 rounded-xl hover:bg-gray-400 transition-all duration-300 shadow-md">Batal</button><button type="submit" class="bg-[--dark-purple] text-white font-semibold px-5 py-2.5 rounded-xl hover:bg-[--light-purple] transition-all duration-300 shadow-md">Simpan</button></div>
+                <div class="flex justify-end gap-4 mt-6"><button type="button" id="cancel-modal" class="bg-gray-300 text-gray-800 font-semibold px-5 py-2.5 rounded-xl hover:bg-gray-400 transition-all duration-300 shadow-md transform active:scale-95">Batal</button><button type="submit" class="bg-[--dark-purple] text-white font-semibold px-5 py-2.5 rounded-xl hover:bg-[--light-purple] transition-all duration-300 shadow-md transform active:scale-95">Simpan</button></div>
             </form>
         </div>
     </div>
@@ -328,15 +367,15 @@
             <h2 id="user-modal-title" class="text-2xl font-bold mb-4 text-text-dark">Edit User</h2>
             <form id="user-form" class="space-y-4">
                 <input type="hidden" id="user-id-input">
-                <div><label for="user-username" class="block text-gray-700 mb-1">Username</label><input type="text" id="user-username" class="w-full px-3 py-2 border rounded-xl bg-cream border-light-pink" required></div>
-                <div><label for="user-role" class="block text-gray-700 mb-1">Role</label><select id="user-role" class="w-full px-3 py-2 border rounded-xl bg-cream border-light-pink"><option value="user">Siswa</option><option value="penjual">Penjual</option><option value="admin">Admin</option></select></div>
+                <div><label for="user-username" class="block text-gray-700 mb-1">Username</label><input type="text" id="user-username" class="w-full px-3 py-2 border rounded-xl bg-cream border-light-pink transition-all duration-300" required></div>
+                <div><label for="user-role" class="block text-gray-700 mb-1">Role</label><select id="user-role" class="w-full px-3 py-2 border rounded-xl bg-cream border-light-pink transition-all duration-300"><option value="user">Siswa</option><option value="penjual">Penjual</option><option value="admin">Admin</option></select></div>
                  
                  <div class="mb-4 hidden"> <!-- DIHILANGKAN: Admin tidak boleh mengganti password -->
                     <label for="user-password" class="block text-gray-700 mb-1">Password Baru (opsional)</label>
                     <input type="password" id="user-password" class="w-full px-3 py-2 border rounded-xl bg-cream border-light-pink" placeholder="Kosongkan jika tidak ingin ganti">
                 </div>
                 <div id="user-modal-error" class="text-red-500 text-sm"></div>
-                <div class="flex justify-end gap-4 pt-4"><button type="button" id="cancel-user-modal" class="bg-gray-300 text-gray-800 font-semibold px-5 py-2.5 rounded-xl hover:bg-gray-400 transition-all duration-300 shadow-md">Batal</button><button type="submit" class="bg-[--dark-purple] text-white font-semibold px-5 py-2.5 rounded-xl hover:bg-[--light-purple] transition-all duration-300 shadow-md">Simpan</button></div>
+                <div class="flex justify-end gap-4 pt-4"><button type="button" id="cancel-user-modal" class="bg-gray-300 text-gray-800 font-semibold px-5 py-2.5 rounded-xl hover:bg-gray-400 transition-all duration-300 shadow-md transform active:scale-95">Batal</button><button type="submit" class="bg-[--dark-purple] text-white font-semibold px-5 py-2.5 rounded-xl hover:bg-[--light-purple] transition-all duration-300 shadow-md transform active:scale-95">Simpan</button></div>
             </form>
         </div>
     </div>
@@ -348,20 +387,20 @@
             <form id="add-seller-form" class="space-y-4">
                 <div>
                     <label for="add-seller-name" class="block text-gray-700 mb-1">Nama Lengkap Penjual</label>
-                    <input type="text" id="add-seller-name" class="w-full px-3 py-2 border rounded-xl bg-cream border-light-pink" required>
+                    <input type="text" id="add-seller-name" class="w-full px-3 py-2 border rounded-xl bg-cream border-light-pink transition-all duration-300" required>
                 </div>
                 <div>
                     <label for="add-seller-email" class="block text-gray-700 mb-1">Email (untuk login)</label>
-                    <input type="email" id="add-seller-email" class="w-full px-3 py-2 border rounded-xl bg-cream border-light-pink" required>
+                    <input type="email" id="add-seller-email" class="w-full px-3 py-2 border rounded-xl bg-cream border-light-pink transition-all duration-300" required>
                 </div>
                 <div>
                     <label for="add-seller-password" class="block text-gray-700 mb-1">Password Awal</label>
-                    <input type="password" id="add-seller-password" class="w-full px-3 py-2 border rounded-xl bg-cream border-light-pink" required>
+                    <input type="password" id="add-seller-password" class="w-full px-3 py-2 border rounded-xl bg-cream border-light-pink transition-all duration-300" required>
                 </div>
                 <div id="add-seller-modal-error" class="text-red-500 text-sm"></div>
                 <div class="flex justify-end gap-4 pt-4">
-                    <button type="button" id="cancel-add-seller-modal" class="bg-gray-300 text-gray-800 font-semibold px-5 py-2.5 rounded-xl hover:bg-gray-400 transition-all duration-300 shadow-md">Batal</button>
-                    <button type="submit" class="bg-[--dark-purple] text-white font-semibold px-5 py-2.5 rounded-xl hover:bg-[--light-purple] transition-all duration-300 shadow-md">Simpan</button>
+                    <button type="button" id="cancel-add-seller-modal" class="bg-gray-300 text-gray-800 font-semibold px-5 py-2.5 rounded-xl hover:bg-gray-400 transition-all duration-300 shadow-md transform active:scale-95">Batal</button>
+                    <button type="submit" class="bg-[--dark-purple] text-white font-semibold px-5 py-2.5 rounded-xl hover:bg-[--light-purple] transition-all duration-300 shadow-md transform active:scale-95">Simpan</button>
                 </div>
             </form>
         </div>
@@ -373,7 +412,7 @@
             <p class="text-gray-500 mb-4">Silakan scan kode QR ini untuk membayar.</p>
             <img id="qris-image" src="" alt="QRIS Code" class="mx-auto rounded-xl">
             <p class="font-bold text-xl my-4 text-text-dark" id="qris-total"></p>
-            <button id="close-qris-modal" class="mt-4 w-full bg-[--dark-purple] text-white font-semibold py-2.5 rounded-xl hover:bg-[--light-purple] transition-all duration-300 shadow-md">Tutup</button>
+            <button id="close-qris-modal" class="mt-4 w-full bg-[--dark-purple] text-white font-semibold py-2.5 rounded-xl hover:bg-[--light-purple] transition-all duration-300 shadow-md transform active:scale-95">Tutup</button>
         </div>
     </div>
     <div id="rating-modal" class="hidden fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-4 z-50">
@@ -383,7 +422,7 @@
             <form id="rating-form">
                 <input type="hidden" id="rating-menu-id">
                 <div id="rating-stars-container" class="flex justify-center text-4xl text-gray-400 mb-6"></div>
-                <div class="flex justify-end gap-4"><button type="button" id="cancel-rating-modal" class="bg-gray-300 text-gray-800 font-semibold px-5 py-2.5 rounded-xl hover:bg-gray-400 transition-all duration-300 shadow-md">Batal</button><button type="submit" class="bg-yellow-500 text-white font-semibold px-5 py-2.5 rounded-xl hover:bg-yellow-600 transition-all duration-300 shadow-md">Kirim</button></div>
+                <div class="flex justify-end gap-4"><button type="button" id="cancel-rating-modal" class="bg-gray-300 text-gray-800 font-semibold px-5 py-2.5 rounded-xl hover:bg-gray-400 transition-all duration-300 shadow-md transform active:scale-95">Batal</button><button type="submit" class="bg-yellow-500 text-white font-semibold px-5 py-2.5 rounded-xl hover:bg-yellow-600 transition-all duration-300 shadow-md transform active:scale-95">Kirim</button></div>
             </form>
         </div>
     </div>
@@ -479,7 +518,12 @@
         const formatRupiah = (number) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(number || 0);
         
         const showLoading = (show) => {
-            loadingOverlay.classList.toggle('hidden', !show);
+            // PERBAIKAN: Dinonaktifkan total atas permintaan.
+            // Kita akan mengandalkan skeleton loader, jadi spinner global tidak diperlukan.
+            // Pastikan overlay selalu tersembunyi.
+            if (!loadingOverlay.classList.contains('hidden')) {
+                loadingOverlay.classList.add('hidden');
+            }
         };
 
         // --- PERBAIKAN: Fungsi helper untuk membuat skeleton UI ---
@@ -689,6 +733,9 @@
                 // PERBAIKAN: Menggunakan nama relasi yang benar
                 const sellerName = item.profiles?.name || 'Penjual';
 
+                // PENAMBAHAN: Encode item JSON untuk data-attribute
+                const itemJsonString = encodeURIComponent(JSON.stringify(item));
+
                 const menuItemElement = document.createElement('div');
                 menuItemElement.className = `bg-card rounded-xl shadow-xl overflow-hidden flex flex-col relative border border-card ${isOutOfStock ? 'opacity-60' : ''} transition-all duration-300 hover:shadow-2xl hover:scale-[1.02]`;
                 menuItemElement.innerHTML = `
@@ -705,20 +752,29 @@
                         <div class="mt-auto">
                             ${isSellerView ? `
                                 <div class="flex gap-2">
-                                    <button onclick='openMenuModal(${JSON.stringify(item)})' class="w-full bg-yellow-500 text-white font-semibold py-2.5 rounded-xl hover:bg-yellow-600 transition-all duration-300 shadow-md">Edit</button>
-                                    <button onclick="handleDeleteMenu(${item.id})" class="w-full bg-red-500 text-white font-semibold py-2.5 rounded-xl hover:bg-red-600 transition-all duration-300 shadow-md">Hapus</button>
+                                    <button onclick='openMenuModal(${JSON.stringify(item)})' class="w-full bg-yellow-500 text-white font-semibold py-2.5 rounded-xl hover:bg-yellow-600 transition-all duration-300 shadow-md transform active:scale-95">Edit</button>
+                                    <button onclick="handleDeleteMenu(${item.id})" class="w-full bg-red-500 text-white font-semibold py-2.5 rounded-xl hover:bg-red-600 transition-all duration-300 shadow-md transform active:scale-95">Hapus</button>
                                 </div>
                             ` : ''}
                              ${isUserView ? `
                                 <div class="flex gap-2">
-                                    <button onclick="openRatingModal(${item.id}, '${item.name}')" class="w-full bg-yellow-500 text-white font-semibold py-2.5 px-3 rounded-xl hover:bg-yellow-600 transition-all duration-300 shadow-md">Beri Rating</button>
-                                    <button onclick='addToCart(${JSON.stringify(item)})' class="w-full bg-[--light-purple] text-white font-semibold py-2.5 px-3 rounded-xl hover:bg-[--dark-purple] disabled:bg-gray-400 disabled:shadow-none transition-all duration-300 shadow-md" ${isOutOfStock ? 'disabled' : ''}>+ Tambah</button>
+                                    <button onclick="openRatingModal(${item.id}, '${item.name}')" class="w-full bg-yellow-500 text-white font-semibold py-2.5 px-3 rounded-xl hover:bg-yellow-600 transition-all duration-300 shadow-md transform active:scale-95">Beri Rating</button>
+                                    
+                                    <!-- PERBAIKAN: Hapus 'onclick', tambahkan 'data-item-json' dan 'add-to-cart-btn' -->
+                                    <button data-item-json="${itemJsonString}" 
+                                            class="w-full bg-[--light-purple] text-white font-semibold py-2.5 px-3 rounded-xl hover:bg-[--dark-purple] disabled:bg-gray-400 disabled:shadow-none transition-all duration-300 shadow-md transform active:scale-95 add-to-cart-btn" 
+                                            ${isOutOfStock ? 'disabled' : ''}>+ Tambah</button>
                                 </div>
                              ` : ''}
                         </div>
                     </div>
                 `;
                 menuContainer.appendChild(menuItemElement);
+            });
+
+            // PENAMBAHAN: Tambahkan event listener SETELAH loop
+            menuContainer.querySelectorAll('.add-to-cart-btn').forEach(btn => {
+                btn.addEventListener('click', handleAddToCartClick);
             });
         };
 
@@ -744,9 +800,9 @@
                             <p class="text-sm text-gray-500">${formatRupiah(cartItem.price)}</p>
                         </div>
                         <div class="flex items-center gap-2">
-                            <button onclick="updateQuantity(${cartItem.id}, -1)" class="w-6 h-6 bg-[--light-purple] rounded-full font-bold text-white">-</button>
+                            <button onclick="updateQuantity(${cartItem.id}, -1)" class="w-6 h-6 bg-[--light-purple] rounded-full font-bold text-white transition-transform transform active:scale-90">-</button>
                             <span class="text-text-dark">${cartItem.quantity}</span>
-                            <button onclick="updateQuantity(${cartItem.id}, 1)" class="w-6 h-6 bg-[--light-purple] rounded-full font-bold text-white">+</button>
+                            <button onclick="updateQuantity(${cartItem.id}, 1)" class="w-6 h-6 bg-[--light-purple] rounded-full font-bold text-white transition-transform transform active:scale-90">+</button>
                         </div>
                     `;
                     cartItemsContainer.appendChild(cartItemElement);
@@ -787,7 +843,8 @@
             
             myOrders.forEach(order => {
                 const orderCard = document.createElement('div');
-                orderCard.className = 'border-b border-card pb-4 last:border-b-0';
+                // PERBAIKAN: Tambahkan 'fade-in'
+                orderCard.className = 'border-b border-card pb-4 last:border-b-0 fade-in';
                 // 'items' sekarang adalah JSONB
                 const itemsHtml = order.items.map(item => `<li>${item.quantity}x ${item.name}</li>`).join('');
                 const statusColor = { 'Baru': 'bg-blue-200 text-blue-800', 'Diproses': 'bg-yellow-200 text-yellow-800', 'Selesai': 'bg-green-200 text-green-800' }[order.status];
@@ -804,8 +861,8 @@
                         <span class="text-xs font-bold px-2 py-1 rounded-full ${statusColor}">${order.status}</span>
                     </div>
                     <ul class="list-disc list-inside text-sm text-gray-600 my-2">${itemsHtml}</ul>
-                    ${order.status === 'Baru' ? `<button onclick="updateOrderStatus(${order.id}, 'Diproses')" class="w-full text-sm bg-yellow-500 text-white font-semibold py-2 rounded-xl hover:bg-yellow-600 mt-2 transition-all duration-300 shadow-md">Proses Pesanan</button>` : ''}
-                    ${order.status === 'Diproses' ? `<button onclick="updateOrderStatus(${order.id}, 'Selesai')" class="w-full text-sm bg-green-500 text-white font-semibold py-2 rounded-xl hover:bg-green-600 mt-2 transition-all duration-300 shadow-md">Selesaikan Pesanan</button>` : ''}
+                    ${order.status === 'Baru' ? `<button onclick="updateOrderStatus(${order.id}, 'Diproses')" class="w-full text-sm bg-yellow-500 text-white font-semibold py-2 rounded-xl hover:bg-yellow-600 mt-2 transition-all duration-300 shadow-md transform active:scale-95">Proses Pesanan</button>` : ''}
+                    ${order.status === 'Diproses' ? `<button onclick="updateOrderStatus(${order.id}, 'Selesai')" class="w-full text-sm bg-green-500 text-white font-semibold py-2 rounded-xl hover:bg-green-600 mt-2 transition-all duration-300 shadow-md transform active:scale-95">Selesaikan Pesanan</button>` : ''}
                 `;
                 sellerOrdersContainer.appendChild(orderCard);
             });
@@ -894,8 +951,8 @@
                             <td class="p-3 text-text-dark">${user.name || user.username}</td>
                             <td class="p-3 text-xs text-gray-500">${user.id}</td>
                             <td class="p-3 flex gap-2">
-                                <button onclick='openUserModal(${JSON.stringify(user)})' class="text-sm bg-yellow-500 text-white font-semibold px-3 py-1.5 rounded-lg hover:bg-yellow-600 transition-all duration-300 shadow-sm">Edit</button>
-                                <button onclick="handleDeleteUser('${user.id}')" class="text-sm bg-red-500 text-white font-semibold px-3 py-1.5 rounded-lg hover:bg-red-600 transition-all duration-300 shadow-sm">Hapus</button>
+                                <button onclick='openUserModal(${JSON.stringify(user)})' class="text-sm bg-yellow-500 text-white font-semibold px-3 py-1.5 rounded-lg hover:bg-yellow-600 transition-all duration-300 shadow-sm transform active:scale-95">Edit</button>
+                                <button onclick="handleDeleteUser('${user.id}')" class="text-sm bg-red-500 text-white font-semibold px-3 py-1.5 rounded-lg hover:bg-red-600 transition-all duration-300 shadow-sm transform active:scale-95">Hapus</button>
                             </td></tr>`).join('')}
                     </tbody></table>`;
             };
@@ -905,89 +962,111 @@
         };
 
         const renderAdminChart = (period = 'day') => {
-            if (adminChartInstance) {
-                adminChartInstance.destroy();
-            }
-            const ctx = document.getElementById('admin-sales-chart').getContext('2d');
-            // Data sudah di-fetch oleh renderAdminIncomeReport
+            // Hapus: if (adminChartInstance) { adminChartInstance.destroy(); }
             const filteredOrders = window.adminFilteredOrders || [];
             const chartData = getChartData(period, filteredOrders);
+            const ctx = document.getElementById('admin-sales-chart').getContext('2d');
 
-            adminChartInstance = new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: chartData.labels,
-                    datasets: [{
-                        label: 'Total Penjualan',
-                        data: chartData.data,
-                        backgroundColor: 'rgba(80, 38, 136, 0.6)',
-                        borderColor: 'rgba(80, 38, 136, 1)',
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        title: { display: true, text: chartData.title },
-                        tooltip: {
-                            callbacks: {
-                                label: (context) => `Penjualan: ${formatRupiah(context.raw)}`
-                            }
-                        }
+            if (adminChartInstance) {
+                // --- PERBAIKAN: Gunakan .update() jika grafik sudah ada ---
+                // Ini akan menganimasikan perpindahan dari data lama ke data baru.
+                adminChartInstance.data.labels = chartData.labels;
+                adminChartInstance.data.datasets[0].data = chartData.data;
+                adminChartInstance.options.plugins.title.text = chartData.title;
+                adminChartInstance.update(); // Memicu animasi transisi
+            } else {
+                // --- Inisialisasi grafik saat pertama kali (animasi 'naik') ---
+                adminChartInstance = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: chartData.labels,
+                        datasets: [{
+                            label: 'Total Penjualan',
+                            data: chartData.data,
+                            backgroundColor: 'rgba(80, 38, 136, 0.6)',
+                            borderColor: 'rgba(80, 38, 136, 1)',
+                            borderWidth: 1
+                        }]
                     },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            ticks: {
-                                callback: (value) => formatRupiah(value)
+                    options: {
+                        animation: {
+                            duration: 1000, 
+                            easing: 'easeOutCubic',
+                        }, 
+                        responsive: true,
+                        plugins: {
+                            title: { display: true, text: chartData.title },
+                            tooltip: {
+                                callbacks: {
+                                    label: (context) => `Penjualan: ${formatRupiah(context.raw)}`
+                                }
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    callback: (value) => formatRupiah(value)
+                                }
                             }
                         }
                     }
-                }
-            });
-        };
-        const renderSellerChart = (period = 'day') => {
-             if (sellerChartInstance) {
-                sellerChartInstance.destroy();
+                });
             }
+        };
+
+        const renderSellerChart = (period = 'day') => {
+            // Hapus: if (sellerChartInstance) { sellerChartInstance.destroy(); }
             if (!currentUser) return;
-            const ctx = document.getElementById('seller-sales-chart').getContext('2d');
-            // Data sudah di-fetch oleh renderSellerIncomeReport
             const filteredOrders = window.sellerFilteredOrders || [];
             const chartData = getChartData(period, filteredOrders);
-            
-            sellerChartInstance = new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: chartData.labels,
-                    datasets: [{
-                        label: 'Total Omset',
-                        data: chartData.data,
-                        backgroundColor: 'rgba(252, 153, 175, 0.6)',
-                        borderColor: 'rgba(252, 153, 175, 1)',
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        title: { display: true, text: chartData.title },
-                         tooltip: {
-                            callbacks: {
-                                label: (context) => `Omset: ${formatRupiah(context.raw)}`
-                            }
-                        }
+            const ctx = document.getElementById('seller-sales-chart').getContext('2d');
+
+            if (sellerChartInstance) {
+                // --- PERBAIKAN: Gunakan .update() jika grafik sudah ada ---
+                sellerChartInstance.data.labels = chartData.labels;
+                sellerChartInstance.data.datasets[0].data = chartData.data;
+                sellerChartInstance.options.plugins.title.text = chartData.title;
+                sellerChartInstance.update(); // Memicu animasi transisi
+            } else {
+                // --- Inisialisasi grafik saat pertama kali (animasi 'naik') ---
+                sellerChartInstance = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: chartData.labels,
+                        datasets: [{
+                            label: 'Total Omset',
+                            data: chartData.data,
+                            backgroundColor: 'rgba(252, 153, 175, 0.6)',
+                            borderColor: 'rgba(252, 153, 175, 1)',
+                            borderWidth: 1
+                        }]
                     },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                             ticks: {
-                                callback: (value) => formatRupiah(value)
+                    options: {
+                        animation: {
+                            duration: 1000,
+                            easing: 'easeOutCubic',
+                        },
+                        responsive: true,
+                        plugins: {
+                            title: { display: true, text: chartData.title },
+                             tooltip: {
+                                callbacks: {
+                                    label: (context) => `Omset: ${formatRupiah(context.raw)}`
+                                }
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                 ticks: {
+                                    callback: (value) => formatRupiah(value)
+                                }
                             }
                         }
                     }
-                }
-            });
+                });
+            }
         };
         const renderAdminIncomeReport = async (period = 'day') => {
             // PERBAIKAN: Jangan tampilkan loading global, cukup di dalam elemen
@@ -1084,6 +1163,74 @@
                   adminProductList.innerHTML = '<p class="text-gray-500 text-center col-span-full">Belum ada produk dari penjual manapun.</p>';
               }
         };
+
+        // PENAMBAHAN: Fungsi untuk animasi "Terbang ke Keranjang"
+        const flyToCart = (event) => {
+            const button = event.currentTarget;
+            // Temukan elemen kartu terdekat
+            const card = button.closest('.bg-card');
+            if (!card) return;
+
+            // Temukan gambar di dalam kartu
+            const imgToAnimate = card.querySelector('img');
+            // Temukan elemen keranjang
+            const cartEl = document.getElementById('cart-and-orders-section');
+            
+            if (!imgToAnimate || !cartEl) return;
+
+            // 1. Dapatkan posisi gambar asli dan keranjang
+            const imgRect = imgToAnimate.getBoundingClientRect();
+            const cartRect = cartEl.getBoundingClientRect();
+
+            // 2. Buat klon gambar
+            const imgClone = document.createElement('img');
+            imgClone.src = imgToAnimate.src;
+            imgClone.className = 'fly-to-cart-clone'; // Terapkan style CSS
+            // Atur posisi awal klon tepat di atas gambar asli
+            imgClone.style.left = `${imgRect.left}px`;
+            imgClone.style.top = `${imgRect.top}px`;
+            imgClone.style.width = `${imgRect.width}px`;
+            imgClone.style.height = `${imgRect.height}px`;
+
+            // 3. Tambahkan klon ke body
+            document.body.appendChild(imgClone);
+
+            // 4. Animasikan klon
+            // Kita gunakan requestAnimationFrame agar browser siap menganimasikan
+            requestAnimationFrame(() => {
+                // Atur posisi akhir (di tengah atas keranjang)
+                imgClone.style.left = `${cartRect.left + cartRect.width / 2 - 10}px`; 
+                imgClone.style.top = `${cartRect.top + 20}px`; // Sedikit di bawah atas keranjang
+                // Atur ukuran akhir (mengecil)
+                imgClone.style.width = '20px';
+                imgClone.style.height = '20px';
+                // Atur opasitas akhir (menghilang)
+                imgClone.style.opacity = '0';
+                // Tambahkan efek berputar dan mengecil
+                imgClone.style.transform = 'rotate(360deg) scale(0.2)';
+            });
+
+            // 5. Hapus klon setelah animasi selesai (700ms, sesuai durasi transisi)
+            setTimeout(() => {
+                imgClone.remove();
+            }, 700); 
+        };
+
+        // PENAMBAHAN: Handler baru untuk tombol AddToCart
+        const handleAddToCartClick = (event) => {
+            const button = event.currentTarget;
+            
+            // Ambil data item yang sudah kita simpan
+            const itemJson = decodeURIComponent(button.dataset.itemJson);
+            const item = JSON.parse(itemJson);
+
+            // 1. Jalankan animasi "terbang"
+            flyToCart(event);
+
+            // 2. Jalankan logika asli untuk menambah ke keranjang
+            addToCart(item);
+        };
+
 
         // --- CORE LOGIC (SUPABASE) ---
         const updateView = () => {
@@ -1547,19 +1694,34 @@
                  alert("Anda tidak bisa menghapus akun Anda sendiri.");
                  return;
             }
-            if (confirm('Yakin ingin menghapus user ini? Ini akan menghapus data profil, tapi TIDAK auth user-nya (lakukan di dashboard Supabase).')) {
+            // PERBAIKAN: Mengganti pesan konfirmasi agar lebih jelas
+            if (confirm('Yakin ingin menghapus user ini? Ini akan menghapus profil mereka DAN SEMUA MENU (jika mereka penjual). Login mereka akan tetap ada (hapus manual di Supabase).')) {
                 showLoading(true);
-                // Hanya hapus dari tabel 'profiles'. Menghapus auth user butuh akses admin API.
-                const { error } = await supabaseClient
+                
+                // LANGKAH 1: Hapus semua menu yang terkait dengan user ini (jika ada)
+                // Ini akan membersihkan data jika user tersebut adalah 'penjual'
+                const { error: menuError } = await supabaseClient
+                    .from('menu_items')
+                    .delete()
+                    .eq('seller_id', userId);
+
+                if (menuError) {
+                    // Jangan hentikan proses jika error (mungkin user-nya bukan penjual)
+                    console.warn('Gagal menghapus menu user (mungkin bukan penjual):', menuError.message);
+                }
+
+                // LANGKAH 2: Hapus profil user
+                const { error: profileError } = await supabaseClient
                     .from('profiles')
                     .delete()
                     .eq('id', userId);
                 
-                if (error) {
-                    alert('Gagal menghapus profil user: ' + error.message);
+                if (profileError) {
+                    alert('Gagal menghapus profil user: ' + profileError.message);
                 } else {
-                    // TODO: Hapus juga menu dan order terkait jika perlu (cascading delete)
+                    // Sukses, refresh semua list
                     renderAdminLists();
+                    renderAdminProductList(); // Refresh daftar produk juga
                 }
                 showLoading(false);
             }
